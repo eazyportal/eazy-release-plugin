@@ -9,6 +9,8 @@ data class Version(
 ) {
 
     companion object {
+        const val DEVELOPMENT_VERSION_SUFFIX = "SNAPSHOT"
+
         private val versionRegex = Regex("^(\\d+)\\.(\\d+)\\.(\\d+)-?([a-zA-Z-\\d\\.]*)\\+?([a-zA-Z-\\d\\.]*)$")
 
         fun of(versionValue: String): Version {
@@ -29,7 +31,7 @@ data class Version(
         if (preRelease.isNullOrBlank()) {
             preRelease = null
         }
-        else if (preRelease?.startsWith("0") == true) {
+        else if (preRelease!!.startsWith("0")) {
             // https://semver.org/#spec-item-9
             throw IllegalArgumentException("Pre-release should not start with '0'.")
         }
@@ -60,5 +62,8 @@ data class Version(
 
         return sb.toString()
     }
+
+    operator fun compareTo(other: Version?): Int =
+        VersionComparator().compare(this, other)
 
 }

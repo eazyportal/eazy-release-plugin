@@ -1,0 +1,76 @@
+package org.eazyportal.plugin.release.core.version.model
+
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+
+internal class VersionComparatorTest {
+
+    companion object {
+        @JvmStatic
+        fun compare() = listOf(
+            Arguments.of(Version(0, 0, 1), null, -1),
+            Arguments.of(null, null, 0),
+            Arguments.of(null, Version(0, 0, 1), 1),
+
+            Arguments.of(Version(0, 0, 1), Version(0, 0, 1, Version.DEVELOPMENT_VERSION_SUFFIX), -1),
+
+            Arguments.of(Version(0, 0, 1), Version(0, 0, 2), -1),
+            Arguments.of(Version(0, 0, 1), Version(0, 0, 1), 0),
+            Arguments.of(Version(0, 0, 2), Version(0, 0, 1), 1),
+
+            Arguments.of(Version(0, 1, 0), Version(0, 2, 0), -1),
+            Arguments.of(Version(0, 1, 0), Version(0, 1, 0), 0),
+            Arguments.of(Version(0, 2, 0), Version(0, 1, 0), 1),
+
+            Arguments.of(Version(1, 0, 0), Version(2, 0, 0), -1),
+            Arguments.of(Version(1, 0, 0), Version(1, 0, 0), 0),
+            Arguments.of(Version(2, 0, 0), Version(1, 0, 0), 1),
+
+            Arguments.of(Version(1, 0, 0), Version(0, 0, 1), 1),
+            Arguments.of(Version(0, 0, 1), Version(1, 0, 0), -1),
+
+            Arguments.of(Version(1, 0, 0), Version(1, 0, 0, "1"), -1),
+            Arguments.of(Version(1, 0, 0, "1"), Version(1, 0, 0), 1),
+
+            Arguments.of(Version(1, 0, 0, "1.1"), Version(1, 0, 0, "1.1.1"), -1),
+            Arguments.of(Version(1, 0, 0, "1.1"), Version(1, 0, 0, "1.1"), 0),
+            Arguments.of(Version(1, 0, 0, "1.1.1"), Version(1, 0, 0, "1.1"), 1),
+
+            Arguments.of(Version(1, 0, 0, "1"), Version(1, 0, 0, "alpha"), -1),
+            Arguments.of(Version(1, 0, 0, "1.1"), Version(1, 0, 0, "alpha"), -1),
+            Arguments.of(Version(1, 0, 0, "alpha"), Version(1, 0, 0, "alpha"), 0),
+            Arguments.of(Version(1, 0, 0, "alpha"), Version(1, 0, 0, "1"), 1),
+            Arguments.of(Version(1, 0, 0, "alpha"), Version(1, 0, 0, "1.1"), 1),
+
+            Arguments.of(Version(1, 0, 0, "alpha"), Version(1, 0, 0, "beta"), -1),
+            Arguments.of(Version(1, 0, 0, "beta"), Version(1, 0, 0, "alpha"), 1),
+
+            Arguments.of(Version(1, 0, 0, "alpha.1"), Version(1, 0, 0, "alpha.2"), -1),
+            Arguments.of(Version(1, 0, 0, "alpha.1"), Version(1, 0, 0, "alpha.1"), 0),
+            Arguments.of(Version(1, 0, 0, "alpha.2"), Version(1, 0, 0, "alpha.1"), 1),
+
+            // Build metadata does not figure into precedence during comparison of versions
+            Arguments.of(Version(1, 0, 0, "1", "1"), Version(1, 0, 0, "1", "2"), 0),
+            Arguments.of(Version(1, 0, 0, "1", "1"), Version(1, 0, 0, "1", "1"), 0),
+            Arguments.of(Version(1, 0, 0, "1", "2"), Version(1, 0, 0, "1", "1"), 0),
+
+            Arguments.of(Version(1, 0, 0, "1", "1.1"), Version(1, 0, 0, "1", "1"), 0),
+            Arguments.of(Version(1, 0, 0, "1", "1.1"), Version(1, 0, 0, "1", "1.1"), 0),
+            Arguments.of(Version(1, 0, 0, "1", "1"), Version(1, 0, 0, "1", "1.1"), 0)
+        )
+    }
+
+    private val underTest = VersionComparator()
+
+    @MethodSource("compare")
+    @ParameterizedTest
+    fun test_compare(version1: Version?, version2: Version?, expected: Int) {
+        // GIVEN
+        // WHEN
+        // THEN
+        assertThat(underTest.compare(version1, version2)).isEqualTo(expected)
+    }
+
+}

@@ -1,23 +1,28 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
-import org.eazyportal.plugin.release.core.version.model.Version
-import org.eazyportal.plugin.release.gradle.tasks.exceptions.InvalidVersionException
+import org.eazyportal.plugin.release.core.SetReleaseVersionAction
+import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
-open class SetReleaseVersionTask @Inject constructor() : EazyBaseTask() {
+open class SetReleaseVersionTask @Inject constructor(
+    private val setReleaseVersionAction: SetReleaseVersionAction
+) : EazyBaseTask() {
 
     @get:Input
-    lateinit var releaseVersion: Version
+    lateinit var conventionalCommitTypes: ListProperty<ConventionalCommitType>
 
     @TaskAction
     fun run() {
-        if (!releaseVersion.preRelease.isNullOrBlank() || !releaseVersion.build.isNullOrBlank()) {
-            throw InvalidVersionException("Invalid release version: $releaseVersion")
-        }
+        logger.quiet("Setting version...")
 
-        logger.quiet("Setting version to $releaseVersion")
+        setReleaseVersionAction.conventionalCommitTypes = conventionalCommitTypes
+            .getOrElse(listOf())
+            .ifEmpty { ConventionalCommitType.DEFAULT_TYPES }
+
+        setReleaseVersionAction.execute(project.rootDir)
     }
 
 }
