@@ -1,9 +1,11 @@
 package org.eazyportal.plugin.release.gradle
 
 import org.eazyportal.plugin.release.core.SetReleaseVersionAction
+import org.eazyportal.plugin.release.core.SetSnapshotVersionAction
 import org.eazyportal.plugin.release.core.executor.CliCommandExecutor
 import org.eazyportal.plugin.release.core.scm.GitActions
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
+import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
 import org.eazyportal.plugin.release.gradle.tasks.EazyBaseTask
 import org.eazyportal.plugin.release.gradle.tasks.SetReleaseVersionTask
@@ -25,10 +27,10 @@ class EazyReleasePlugin : Plugin<Project> {
         val extension = project.extensions.create("release", EazyReleasePluginExtension::class.java)
 
         val projectActions = GradleProjectActions(project.rootDir)
-        val releaseVersionProvider = ReleaseVersionProvider()
         val scmActions = GitActions(CliCommandExecutor())
 
-        val setReleaseVersionAction = SetReleaseVersionAction(projectActions, releaseVersionProvider, scmActions)
+        val setReleaseVersionAction = SetReleaseVersionAction(projectActions, ReleaseVersionProvider(), scmActions)
+        val setSnapshotVersionAction = SetSnapshotVersionAction(projectActions, SnapshotVersionProvider())
 
         project.tasks.apply {
             register(SET_RELEASE_VERSION_TASK_NAME, SetReleaseVersionTask::class.java, setReleaseVersionAction).configure {
@@ -45,7 +47,7 @@ class EazyReleasePlugin : Plugin<Project> {
                 it.finalizedBy(SET_SNAPSHOT_VERSION_TASK_NAME, UPDATE_SCM_TASK_NAME)
             }
 
-            register(SET_SNAPSHOT_VERSION_TASK_NAME, SetSnapshotVersionTask::class.java) {
+            register(SET_SNAPSHOT_VERSION_TASK_NAME, SetSnapshotVersionTask::class.java, setSnapshotVersionAction).configure {
                 it.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME, RELEASE_TASK_NAME)
             }
 

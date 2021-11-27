@@ -41,6 +41,10 @@ data class Version(
         }
     }
 
+    fun isRelease(): Boolean {
+        return preRelease.isNullOrBlank() && build.isNullOrBlank()
+    }
+
     override fun toString(): String {
         val sb = StringBuilder(9)
 
