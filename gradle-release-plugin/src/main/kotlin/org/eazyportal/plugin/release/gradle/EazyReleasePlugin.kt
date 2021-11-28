@@ -30,7 +30,7 @@ class EazyReleasePlugin : Plugin<Project> {
         val scmActions = GitActions(CliCommandExecutor())
 
         val setReleaseVersionAction = SetReleaseVersionAction(projectActions, ReleaseVersionProvider(), scmActions)
-        val setSnapshotVersionAction = SetSnapshotVersionAction(projectActions, SnapshotVersionProvider())
+        val setSnapshotVersionAction = SetSnapshotVersionAction(projectActions, SnapshotVersionProvider(), scmActions)
 
         project.tasks.apply {
             register(SET_RELEASE_VERSION_TASK_NAME, SetReleaseVersionTask::class.java, setReleaseVersionAction).configure {

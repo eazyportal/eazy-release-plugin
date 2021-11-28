@@ -43,6 +43,8 @@ class GradleProjectActions(
         }
     }
 
+    override fun scmFilesToCommit(): Array<String> = arrayOf(".")
+
     override fun setVersion(version: Version) {
         gradlePropertiesFile.createNewFile()
 

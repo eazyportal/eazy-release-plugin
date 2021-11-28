@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
@@ -56,7 +55,6 @@ internal class SetReleaseVersionTaskTest {
 
         // WHEN
         doAnswer { it }.whenever(setReleaseVersionAction).conventionalCommitTypes = conventionalCommitTypes
-        doNothing().whenever(setReleaseVersionAction).execute(project.rootDir)
 
         // THEN
         underTest.run()

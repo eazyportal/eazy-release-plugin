@@ -19,7 +19,6 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
@@ -83,7 +82,7 @@ internal class SetReleaseVersionActionTest {
         whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
         whenever(scmActions.getCommits(workingDir, GIT_TAG)).thenReturn(commits)
         whenever(releaseVersionProvider.provide(eq(currentVersion), any())).thenReturn(RELEASE_001)
-        doNothing().whenever(projectActions).setVersion(RELEASE_001)
+        whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("dummy"))
 
         // THEN
         underTest.execute(workingDir)
@@ -95,6 +94,10 @@ internal class SetReleaseVersionActionTest {
         verify(scmActions).getCommits(workingDir, GIT_TAG)
         verify(releaseVersionProvider).provide(eq(currentVersion), versionIncrementCaptor.capture())
         verify(projectActions).setVersion(RELEASE_001)
+        verify(projectActions).scmFilesToCommit()
+        verify(scmActions).add(eq(workingDir), any())
+        verify(scmActions).commit(eq(workingDir), any())
+        verify(scmActions).tag(eq(workingDir), any())
         verifyNoMoreInteractions(projectActions, releaseVersionProvider, scmActions)
 
         assertThat(versionIncrementCaptor.firstValue).isEqualTo(expectedVersionIncrement)
@@ -110,7 +113,7 @@ internal class SetReleaseVersionActionTest {
         whenever(scmActions.getLastTag(workingDir)).thenAnswer { throw ScmActionException(RuntimeException()) }
         whenever(scmActions.getCommits(workingDir, null)).thenReturn(commits)
         whenever(releaseVersionProvider.provide(eq(SNAPSHOT_001), any())).thenReturn(RELEASE_001)
-        doNothing().whenever(projectActions).setVersion(RELEASE_001)
+        whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("dummy"))
 
         // THEN
         underTest.execute(workingDir)
@@ -120,6 +123,10 @@ internal class SetReleaseVersionActionTest {
         verify(scmActions).getCommits(workingDir, null)
         verify(releaseVersionProvider).provide(eq(SNAPSHOT_001), any())
         verify(projectActions).setVersion(RELEASE_001)
+        verify(projectActions).scmFilesToCommit()
+        verify(scmActions).add(eq(workingDir), any())
+        verify(scmActions).commit(eq(workingDir), any())
+        verify(scmActions).tag(eq(workingDir), any())
         verifyNoMoreInteractions(projectActions, releaseVersionProvider, scmActions)
     }
 

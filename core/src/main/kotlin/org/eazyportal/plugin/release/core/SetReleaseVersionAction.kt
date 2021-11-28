@@ -24,12 +24,14 @@ open class SetReleaseVersionAction(
 
     override fun execute(workingDir: File) {
         val currentVersion = projectActions.getVersion()
-
         val versionIncrement = getVersionIncrement(workingDir)
-
         val releaseVersion = releaseVersionProvider.provide(currentVersion, versionIncrement)
 
         projectActions.setVersion(releaseVersion)
+
+        scmActions.add(workingDir, *projectActions.scmFilesToCommit())
+        scmActions.commit(workingDir, "Release version: $releaseVersion")
+        scmActions.tag(workingDir, "-a", releaseVersion.toString(), "-m", "v${releaseVersion}")
     }
 
     private fun getVersionIncrement(workingDir: File): VersionIncrement {

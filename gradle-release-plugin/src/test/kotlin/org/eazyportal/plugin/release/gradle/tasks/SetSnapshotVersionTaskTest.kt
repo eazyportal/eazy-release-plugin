@@ -7,10 +7,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
-import org.mockito.kotlin.whenever
 
 internal class SetSnapshotVersionTaskTest {
 
@@ -33,8 +31,6 @@ internal class SetSnapshotVersionTaskTest {
     fun test_run() {
         // GIVEN
         // WHEN
-        doNothing().whenever(setSnapshotVersionAction).execute(project.rootDir)
-
         // THEN
         underTest.run()
 

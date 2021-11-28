@@ -43,6 +43,38 @@ internal class GitActionsTest {
     }
 
     @Test
+    fun test_add() {
+        // GIVEN
+        val filePaths = arrayOf(".")
+
+        // WHEN
+        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "add", *filePaths))
+            .thenReturn("")
+
+        // THEN
+        underTest.add(workingDir, *filePaths)
+
+        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "add", *filePaths)
+        verifyNoMoreInteractions(commandExecutor)
+    }
+
+    @Test
+    fun test_commit() {
+        // GIVEN
+        val message = "commit message"
+
+        // WHEN
+        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "commit", "-m", message))
+            .thenReturn("")
+
+        // THEN
+        underTest.commit(workingDir, message)
+
+        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "commit", "-m", message)
+        verifyNoMoreInteractions(commandExecutor)
+    }
+
+    @Test
     fun test_execute() {
         // GIVEN
         val response = "dummy response"
@@ -170,6 +202,22 @@ internal class GitActionsTest {
         assertThat(actual).isEqualTo(listOf(TAG_1, TAG_2))
 
         verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", COMMIT_HASH_1)
+        verifyNoMoreInteractions(commandExecutor)
+    }
+
+    @Test
+    fun test_tag() {
+        // GIVEN
+        val commands = arrayOf("0.0.1")
+
+        // WHEN
+        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", *commands))
+            .thenReturn("")
+
+        // THEN
+        underTest.tag(workingDir, *commands)
+
+        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", *commands)
         verifyNoMoreInteractions(commandExecutor)
     }
 

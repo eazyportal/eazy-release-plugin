@@ -14,6 +14,14 @@ class GitActions(
             if (isWindows()) "git.exe" else "git"
     }
 
+    override fun add(workingDir: File, vararg filePaths: String) {
+        execute(workingDir, "add", *filePaths)
+    }
+
+    override fun commit(workingDir: File, message: String) {
+        execute(workingDir, "commit", "-m", message)
+    }
+
     override fun getCommits(workingDir: File, fromRef: String?, toRef: String?): List<String> {
         val refs = listOfNotNull(fromRef, (toRef ?: "HEAD"))
             .joinToString("..")
@@ -29,6 +37,10 @@ class GitActions(
     override fun getTags(workingDir: File, fromRef: String?): List<String> {
         return execute(workingDir, "tag", "--sort=-creatordate", "--contains", (fromRef ?: "HEAD"))
             .split(System.lineSeparator())
+    }
+
+    override fun tag(workingDir: File, vararg commands: String) {
+        execute(workingDir, "tag", *commands)
     }
 
     internal fun execute(workingDir: File, vararg gitCommands: String): String {
