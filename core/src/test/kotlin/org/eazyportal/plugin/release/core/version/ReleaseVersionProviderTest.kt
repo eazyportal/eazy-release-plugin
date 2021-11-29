@@ -27,7 +27,9 @@ internal class ReleaseVersionProviderTest {
                 Arguments.of(RELEASE_001, VersionIncrement.MINOR, RELEASE_010),
                 Arguments.of(RELEASE_001, VersionIncrement.MAJOR, RELEASE_100),
 
-                Arguments.of(Version(0, 0, 1, null, "invalid.version"), VersionIncrement.PATCH, RELEASE_001)
+                Arguments.of(Version(0, 0, 1, null, "invalid.version"), VersionIncrement.PATCH, RELEASE_001),
+
+                Arguments.of(Version(0, 0, 1, "SNAPSHOT", null), VersionIncrement.PATCH, RELEASE_001)
             )
         }
     }

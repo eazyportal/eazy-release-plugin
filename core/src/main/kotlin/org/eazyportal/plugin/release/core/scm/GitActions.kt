@@ -39,6 +39,12 @@ class GitActions(
             .split(System.lineSeparator())
     }
 
+    override fun push(workingDir: File, remote: String, vararg branches: String) {
+        val branchesRefs = branches.map { "$it:$it" }
+
+        execute(workingDir, "push", "--atomic", "--tags", remote, *branchesRefs.toTypedArray())
+    }
+
     override fun tag(workingDir: File, vararg commands: String) {
         execute(workingDir, "tag", *commands)
     }

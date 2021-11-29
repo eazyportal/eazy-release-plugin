@@ -11,10 +11,8 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
-import org.mockito.kotlin.whenever
 import java.io.File
 
 internal class SetReleaseVersionTaskTest {
@@ -49,17 +47,13 @@ internal class SetReleaseVersionTaskTest {
     @ParameterizedTest
     fun test_run(conventionalCommitTypes: List<ConventionalCommitType>) {
         // GIVEN
-        underTest.conventionalCommitTypes = project.objects.listProperty(ConventionalCommitType::class.java).apply {
-            this.set(conventionalCommitTypes)
-        }
+        underTest.conventionalCommitTypes.set(conventionalCommitTypes)
 
         // WHEN
-        doAnswer { it }.whenever(setReleaseVersionAction).conventionalCommitTypes = conventionalCommitTypes
-
         // THEN
         underTest.run()
 
-        verify(setReleaseVersionAction).conventionalCommitTypes = conventionalCommitTypes.ifEmpty { ConventionalCommitType.DEFAULT_TYPES }
+        verify(setReleaseVersionAction).conventionalCommitTypes = conventionalCommitTypes
         verify(setReleaseVersionAction).execute(project.rootDir)
         verifyNoMoreInteractions(setReleaseVersionAction)
     }

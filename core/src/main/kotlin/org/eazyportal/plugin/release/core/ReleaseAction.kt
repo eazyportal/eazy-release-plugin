@@ -2,7 +2,7 @@ package org.eazyportal.plugin.release.core
 
 import java.io.File
 
-interface SetVersionAction {
+interface ReleaseAction {
 
     fun execute(workingDir: File)
 

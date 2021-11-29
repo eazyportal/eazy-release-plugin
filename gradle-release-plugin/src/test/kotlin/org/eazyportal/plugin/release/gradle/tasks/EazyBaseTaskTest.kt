@@ -16,7 +16,7 @@ internal class EazyBaseTaskTest {
 
     @BeforeEach
     fun setUp() {
-        underTest = project.tasks.create(EazyReleasePlugin.UPDATE_SCM_TASK_NAME, UpdateScmTask::class.java)
+        underTest = project.tasks.create(EazyReleasePlugin.UPDATE_SCM_TASK_NAME, EazyBaseTask::class.java)
     }
 
     @Test

@@ -2,10 +2,12 @@ package org.eazyportal.plugin.release.gradle
 
 import org.eazyportal.plugin.release.core.SetReleaseVersionAction
 import org.eazyportal.plugin.release.core.SetSnapshotVersionAction
+import org.eazyportal.plugin.release.core.UpdateScmAction
 import org.eazyportal.plugin.release.core.executor.CliCommandExecutor
 import org.eazyportal.plugin.release.core.scm.GitActions
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
+import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
 import org.eazyportal.plugin.release.gradle.tasks.EazyBaseTask
 import org.eazyportal.plugin.release.gradle.tasks.SetReleaseVersionTask
@@ -31,10 +33,11 @@ class EazyReleasePlugin : Plugin<Project> {
 
         val setReleaseVersionAction = SetReleaseVersionAction(projectActions, ReleaseVersionProvider(), scmActions)
         val setSnapshotVersionAction = SetSnapshotVersionAction(projectActions, SnapshotVersionProvider(), scmActions)
+        val updateScmAction = UpdateScmAction(scmActions)
 
         project.tasks.apply {
             register(SET_RELEASE_VERSION_TASK_NAME, SetReleaseVersionTask::class.java, setReleaseVersionAction).configure {
-                it.conventionalCommitTypes = extension.conventionalCommitTypes
+                it.conventionalCommitTypes.set(extension.conventionalCommitTypes)
             }
 
             val buildTask = getByName("build").also {
@@ -51,8 +54,13 @@ class EazyReleasePlugin : Plugin<Project> {
                 it.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME, RELEASE_TASK_NAME)
             }
 
-            register(UPDATE_SCM_TASK_NAME, UpdateScmTask::class.java) {
+            register(UPDATE_SCM_TASK_NAME, UpdateScmTask::class.java, updateScmAction).configure {
                 it.mustRunAfter(SET_SNAPSHOT_VERSION_TASK_NAME)
+
+                extension.scm.let { scm ->
+                    it.releaseBranch.set(scm.releaseBranch)
+                    it.remote.set(scm.remote)
+                }
             }
         }
     }

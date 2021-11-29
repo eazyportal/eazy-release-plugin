@@ -12,7 +12,7 @@ open class SetReleaseVersionTask @Inject constructor(
 ) : EazyBaseTask() {
 
     @get:Input
-    lateinit var conventionalCommitTypes: ListProperty<ConventionalCommitType>
+    val conventionalCommitTypes: ListProperty<ConventionalCommitType> = project.objects.listProperty(ConventionalCommitType::class.java)
 
     @TaskAction
     fun run() {
@@ -20,7 +20,6 @@ open class SetReleaseVersionTask @Inject constructor(
 
         setReleaseVersionAction.conventionalCommitTypes = conventionalCommitTypes
             .getOrElse(listOf())
-            .ifEmpty { ConventionalCommitType.DEFAULT_TYPES }
 
         setReleaseVersionAction.execute(project.rootDir)
     }

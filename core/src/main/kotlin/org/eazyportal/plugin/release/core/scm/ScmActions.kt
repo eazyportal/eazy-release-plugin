@@ -14,6 +14,8 @@ interface ScmActions {
 
     fun getTags(workingDir: File, fromRef: String? = null): List<String>
 
+    fun push(workingDir: File, remote: String, vararg branches: String)
+
     fun tag(workingDir: File, vararg commands: String)
 
 }

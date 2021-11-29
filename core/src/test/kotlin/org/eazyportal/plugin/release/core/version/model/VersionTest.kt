@@ -27,6 +27,13 @@ internal class VersionTest {
         )
 
         @JvmStatic
+        fun isRelease() = listOf(
+            Arguments.of(Version(0, 0, 1), true),
+            Arguments.of(Version(0, 0, 1, "SNAPSHOT"), false),
+            Arguments.of(Version(0, 0, 1, "SNAPSHOT", "build"), false)
+        )
+
+        @JvmStatic
         fun of_validVersions() = listOf(
             Arguments.of("1.0.0", Version(1, 0, 0)),
             Arguments.of("1.0.0-SNAPSHOT", Version(1, 0, 0, "SNAPSHOT")),
@@ -89,6 +96,17 @@ internal class VersionTest {
         assertThatThrownBy { Version(0, 0, 0, "0") }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("Pre-release should not start with '0'.")
+    }
+
+    @MethodSource("isRelease")
+    @ParameterizedTest
+    fun test_isRelease(version: Version, expected: Boolean) {
+        // GIVEN
+        // WHEN
+        // THEN
+        val actual = version.isRelease()
+
+        assertThat(actual).isEqualTo(expected)
     }
 
     @MethodSource("of_validVersions")

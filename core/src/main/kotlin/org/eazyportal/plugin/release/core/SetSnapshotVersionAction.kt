@@ -10,7 +10,7 @@ class SetSnapshotVersionAction(
     private val snapshotVersionProvider: SnapshotVersionProvider,
     private val scmActions: ScmActions
 
-) : SetVersionAction {
+) : ReleaseAction {
 
     override fun execute(workingDir: File) {
         val currentVersion = projectActions.getVersion()

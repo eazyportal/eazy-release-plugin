@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.nio.file.Files
 
-internal class GradleProjectTypeTest {
+internal class GradleProjectActionsTest {
 
     companion object {
         @JvmStatic
@@ -127,6 +127,16 @@ internal class GradleProjectTypeTest {
         assertThatThrownBy { underTest.getVersion() }
             .isInstanceOf(MultipleProjectVersionPropertyException::class.java)
             .hasMessage("The project has multiple versions: [0.0.0, 0.0.1]")
+    }
+
+    @Test
+    fun test_scmFilesToCommit() {
+        // GIVEN
+        // WHEN
+        // THEN
+        val actual = underTest.scmFilesToCommit()
+
+        assertThat(actual).isNotEmpty
     }
 
     @MethodSource("setVersion")

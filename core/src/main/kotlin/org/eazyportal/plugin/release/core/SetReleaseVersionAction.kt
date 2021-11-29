@@ -13,7 +13,7 @@ open class SetReleaseVersionAction(
     private val projectActions: ProjectActions,
     private val releaseVersionProvider: ReleaseVersionProvider,
     private val scmActions: ScmActions
-) : SetVersionAction {
+) : ReleaseAction {
 
     companion object {
         @JvmStatic
@@ -69,7 +69,8 @@ open class SetReleaseVersionAction(
             return VersionIncrement.MAJOR
         }
 
-        return conventionalCommitTypes.firstOrNull { it.aliases.contains(commitType) }
+        return conventionalCommitTypes.ifEmpty { ConventionalCommitType.DEFAULT_TYPES }
+            .firstOrNull { it.aliases.contains(commitType) }
             ?.versionIncrement
     }
 

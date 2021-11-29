@@ -206,6 +206,23 @@ internal class GitActionsTest {
     }
 
     @Test
+    fun test_push() {
+        // GIVEN
+        val remote = "remote-repository"
+        val branch = "release-branch"
+
+        // WHEN
+        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "push", "--atomic", "--tags", remote, "$branch:$branch"))
+            .thenReturn("")
+
+        // THEN
+        underTest.push(workingDir, remote, branch)
+
+        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "push", "--atomic", "--tags", remote, "$branch:$branch")
+        verifyNoMoreInteractions(commandExecutor)
+    }
+
+    @Test
     fun test_tag() {
         // GIVEN
         val commands = arrayOf("0.0.1")

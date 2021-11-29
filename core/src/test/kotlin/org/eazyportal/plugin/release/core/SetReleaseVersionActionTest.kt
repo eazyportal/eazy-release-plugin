@@ -130,6 +130,37 @@ internal class SetReleaseVersionActionTest {
         verifyNoMoreInteractions(projectActions, releaseVersionProvider, scmActions)
     }
 
+    @Test
+    fun test_execute_whenConventionalCommitTypesIsEmpty() {
+        // GIVEN
+        underTest.conventionalCommitTypes = listOf()
+
+        // WHEN
+        whenever(projectActions.getVersion()).thenReturn(SNAPSHOT_001)
+        whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
+        whenever(scmActions.getCommits(workingDir, GIT_TAG)).thenReturn(listOf("feature: message"))
+        whenever(releaseVersionProvider.provide(eq(SNAPSHOT_001), any())).thenReturn(RELEASE_001)
+        whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("dummy"))
+
+        // THEN
+        underTest.execute(workingDir)
+
+        val versionIncrementCaptor = argumentCaptor<VersionIncrement>()
+
+        verify(projectActions).getVersion()
+        verify(scmActions).getLastTag(workingDir)
+        verify(scmActions).getCommits(workingDir, GIT_TAG)
+        verify(releaseVersionProvider).provide(eq(SNAPSHOT_001), versionIncrementCaptor.capture())
+        verify(projectActions).setVersion(RELEASE_001)
+        verify(projectActions).scmFilesToCommit()
+        verify(scmActions).add(eq(workingDir), any())
+        verify(scmActions).commit(eq(workingDir), any())
+        verify(scmActions).tag(eq(workingDir), any())
+        verifyNoMoreInteractions(projectActions, releaseVersionProvider, scmActions)
+
+        assertThat(versionIncrementCaptor.firstValue).isEqualTo(VersionIncrement.MINOR)
+    }
+
     @MethodSource("execute_withInvalidCommits")
     @ParameterizedTest
     fun test_execute_shouldFail_whenCommitsAreInvalid(currentVersion: Version, commits: List<String>) {
