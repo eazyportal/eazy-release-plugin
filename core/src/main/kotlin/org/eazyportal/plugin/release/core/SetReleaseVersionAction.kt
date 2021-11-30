@@ -47,8 +47,8 @@ open class SetReleaseVersionAction(
         return scmActions.getCommits(workingDir, lastTag)
             .mapNotNull { mapToCommitType(it) }
             .mapNotNull { mapToVersionIncrement(it) }
-            .reduceOrNull { acc, versionIncrement -> acc.coerceAtMost(versionIncrement) }
-            ?: throw IllegalArgumentException("Unable to determine the release version.")
+            .ifEmpty { throw IllegalArgumentException("There are no acceptable commits since the previous release {tag: $lastTag}.") }
+            .reduce { acc, versionIncrement -> acc.coerceAtMost(versionIncrement) }
     }
 
     private fun mapToCommitType(commit: String): String? {

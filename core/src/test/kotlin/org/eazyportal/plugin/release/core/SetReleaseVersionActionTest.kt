@@ -173,7 +173,7 @@ internal class SetReleaseVersionActionTest {
         // THEN
         assertThatThrownBy { underTest.execute(workingDir) }
             .isInstanceOf(IllegalArgumentException::class.java)
-            .hasMessage("Unable to determine the release version.")
+            .hasMessage("There are no acceptable commits since the previous release {tag: $GIT_TAG}.")
 
         verifyNoInteractions(releaseVersionProvider)
         verify(projectActions).getVersion()
