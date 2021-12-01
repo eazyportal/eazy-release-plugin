@@ -6,6 +6,7 @@ import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
+import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
 import org.eazyportal.plugin.release.core.version.model.Version
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement
@@ -71,12 +72,15 @@ internal class SetReleaseVersionActionTest {
         MockitoAnnotations.openMocks(this)
 
         underTest.conventionalCommitTypes = ConventionalCommitType.DEFAULT_TYPES
+        underTest.scmConfig = ScmConfig.GIT_FLOW
     }
 
     @MethodSource("execute")
     @ParameterizedTest
-    fun test_execute(currentVersion: Version, commits: List<String>, expectedVersionIncrement: VersionIncrement) {
+    fun test_execute_withGitFlow(currentVersion: Version, commits: List<String>, expectedVersionIncrement: VersionIncrement) {
         // GIVEN
+        underTest.scmConfig = ScmConfig.GIT_FLOW
+
         // WHEN
         whenever(projectActions.getVersion()).thenReturn(currentVersion)
         whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
@@ -89,6 +93,43 @@ internal class SetReleaseVersionActionTest {
 
         val versionIncrementCaptor = argumentCaptor<VersionIncrement>()
 
+        verify(scmActions).fetch(workingDir, ScmConfig.GIT_FLOW.remote)
+        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
+        verify(projectActions).getVersion()
+        verify(scmActions).getLastTag(workingDir)
+        verify(scmActions).getCommits(workingDir, GIT_TAG)
+        verify(releaseVersionProvider).provide(eq(currentVersion), versionIncrementCaptor.capture())
+        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
+        verify(scmActions).mergeNoCommit(workingDir, ScmConfig.GIT_FLOW.featureBranch)
+        verify(projectActions).setVersion(RELEASE_001)
+        verify(projectActions).scmFilesToCommit()
+        verify(scmActions).add(eq(workingDir), any())
+        verify(scmActions).commit(eq(workingDir), any())
+        verify(scmActions).tag(eq(workingDir), any())
+        verifyNoMoreInteractions(projectActions, releaseVersionProvider, scmActions)
+
+        assertThat(versionIncrementCaptor.firstValue).isEqualTo(expectedVersionIncrement)
+    }
+
+    @MethodSource("execute")
+    @ParameterizedTest
+    fun test_execute_withTrunkBasedFlow(currentVersion: Version, commits: List<String>, expectedVersionIncrement: VersionIncrement) {
+        // GIVEN
+        underTest.scmConfig = ScmConfig.TRUNK_BASED_FLOW
+
+        // WHEN
+        whenever(projectActions.getVersion()).thenReturn(currentVersion)
+        whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
+        whenever(scmActions.getCommits(workingDir, GIT_TAG)).thenReturn(commits)
+        whenever(releaseVersionProvider.provide(eq(currentVersion), any())).thenReturn(RELEASE_001)
+        whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("dummy"))
+
+        // THEN
+        underTest.execute(workingDir)
+
+        val versionIncrementCaptor = argumentCaptor<VersionIncrement>()
+
+        verify(scmActions).fetch(workingDir, ScmConfig.TRUNK_BASED_FLOW.remote)
         verify(projectActions).getVersion()
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, GIT_TAG)
@@ -118,10 +159,14 @@ internal class SetReleaseVersionActionTest {
         // THEN
         underTest.execute(workingDir)
 
+        verify(scmActions).fetch(workingDir, ScmConfig.GIT_FLOW.remote)
+        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
         verify(projectActions).getVersion()
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, null)
         verify(releaseVersionProvider).provide(eq(SNAPSHOT_001), any())
+        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
+        verify(scmActions).mergeNoCommit(workingDir, ScmConfig.GIT_FLOW.featureBranch)
         verify(projectActions).setVersion(RELEASE_001)
         verify(projectActions).scmFilesToCommit()
         verify(scmActions).add(eq(workingDir), any())
@@ -147,10 +192,14 @@ internal class SetReleaseVersionActionTest {
 
         val versionIncrementCaptor = argumentCaptor<VersionIncrement>()
 
+        verify(scmActions).fetch(workingDir, ScmConfig.GIT_FLOW.remote)
+        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
         verify(projectActions).getVersion()
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, GIT_TAG)
         verify(releaseVersionProvider).provide(eq(SNAPSHOT_001), versionIncrementCaptor.capture())
+        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
+        verify(scmActions).mergeNoCommit(workingDir, ScmConfig.GIT_FLOW.featureBranch)
         verify(projectActions).setVersion(RELEASE_001)
         verify(projectActions).scmFilesToCommit()
         verify(scmActions).add(eq(workingDir), any())
@@ -176,6 +225,8 @@ internal class SetReleaseVersionActionTest {
             .hasMessage("There are no acceptable commits since the previous release {tag: $GIT_TAG}.")
 
         verifyNoInteractions(releaseVersionProvider)
+        verify(scmActions).fetch(workingDir, ScmConfig.GIT_FLOW.remote)
+        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
         verify(projectActions).getVersion()
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, GIT_TAG)

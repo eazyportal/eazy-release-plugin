@@ -2,6 +2,7 @@ package org.eazyportal.plugin.release.core
 
 import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.scm.ScmActions
+import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
 import org.eazyportal.plugin.release.core.version.model.Version
 import org.junit.jupiter.api.BeforeEach
@@ -43,8 +44,35 @@ internal class SetSnapshotVersionActionTest {
     }
 
     @Test
-    fun test_execute() {
+    fun test_execute_withGitFlow() {
         // GIVEN
+        underTest.scmConfig = ScmConfig.GIT_FLOW
+
+        // WHEN
+        whenever(projectActions.getVersion()).thenReturn(RELEASE_001)
+        whenever(snapshotVersionProvider.provide(RELEASE_001)).thenReturn(SNAPSHOT_002)
+        whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("."))
+
+        // THEN
+        underTest.execute(workingDir)
+
+        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
+        verify(projectActions).getVersion()
+        verify(snapshotVersionProvider).provide(RELEASE_001)
+        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
+        verify(scmActions).mergeNoCommit(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
+        verify(projectActions).setVersion(SNAPSHOT_002)
+        verify(projectActions).scmFilesToCommit()
+        verify(scmActions).add(eq(workingDir), any())
+        verify(scmActions).commit(eq(workingDir), any())
+        verifyNoMoreInteractions(projectActions, scmActions, snapshotVersionProvider)
+    }
+
+    @Test
+    fun test_execute_withTrunkBasedFlow() {
+        // GIVEN
+        underTest.scmConfig = ScmConfig.TRUNK_BASED_FLOW
+
         // WHEN
         whenever(projectActions.getVersion()).thenReturn(RELEASE_001)
         whenever(snapshotVersionProvider.provide(RELEASE_001)).thenReturn(SNAPSHOT_002)
@@ -59,7 +87,7 @@ internal class SetSnapshotVersionActionTest {
         verify(projectActions).scmFilesToCommit()
         verify(scmActions).add(eq(workingDir), any())
         verify(scmActions).commit(eq(workingDir), any())
-        verifyNoMoreInteractions(projectActions, snapshotVersionProvider)
+        verifyNoMoreInteractions(projectActions, scmActions, snapshotVersionProvider)
     }
 
 }

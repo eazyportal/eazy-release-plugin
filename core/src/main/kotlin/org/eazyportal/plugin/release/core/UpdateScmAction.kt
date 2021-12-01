@@ -1,22 +1,17 @@
 package org.eazyportal.plugin.release.core
 
 import org.eazyportal.plugin.release.core.scm.ScmActions
+import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import java.io.File
 
 class UpdateScmAction(
     private val scmActions: ScmActions
 ) : ReleaseAction {
 
-    companion object {
-        const val RELEASE_BRANCH = "master"
-        const val REMOTE = "origin"
-    }
-
-    var releaseBranch: String = RELEASE_BRANCH
-    var remote: String = REMOTE
+    var scmConfig: ScmConfig = ScmConfig.GIT_FLOW
 
     override fun execute(workingDir: File) {
-        scmActions.push(workingDir, remote, releaseBranch)
+        scmActions.push(workingDir, scmConfig.remote, scmConfig.releaseBranch, scmConfig.featureBranch)
     }
 
 }

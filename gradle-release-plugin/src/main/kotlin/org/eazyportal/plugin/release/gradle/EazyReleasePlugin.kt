@@ -38,6 +38,7 @@ class EazyReleasePlugin : Plugin<Project> {
         project.tasks.apply {
             register(SET_RELEASE_VERSION_TASK_NAME, SetReleaseVersionTask::class.java, setReleaseVersionAction).configure {
                 it.conventionalCommitTypes.set(extension.conventionalCommitTypes)
+                it.scmConfig.set(extension.scm)
             }
 
             val buildTask = getByName("build").also {
@@ -52,15 +53,14 @@ class EazyReleasePlugin : Plugin<Project> {
 
             register(SET_SNAPSHOT_VERSION_TASK_NAME, SetSnapshotVersionTask::class.java, setSnapshotVersionAction).configure {
                 it.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME, RELEASE_TASK_NAME)
+
+                it.scmConfig.set(extension.scm)
             }
 
             register(UPDATE_SCM_TASK_NAME, UpdateScmTask::class.java, updateScmAction).configure {
                 it.mustRunAfter(SET_SNAPSHOT_VERSION_TASK_NAME)
 
-                extension.scm.let { scm ->
-                    it.releaseBranch.set(scm.releaseBranch)
-                    it.remote.set(scm.remote)
-                }
+                it.scmConfig.set(extension.scm)
             }
         }
     }

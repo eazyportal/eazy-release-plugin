@@ -4,6 +4,7 @@ import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
+import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement
 import org.slf4j.LoggerFactory
@@ -21,11 +22,24 @@ open class SetReleaseVersionAction(
     }
 
     lateinit var conventionalCommitTypes: List<ConventionalCommitType>
+    lateinit var scmConfig: ScmConfig
 
     override fun execute(workingDir: File) {
+        scmActions.fetch(workingDir, scmConfig.remote)
+
+        if (scmConfig.releaseBranch != scmConfig.featureBranch) {
+            scmActions.checkout(workingDir, scmConfig.featureBranch)
+        }
+
         val currentVersion = projectActions.getVersion()
         val versionIncrement = getVersionIncrement(workingDir)
         val releaseVersion = releaseVersionProvider.provide(currentVersion, versionIncrement)
+
+        if (scmConfig.releaseBranch != scmConfig.featureBranch) {
+            scmActions.checkout(workingDir, scmConfig.releaseBranch)
+
+            scmActions.mergeNoCommit(workingDir, scmConfig.featureBranch)
+        }
 
         projectActions.setVersion(releaseVersion)
 

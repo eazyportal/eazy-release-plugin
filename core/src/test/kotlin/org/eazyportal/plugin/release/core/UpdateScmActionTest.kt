@@ -1,8 +1,11 @@
 package org.eazyportal.plugin.release.core
 
 import org.eazyportal.plugin.release.core.scm.ScmActions
+import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -13,8 +16,12 @@ import java.io.File
 internal class UpdateScmActionTest {
 
     companion object {
-        private const val RELEASE_BRANCH = "release-branch"
-        private const val REMOTE = "remote-repository"
+        @JvmStatic
+        fun execute() = listOf(
+            Arguments.of(ScmConfig.GIT_FLOW),
+            Arguments.of(ScmConfig.TRUNK_BASED_FLOW),
+            Arguments.of(ScmConfig("feature-branch", "release-branch", "remote-repository"))
+        )
     }
 
     private val workingDir = File("")
@@ -30,17 +37,17 @@ internal class UpdateScmActionTest {
         MockitoAnnotations.openMocks(this)
     }
 
-    @Test
-    fun test_execute() {
+    @MethodSource("execute")
+    @ParameterizedTest
+    fun test_execute(scmConfig: ScmConfig) {
         // GIVEN
-        underTest.releaseBranch = RELEASE_BRANCH
-        underTest.remote = REMOTE
+        underTest.scmConfig = scmConfig
 
         // WHEN
         // THEN
         underTest.execute(workingDir)
 
-        verify(scmActions).push(workingDir, REMOTE, RELEASE_BRANCH)
+        verify(scmActions).push(workingDir, scmConfig.remote, scmConfig.releaseBranch, scmConfig.featureBranch)
         verifyNoMoreInteractions(scmActions)
     }
 

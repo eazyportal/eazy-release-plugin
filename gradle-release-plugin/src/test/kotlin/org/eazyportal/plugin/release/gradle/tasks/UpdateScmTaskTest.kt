@@ -1,6 +1,7 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
 import org.eazyportal.plugin.release.core.UpdateScmAction
+import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.BeforeEach
@@ -11,11 +12,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 
 internal class UpdateScmTaskTest {
-
-    companion object {
-        private const val RELEASE_BRANCH = "release-branch"
-        private const val REMOTE = "remote-repository"
-    }
 
     private val project = ProjectBuilder.builder()
         .build()
@@ -30,8 +26,7 @@ internal class UpdateScmTaskTest {
         MockitoAnnotations.openMocks(this)
 
         underTest = project.tasks.create(EazyReleasePlugin.UPDATE_SCM_TASK_NAME, UpdateScmTask::class.java, updateScmAction).apply {
-            releaseBranch.set(RELEASE_BRANCH)
-            remote.set(REMOTE)
+            scmConfig.set(ScmConfig.GIT_FLOW)
         }
     }
 
@@ -42,8 +37,7 @@ internal class UpdateScmTaskTest {
         // THEN
         underTest.run()
 
-        verify(updateScmAction).releaseBranch = RELEASE_BRANCH
-        verify(updateScmAction).remote = REMOTE
+        verify(updateScmAction).scmConfig = ScmConfig.GIT_FLOW
         verify(updateScmAction).execute(project.rootDir)
         verifyNoMoreInteractions(updateScmAction)
     }

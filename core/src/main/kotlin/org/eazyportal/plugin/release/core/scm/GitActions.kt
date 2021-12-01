@@ -18,8 +18,16 @@ class GitActions(
         execute(workingDir, "add", *filePaths)
     }
 
+    override fun checkout(workingDir: File, toRef: String) {
+        execute(workingDir, "checkout", toRef)
+    }
+
     override fun commit(workingDir: File, message: String) {
         execute(workingDir, "commit", "-m", message)
+    }
+
+    override fun fetch(workingDir: File, remote: String) {
+        execute(workingDir, "fetch", remote)
     }
 
     override fun getCommits(workingDir: File, fromRef: String?, toRef: String?): List<String> {
@@ -39,10 +47,17 @@ class GitActions(
             .split(System.lineSeparator())
     }
 
-    override fun push(workingDir: File, remote: String, vararg branches: String) {
-        val branchesRefs = branches.map { "$it:$it" }
+    override fun mergeNoCommit(workingDir: File, fromBranch: String) {
+        execute(workingDir, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch)
+    }
 
-        execute(workingDir, "push", "--atomic", "--tags", remote, *branchesRefs.toTypedArray())
+    override fun push(workingDir: File, remote: String, vararg branches: String) {
+        val branchesRefs = branches
+            .distinct()
+            .map { "$it:$it" }
+            .toTypedArray()
+
+        execute(workingDir, "push", "--atomic", "--tags", remote, *branchesRefs)
     }
 
     override fun tag(workingDir: File, vararg commands: String) {

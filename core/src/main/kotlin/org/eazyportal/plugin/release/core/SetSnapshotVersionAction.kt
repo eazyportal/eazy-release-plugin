@@ -2,6 +2,7 @@ package org.eazyportal.plugin.release.core
 
 import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.scm.ScmActions
+import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
 import java.io.File
 
@@ -12,9 +13,21 @@ class SetSnapshotVersionAction(
 
 ) : ReleaseAction {
 
+    lateinit var scmConfig: ScmConfig
+
     override fun execute(workingDir: File) {
+        if (scmConfig.releaseBranch != scmConfig.featureBranch) {
+            scmActions.checkout(workingDir, scmConfig.releaseBranch)
+        }
+
         val currentVersion = projectActions.getVersion()
         val snapshotVersion  = snapshotVersionProvider.provide(currentVersion)
+
+        if (scmConfig.releaseBranch != scmConfig.featureBranch) {
+            scmActions.checkout(workingDir, scmConfig.featureBranch)
+
+            scmActions.mergeNoCommit(workingDir, scmConfig.releaseBranch)
+        }
 
         projectActions.setVersion(snapshotVersion)
 
