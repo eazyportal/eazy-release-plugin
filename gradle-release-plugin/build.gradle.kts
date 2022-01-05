@@ -21,6 +21,5 @@ tasks {
 }
 
 dependencies {
-    implementation(project(":eazy-release-plugin-core"))
-    implementation("org.junit.jupiter:junit-jupiter:5.7.0")
+    api(project(":eazy-release-plugin-core"))
 }
