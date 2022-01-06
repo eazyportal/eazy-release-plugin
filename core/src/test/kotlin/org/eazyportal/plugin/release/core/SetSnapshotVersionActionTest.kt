@@ -41,6 +41,8 @@ internal class SetSnapshotVersionActionTest {
     @BeforeEach
     fun setUp() {
         MockitoAnnotations.openMocks(this)
+
+        underTest.scmActions = scmActions
     }
 
     @Test

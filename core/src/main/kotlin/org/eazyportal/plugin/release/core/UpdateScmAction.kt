@@ -4,11 +4,10 @@ import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import java.io.File
 
-class UpdateScmAction(
-    private val scmActions: ScmActions
-) : ReleaseAction {
+class UpdateScmAction : ReleaseAction {
 
-    var scmConfig: ScmConfig = ScmConfig.GIT_FLOW
+    lateinit var scmActions: ScmActions
+    lateinit var scmConfig: ScmConfig
 
     override fun execute(workingDir: File) {
         scmActions.push(workingDir, scmConfig.remote, scmConfig.releaseBranch, scmConfig.featureBranch)

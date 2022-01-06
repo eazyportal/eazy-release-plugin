@@ -12,8 +12,7 @@ import java.io.File
 
 open class SetReleaseVersionAction(
     private val projectActions: ProjectActions,
-    private val releaseVersionProvider: ReleaseVersionProvider,
-    private val scmActions: ScmActions
+    private val releaseVersionProvider: ReleaseVersionProvider
 ) : ReleaseAction {
 
     companion object {
@@ -22,6 +21,7 @@ open class SetReleaseVersionAction(
     }
 
     lateinit var conventionalCommitTypes: List<ConventionalCommitType>
+    lateinit var scmActions: ScmActions
     lateinit var scmConfig: ScmConfig
 
     override fun execute(workingDir: File) {

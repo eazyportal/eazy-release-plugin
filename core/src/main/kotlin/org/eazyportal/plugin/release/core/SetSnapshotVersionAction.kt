@@ -8,11 +8,10 @@ import java.io.File
 
 class SetSnapshotVersionAction(
     private val projectActions: ProjectActions,
-    private val snapshotVersionProvider: SnapshotVersionProvider,
-    private val scmActions: ScmActions
-
+    private val snapshotVersionProvider: SnapshotVersionProvider
 ) : ReleaseAction {
 
+    lateinit var scmActions: ScmActions
     lateinit var scmConfig: ScmConfig
 
     override fun execute(workingDir: File) {

@@ -35,6 +35,8 @@ internal class UpdateScmActionTest {
     @BeforeEach
     fun setUp() {
         MockitoAnnotations.openMocks(this)
+
+        underTest.scmActions = scmActions
     }
 
     @MethodSource("execute")

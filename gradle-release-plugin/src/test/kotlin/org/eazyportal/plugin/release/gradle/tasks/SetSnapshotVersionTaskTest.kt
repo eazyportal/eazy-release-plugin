@@ -1,30 +1,32 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
 import org.eazyportal.plugin.release.core.SetSnapshotVersionAction
+import org.eazyportal.plugin.release.core.scm.ScmActions
+import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
+import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 
-internal class SetSnapshotVersionTaskTest {
-
-    private val project = ProjectBuilder.builder()
-        .build()
+internal class SetSnapshotVersionTaskTest : EazyBaseTaskTest<SetSnapshotVersionTask>() {
 
     @Mock
     private lateinit var setSnapshotVersionAction: SetSnapshotVersionAction
-
-    private lateinit var underTest: SetSnapshotVersionTask
 
     @BeforeEach
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
         underTest = project.tasks.create(EazyReleasePlugin.UPDATE_SCM_TASK_NAME, SetSnapshotVersionTask::class.java, setSnapshotVersionAction)
+            .also {
+                it.scmActions.set(scmActions)
+                it.scmConfig.set(scmConfig)
+            }
     }
 
     @Test
@@ -34,6 +36,8 @@ internal class SetSnapshotVersionTaskTest {
         // THEN
         underTest.run()
 
+        verify(setSnapshotVersionAction).scmActions = scmActions
+        verify(setSnapshotVersionAction).scmConfig = scmConfig
         verify(setSnapshotVersionAction).execute(project.rootDir)
         verifyNoMoreInteractions(setSnapshotVersionAction)
     }

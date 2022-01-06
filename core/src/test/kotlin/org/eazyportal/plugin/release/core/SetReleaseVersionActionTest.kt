@@ -72,8 +72,11 @@ internal class SetReleaseVersionActionTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
-        underTest.conventionalCommitTypes = ConventionalCommitType.DEFAULT_TYPES
-        underTest.scmConfig = ScmConfig.GIT_FLOW
+        underTest.also {
+            it.conventionalCommitTypes = ConventionalCommitType.DEFAULT_TYPES
+            it.scmActions = scmActions
+            it.scmConfig = ScmConfig.GIT_FLOW
+        }
     }
 
     @MethodSource("execute")
