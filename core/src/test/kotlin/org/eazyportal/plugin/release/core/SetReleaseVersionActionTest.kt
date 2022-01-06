@@ -39,12 +39,13 @@ internal class SetReleaseVersionActionTest {
             Arguments.of(SNAPSHOT_001, listOf("BREAKING CHANGE: message"), VersionIncrement.MAJOR),
             Arguments.of(SNAPSHOT_001, listOf("feature: message"), VersionIncrement.MINOR),
             Arguments.of(SNAPSHOT_001, listOf("fix: message"), VersionIncrement.PATCH),
+            Arguments.of(SNAPSHOT_001, listOf("chore: message"), VersionIncrement.NONE),
 
             Arguments.of(SNAPSHOT_001, listOf("feature!: message"), VersionIncrement.MAJOR),
             Arguments.of(SNAPSHOT_001, listOf("fix!: message"), VersionIncrement.MAJOR),
 
             Arguments.of(SNAPSHOT_001, listOf("feature: message", "fix: message"), VersionIncrement.MINOR),
-            Arguments.of(SNAPSHOT_001, listOf("feature: message", "fix!: message"), VersionIncrement.MAJOR)
+            Arguments.of(SNAPSHOT_001, listOf("feature: message", "fix!: message"), VersionIncrement.MAJOR),
         )
 
         @JvmStatic

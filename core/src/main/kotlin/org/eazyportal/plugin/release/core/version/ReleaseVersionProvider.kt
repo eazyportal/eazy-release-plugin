@@ -20,6 +20,7 @@ class ReleaseVersionProvider {
                     Version(version.major, version.minor, version.patch + 1)
                 }
             }
+            VersionIncrement.NONE -> version
         }
     }
 

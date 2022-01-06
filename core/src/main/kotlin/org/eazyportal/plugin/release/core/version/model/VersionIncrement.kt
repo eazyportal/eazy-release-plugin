@@ -4,6 +4,7 @@ enum class VersionIncrement {
 
     MAJOR,
     MINOR,
-    PATCH
+    PATCH,
+    NONE
 
 }
