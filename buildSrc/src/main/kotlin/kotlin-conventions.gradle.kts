@@ -1,8 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("jacoco")
+    id("org.cyclonedx.bom")
     id("org.jetbrains.kotlin.jvm")
+    id("jacoco")
 }
 
 repositories {
@@ -28,11 +29,13 @@ tasks {
     jacocoTestReport {
         dependsOn(test)
     }
+
+    check {
+        finalizedBy(cyclonedxBom)
+    }
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-
     // Test dependencies
     testImplementation("org.assertj", "assertj-core", "+")
     testImplementation("org.junit.jupiter", "junit-jupiter", "+")
