@@ -1,5 +1,5 @@
 plugins {
-    id("kotlin-conventions")
+    id("eazy-kotlin-conventions")
     `java-gradle-plugin`
 }
 

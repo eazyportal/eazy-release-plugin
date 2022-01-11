@@ -1,5 +1,5 @@
 plugins {
-    id("kotlin-library-conventions")
+    id("eazy-kotlin-library-conventions")
     `java-gradle-plugin`
 }
 
@@ -8,14 +8,6 @@ gradlePlugin {
         create("eazyGradleReleasePlugin") {
             id = "$group.release"
             implementationClass = "org.eazyportal.plugin.release.gradle.EazyReleasePlugin"
-        }
-    }
-}
-
-tasks {
-    jar {
-        manifest {
-            attributes["Implementation-Version"] = project.version
         }
     }
 }

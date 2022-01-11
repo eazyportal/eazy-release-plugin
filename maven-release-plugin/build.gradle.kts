@@ -1,13 +1,5 @@
 plugins {
-    id("kotlin-library-conventions")
-}
-
-tasks {
-    jar {
-        manifest {
-            attributes["Implementation-Version"] = project.version
-        }
-    }
+    id("eazy-kotlin-library-conventions")
 }
 
 dependencies {

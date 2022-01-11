@@ -1,12 +1,12 @@
 plugins {
-    id("org.gradle.kotlin.kotlin-dsl") version "2.1.6"
+    `kotlin-dsl`
 }
 
 repositories {
     gradlePluginPortal()
+    mavenLocal()
 }
 
 dependencies {
-    implementation("org.cyclonedx.bom:org.cyclonedx.bom.gradle.plugin:1.4.1")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    implementation("org.eazyportal.plugin", "eazy-gradle-project-convention-plugin", "+")
 }
