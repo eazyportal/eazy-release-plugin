@@ -11,20 +11,13 @@ import java.nio.file.Files
 internal class EazyReleasePluginTest {
 
     private val workingDir = Files.createTempDirectory("").toFile()
-    private val buildFile = workingDir.resolve("build.gradle")
 
     private lateinit var gradleRunner: GradleRunner
 
     @BeforeEach
     fun setUp() {
-        buildFile.writeText("""
-            plugins {
-                id 'java'
-                id 'org.eazyportal.plugin.release'
-            }
-        """.trimIndent())
-
         gradleRunner = GradleRunner.create()
+            .forwardOutput()
             .withPluginClasspath()
             .withProjectDir(workingDir)
             .withTestKitDir(workingDir)
@@ -36,8 +29,42 @@ internal class EazyReleasePluginTest {
     }
 
     @Test
-    fun test_plugin() {
+    fun test_plugin_withGroovySyntax() {
         // GIVEN
+        workingDir.resolve("build.gradle")
+            .writeText("""
+                plugins {
+                    id 'java'
+                    id 'org.eazyportal.plugin.release'
+                }
+            """.trimIndent())
+
+        // WHEN
+        // THEN
+        val actual = gradleRunner.withArguments("tasks")
+            .build()
+
+        assertThat(actual.task(":tasks")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
+        assertThat(actual.output).contains(
+            "Eazy tasks",
+            EazyReleasePlugin.RELEASE_TASK_NAME,
+            EazyReleasePlugin.SET_RELEASE_VERSION_TASK_NAME,
+            EazyReleasePlugin.SET_SNAPSHOT_VERSION_TASK_NAME,
+            EazyReleasePlugin.UPDATE_SCM_TASK_NAME
+        )
+    }
+
+    @Test
+    fun test_plugin_withKotlinSyntax() {
+        // GIVEN
+        workingDir.resolve("build.gradle.kts")
+            .writeText("""
+                plugins {
+                    `kotlin-dsl`
+                    id("org.eazyportal.plugin.release")
+                }
+            """.trimIndent())
+
         // WHEN
         // THEN
         val actual = gradleRunner.withArguments("tasks")
