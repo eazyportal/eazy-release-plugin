@@ -32,7 +32,7 @@ internal class EazyReleasePluginTest {
 
     @AfterEach
     fun tearDown() {
-        workingDir.deleteRecursively()
+        workingDir.deleteOnExit()
     }
 
     @Test

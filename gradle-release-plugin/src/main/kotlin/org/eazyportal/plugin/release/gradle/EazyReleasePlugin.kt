@@ -25,6 +25,8 @@ class EazyReleasePlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
+        project.plugins.apply("maven-publish")
+
         val extension = project.extensions.create("release", EazyReleasePluginExtension::class.java)
 
         val projectActions = GradleProjectActions(project.rootDir)
@@ -44,8 +46,12 @@ class EazyReleasePlugin : Plugin<Project> {
                 it.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME)
             }
 
+            val publishTask = getByName("publish").also {
+                it.mustRunAfter(buildTask)
+            }
+
             register(RELEASE_TASK_NAME, EazyBaseTask::class.java) {
-                it.dependsOn(SET_RELEASE_VERSION_TASK_NAME, buildTask)
+                it.dependsOn(SET_RELEASE_VERSION_TASK_NAME, buildTask, publishTask)
 
                 it.finalizedBy(SET_SNAPSHOT_VERSION_TASK_NAME, UPDATE_SCM_TASK_NAME)
             }

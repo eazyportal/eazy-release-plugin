@@ -17,8 +17,8 @@ class ApplyPluginTest {
         // GIVEN
         val project: Project = ProjectBuilder.builder()
             .build()
-           .also {
-                it.pluginManager.apply {
+            .also {
+                it.plugins.apply {
                     apply("java")
                     apply("org.eazyportal.plugin.release")
                 }

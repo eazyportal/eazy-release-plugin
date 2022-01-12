@@ -16,7 +16,7 @@ internal abstract class EazyBaseTaskAcceptanceTest {
     fun baseSetUp() {
         buildFile.writeText("""
             plugins {
-                java
+                `java`
                 id("org.eazyportal.plugin.release")
             }
 
