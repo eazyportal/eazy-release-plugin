@@ -1,10 +1,12 @@
 package org.eazyportal.plugin.release.core.version.model
 
-enum class VersionIncrement {
+enum class VersionIncrement(
+    val priority: Int
+) {
 
-    MAJOR,
-    MINOR,
-    PATCH,
-    NONE
+    MAJOR(0),
+    MINOR(1),
+    PATCH(2),
+    NONE(3);
 
 }

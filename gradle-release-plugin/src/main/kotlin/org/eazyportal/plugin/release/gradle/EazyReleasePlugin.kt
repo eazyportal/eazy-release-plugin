@@ -5,6 +5,7 @@ import org.eazyportal.plugin.release.core.SetSnapshotVersionAction
 import org.eazyportal.plugin.release.core.UpdateScmAction
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
+import org.eazyportal.plugin.release.core.version.VersionIncrementProvider
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
 import org.eazyportal.plugin.release.gradle.tasks.EazyBaseTask
@@ -28,7 +29,7 @@ class EazyReleasePlugin : Plugin<Project> {
 
         val projectActions = GradleProjectActions(project.rootDir)
 
-        val setReleaseVersionAction = SetReleaseVersionAction(projectActions, ReleaseVersionProvider())
+        val setReleaseVersionAction = SetReleaseVersionAction(projectActions, ReleaseVersionProvider(), VersionIncrementProvider())
         val setSnapshotVersionAction = SetSnapshotVersionAction(projectActions, SnapshotVersionProvider())
         val updateScmAction = UpdateScmAction()
 

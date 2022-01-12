@@ -6,13 +6,15 @@ import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
+import org.eazyportal.plugin.release.core.version.VersionIncrementProvider
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement
 import org.slf4j.LoggerFactory
 import java.io.File
 
 open class SetReleaseVersionAction(
     private val projectActions: ProjectActions,
-    private val releaseVersionProvider: ReleaseVersionProvider
+    private val releaseVersionProvider: ReleaseVersionProvider,
+    private val versionIncrementProvider: VersionIncrementProvider
 ) : ReleaseAction {
 
     companion object {
@@ -58,34 +60,9 @@ open class SetReleaseVersionAction(
             null
         }
 
-        return scmActions.getCommits(workingDir, lastTag)
-            .mapNotNull { mapToCommitType(it) }
-            .mapNotNull { mapToVersionIncrement(it) }
-            .ifEmpty { throw IllegalArgumentException("There are no acceptable commits since the previous release {tag: $lastTag}.") }
-            .reduce { acc, versionIncrement -> acc.coerceAtMost(versionIncrement) }
-    }
+        val commits = scmActions.getCommits(workingDir, lastTag)
 
-    private fun mapToCommitType(commit: String): String? {
-        val commitTypeDelimiterIndex = commit.indexOf(ConventionalCommitType.TYPE_DELIMITER)
-
-        return if (commitTypeDelimiterIndex > 1) {
-            commit.substring(0, commitTypeDelimiterIndex)
-        }
-        else {
-            LOGGER.warn("Ignoring invalid commit: $commit")
-
-            null
-        }
-    }
-
-    private fun mapToVersionIncrement(commitType: String): VersionIncrement? {
-        if (commitType.endsWith(ConventionalCommitType.BREAKING_CHANGE_INDICATOR)) {
-            return VersionIncrement.MAJOR
-        }
-
-        return conventionalCommitTypes.ifEmpty { ConventionalCommitType.DEFAULT_TYPES }
-            .firstOrNull { it.aliases.contains(commitType) }
-            ?.versionIncrement
+        return versionIncrementProvider.provide(commits, conventionalCommitTypes)
     }
 
 }
