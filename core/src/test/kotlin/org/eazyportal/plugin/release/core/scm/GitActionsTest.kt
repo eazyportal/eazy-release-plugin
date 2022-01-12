@@ -19,14 +19,16 @@ internal class GitActionsTest {
     companion object {
         const val COMMIT_HASH_1 = "hash-1"
         const val COMMIT_HASH_2 = "hash-2"
-        val COMMIT_MESSAGES = listOf(
-            "chore: commit #3",
-            "fix: commit #2",
-            "feature: commit #1",
-            "initial commit"
-        )
+
+        const val COMMIT_MESSAGE_1 = "feature: commit"
+        const val COMMIT_MESSAGE_2 = "fix: commit"
+        const val COMMIT_MESSAGE_3 = "chore: commit"
+        val COMMIT_MESSAGES = listOf(COMMIT_MESSAGE_1, COMMIT_MESSAGE_2, COMMIT_MESSAGE_3)
+
         const val TAG_1 = "0.1.1"
         const val TAG_2 = "0.1.2"
+        const val TAG_3 = "0.1.3"
+        val TAGS = listOf(TAG_1, TAG_2, TAG_3)
     }
 
     private val workingDir = File("")
@@ -114,7 +116,7 @@ internal class GitActionsTest {
         // GIVEN
         // WHEN
         whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "log", "--pretty=format:%s", "HEAD"))
-            .thenReturn(COMMIT_MESSAGES.joinToString(System.lineSeparator()))
+            .thenReturn("$COMMIT_MESSAGE_1\n$COMMIT_MESSAGE_2\r\n$COMMIT_MESSAGE_3")
 
         // THEN
         val actual = underTest.getCommits(workingDir)
@@ -178,12 +180,12 @@ internal class GitActionsTest {
         // GIVEN
         // WHEN
         whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", "HEAD"))
-            .thenReturn("$TAG_1${System.lineSeparator()}$TAG_2")
+            .thenReturn("$TAG_1\n$TAG_2\r\n$TAG_3")
 
         // THEN
         val actual = underTest.getTags(workingDir)
 
-        assertThat(actual).isEqualTo(listOf(TAG_1, TAG_2))
+        assertThat(actual).isEqualTo(TAGS)
 
         verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", "HEAD")
         verifyNoMoreInteractions(commandExecutor)
@@ -194,12 +196,12 @@ internal class GitActionsTest {
         // GIVEN
         // WHEN
         whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", COMMIT_HASH_1))
-            .thenReturn("$TAG_1${System.lineSeparator()}$TAG_2")
+            .thenReturn(TAGS.joinToString(System.lineSeparator()))
 
         // THEN
         val actual = underTest.getTags(workingDir, COMMIT_HASH_1)
 
-        assertThat(actual).isEqualTo(listOf(TAG_1, TAG_2))
+        assertThat(actual).isEqualTo(TAGS)
 
         verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", COMMIT_HASH_1)
         verifyNoMoreInteractions(commandExecutor)

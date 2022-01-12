@@ -12,6 +12,8 @@ class GitActions(
     companion object {
         internal val GIT_EXECUTABLE =
             if (isWindows()) "git.exe" else "git"
+
+        val LINE_BREAK_REGEX = Regex("\r?\n")
     }
 
     override fun add(workingDir: File, vararg filePaths: String) {
@@ -35,7 +37,7 @@ class GitActions(
             .joinToString("..")
 
         return execute(workingDir, "log", "--pretty=format:%s", refs)
-            .split(System.lineSeparator())
+            .split(LINE_BREAK_REGEX)
     }
 
     override fun getLastTag(workingDir: File, fromRef: String?): String {
@@ -44,7 +46,7 @@ class GitActions(
 
     override fun getTags(workingDir: File, fromRef: String?): List<String> {
         return execute(workingDir, "tag", "--sort=-creatordate", "--contains", (fromRef ?: "HEAD"))
-            .split(System.lineSeparator())
+            .split(LINE_BREAK_REGEX)
     }
 
     override fun mergeNoCommit(workingDir: File, fromBranch: String) {
