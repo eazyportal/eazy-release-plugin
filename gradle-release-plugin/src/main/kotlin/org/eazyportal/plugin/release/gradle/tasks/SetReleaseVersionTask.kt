@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 open class SetReleaseVersionTask @Inject constructor(
     private val setReleaseVersionAction: SetReleaseVersionAction
-) : EazyBaseTask() {
+) : EazyReleaseBaseTask() {
 
     @get:Input
     val conventionalCommitTypes: ListProperty<ConventionalCommitType> = project.objects.listProperty(ConventionalCommitType::class.java)

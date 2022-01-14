@@ -13,7 +13,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 
-internal class SetReleaseVersionTaskTest : EazyBaseTaskTest<SetReleaseVersionTask>() {
+internal class SetReleaseVersionTaskTest : EazyReleaseBaseTaskTest<SetReleaseVersionTask>() {
 
     companion object {
         @JvmStatic

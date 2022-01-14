@@ -7,7 +7,11 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 
-open class EazyBaseTask : DefaultTask() {
+open class EazyReleaseBaseTask : DefaultTask() {
+
+    companion object {
+        const val GROUP = "eazy-release"
+    }
 
     @get:Input
     val scmActions: Property<ScmActions> = project.objects.property(ScmActions::class.java)
@@ -15,12 +19,12 @@ open class EazyBaseTask : DefaultTask() {
     val scmConfig: Property<ScmConfig> = project.objects.property(ScmConfig::class.java)
 
     @Internal
-    override fun getGroup(): String {
-        return "eazy"
+    final override fun getGroup(): String {
+        return GROUP
     }
 
-    override fun setGroup(group: String?) {
-        throw UnsupportedOperationException("Not allowed to set the group of EazyTasks.")
+    final override fun setGroup(group: String?) {
+        throw UnsupportedOperationException("Not allowed to set the group of an $GROUP task.")
     }
 
 }

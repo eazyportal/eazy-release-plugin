@@ -1,7 +1,6 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
 import org.eazyportal.plugin.release.core.UpdateScmAction
-import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -10,7 +9,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 
-internal class UpdateScmTaskTest : EazyBaseTaskTest<UpdateScmTask>() {
+internal class UpdateScmTaskTest : EazyReleaseBaseTaskTest<UpdateScmTask>() {
 
     @Mock
     private lateinit var updateScmAction: UpdateScmAction

@@ -1,19 +1,15 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
 import org.eazyportal.plugin.release.core.SetSnapshotVersionAction
-import org.eazyportal.plugin.release.core.scm.ScmActions
-import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
-import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
-import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 
-internal class SetSnapshotVersionTaskTest : EazyBaseTaskTest<SetSnapshotVersionTask>() {
+internal class SetSnapshotVersionTaskTest : EazyReleaseBaseTaskTest<SetSnapshotVersionTask>() {
 
     @Mock
     private lateinit var setSnapshotVersionAction: SetSnapshotVersionAction

@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 open class UpdateScmTask @Inject constructor(
     private val updateScmAction: UpdateScmAction
-) : EazyBaseTask() {
+) : EazyReleaseBaseTask() {
 
     @TaskAction
     fun run() {

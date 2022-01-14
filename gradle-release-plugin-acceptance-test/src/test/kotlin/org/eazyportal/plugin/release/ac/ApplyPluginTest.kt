@@ -2,7 +2,7 @@ package org.eazyportal.plugin.release.ac
 
 import org.assertj.core.api.Assertions.assertThat
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
-import org.eazyportal.plugin.release.gradle.tasks.EazyBaseTask
+import org.eazyportal.plugin.release.gradle.tasks.EazyReleaseBaseTask
 import org.eazyportal.plugin.release.gradle.tasks.SetReleaseVersionTask
 import org.eazyportal.plugin.release.gradle.tasks.SetSnapshotVersionTask
 import org.eazyportal.plugin.release.gradle.tasks.UpdateScmTask
@@ -36,7 +36,7 @@ class ApplyPluginTest {
             .isInstanceOf(UpdateScmTask::class.java)
 
         assertThat(project.tasks.getByName(EazyReleasePlugin.RELEASE_TASK_NAME))
-            .isInstanceOf(EazyBaseTask::class.java)
+            .isInstanceOf(EazyReleaseBaseTask::class.java)
     }
 
 }

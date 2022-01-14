@@ -8,7 +8,7 @@ import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
-import org.eazyportal.plugin.release.gradle.tasks.EazyBaseTask
+import org.eazyportal.plugin.release.gradle.tasks.EazyReleaseBaseTask
 import org.eazyportal.plugin.release.gradle.tasks.SetReleaseVersionTask
 import org.eazyportal.plugin.release.gradle.tasks.SetSnapshotVersionTask
 import org.eazyportal.plugin.release.gradle.tasks.UpdateScmTask
@@ -50,7 +50,7 @@ class EazyReleasePlugin : Plugin<Project> {
                 it.mustRunAfter(buildTask)
             }
 
-            register(RELEASE_TASK_NAME, EazyBaseTask::class.java) {
+            register(RELEASE_TASK_NAME, EazyReleaseBaseTask::class.java) {
                 it.dependsOn(SET_RELEASE_VERSION_TASK_NAME, buildTask, publishTask)
 
                 it.finalizedBy(SET_SNAPSHOT_VERSION_TASK_NAME, UPDATE_SCM_TASK_NAME)

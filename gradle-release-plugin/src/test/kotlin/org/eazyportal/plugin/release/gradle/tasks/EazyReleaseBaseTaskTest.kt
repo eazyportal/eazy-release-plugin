@@ -4,15 +4,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
-import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
 
-internal abstract class EazyBaseTaskTest<in T: EazyBaseTask> {
+internal abstract class EazyReleaseBaseTaskTest<in T: EazyReleaseBaseTask> {
 
     protected val project: Project = ProjectBuilder.builder()
         .build()
@@ -26,7 +23,7 @@ internal abstract class EazyBaseTaskTest<in T: EazyBaseTask> {
         // GIVEN
         // WHEN
         // THEN
-        assertThat(underTest.group).isEqualTo("eazy")
+        assertThat(underTest.group).isEqualTo(EazyReleaseBaseTask.GROUP)
     }
 
     @Test
@@ -36,7 +33,7 @@ internal abstract class EazyBaseTaskTest<in T: EazyBaseTask> {
         // THEN
         assertThatThrownBy { underTest.group = "newValue" }
             .isInstanceOf(UnsupportedOperationException::class.java)
-            .hasMessage("Not allowed to set the group of EazyTasks.")
+            .hasMessage("Not allowed to set the group of an ${EazyReleaseBaseTask.GROUP} task.")
     }
 
 }

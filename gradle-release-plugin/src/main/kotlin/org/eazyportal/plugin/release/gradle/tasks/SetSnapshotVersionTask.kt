@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 open class SetSnapshotVersionTask @Inject constructor(
     private val setSnapshotVersionAction: SetSnapshotVersionAction
-) : EazyBaseTask() {
+) : EazyReleaseBaseTask() {
 
     @TaskAction
     fun run() {

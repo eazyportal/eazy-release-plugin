@@ -46,7 +46,7 @@ internal class EazyReleasePluginTest {
 
         assertThat(actual.task(":tasks")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
         assertThat(actual.output).contains(
-            "Eazy tasks",
+            "Eazy-release tasks",
             EazyReleasePlugin.RELEASE_TASK_NAME,
             EazyReleasePlugin.SET_RELEASE_VERSION_TASK_NAME,
             EazyReleasePlugin.SET_SNAPSHOT_VERSION_TASK_NAME,
@@ -72,7 +72,7 @@ internal class EazyReleasePluginTest {
 
         assertThat(actual.task(":tasks")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
         assertThat(actual.output).contains(
-            "Eazy tasks",
+            "Eazy-release tasks",
             EazyReleasePlugin.RELEASE_TASK_NAME,
             EazyReleasePlugin.SET_RELEASE_VERSION_TASK_NAME,
             EazyReleasePlugin.SET_SNAPSHOT_VERSION_TASK_NAME,
