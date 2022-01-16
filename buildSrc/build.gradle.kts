@@ -8,5 +8,5 @@ repositories {
 }
 
 dependencies {
-    implementation("org.eazyportal.plugin", "eazy-gradle-project-convention-plugin", "+")
+    implementation("org.eazyportal.plugin.convention", "eazy-project-convention-gradle-plugin", "+")
 }
