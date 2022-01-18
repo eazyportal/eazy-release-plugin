@@ -5,8 +5,8 @@ plugins {
 
 gradlePlugin {
     plugins {
-        create("eazyGradleReleasePlugin") {
-            id = "$group.release"
+        create("eazy-release-gradle-plugin") {
+            id = "$group"
             implementationClass = "org.eazyportal.plugin.release.gradle.EazyReleasePlugin"
         }
     }
