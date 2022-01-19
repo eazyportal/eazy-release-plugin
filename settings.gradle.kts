@@ -1,5 +1,20 @@
 rootProject.name = "eazy-release-plugin"
 
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+
+        maven {
+            val githubUrl: String by settings
+
+            name = "github"
+
+            url = uri("$githubUrl/*")
+            credentials(PasswordCredentials::class)
+        }
+    }
+}
+
 include("eazy-release-plugin-core")
 project(":eazy-release-plugin-core").projectDir = file("core")
 
