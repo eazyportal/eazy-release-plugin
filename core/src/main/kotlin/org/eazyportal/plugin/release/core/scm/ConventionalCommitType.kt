@@ -11,6 +11,7 @@ data class ConventionalCommitType(
         const val BREAKING_CHANGE_INDICATOR = '!'
         const val TYPE_DELIMITER = ':'
 
+        @JvmStatic
         val DEFAULT_TYPES = listOf(
             ConventionalCommitType(listOf("BREAKING CHANGE"), VersionIncrement.MAJOR),
 
