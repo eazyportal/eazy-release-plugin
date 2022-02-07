@@ -11,6 +11,14 @@ jenkinsPlugin {
 
     configurePublishing = false
     pluginFirstClassLoader = true
+
+    developers {
+        developer {
+            id.set("Yg0R2")
+            name.set("Tibor Kovacs")
+            email.set("tibor.kovacs@eazyportal.org")
+        }
+    }
 }
 
 java {
