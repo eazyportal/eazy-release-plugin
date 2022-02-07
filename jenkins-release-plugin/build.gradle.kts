@@ -8,7 +8,8 @@ plugins {
 jenkinsPlugin {
     jenkinsVersion.set("2.319")
     displayName = "Eazy Release Plugin"
-    fileExtension = "jpi"
+
+    configurePublishing = false
     pluginFirstClassLoader = true
 }
 
