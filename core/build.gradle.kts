@@ -1,5 +1,5 @@
 plugins {
-    id("eazy-kotlin-library-conventions") version("+")
+    id("eazy-kotlin-library-conventions")
 }
 
 dependencies {

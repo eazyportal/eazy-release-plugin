@@ -1,5 +1,5 @@
 plugins {
-    id("eazy-java-conventions") version("+")
+    id("eazy-java-conventions")
 
     id("org.jenkins-ci.jpi") version("+")
 }
@@ -33,7 +33,7 @@ tasks.generateLicenseInfo {
 dependencies {
     implementation(project(":core"))
     // https://docs.gradle.org/current/userguide/cross_project_publications.html#sec:simple-sharing-artifacts-between-projects
-    implementation(project(mapOf("path" to ":gradle-release-plugin", "configuration" to "consumableConfiguration")))
+    implementation(project(mapOf("path" to ":gradle-plugin", "configuration" to "consumableConfiguration")))
 
     // Jenkins BOM
     implementation(platform("io.jenkins.tools.bom:bom-2.319.x:+"))

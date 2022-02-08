@@ -19,12 +19,11 @@ pluginManagement {
 include("core")
 
 // Gradle
-include("gradle-release-plugin")
-
-include("gradle-release-plugin-acceptance-test")
+include("gradle-plugin")
+include("gradle-plugin-acceptance-test")
 
 // Jenkins
-include("jenkins-release-plugin")
+include("jenkins-plugin")
 
 // Maven
-include("maven-release-plugin")
+include("maven-plugin")

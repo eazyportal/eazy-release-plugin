@@ -1,5 +1,6 @@
 plugins {
-    id("eazy-kotlin-conventions") version("+")
+    id("eazy-kotlin-conventions")
+
     `java-gradle-plugin`
 }
 
@@ -11,5 +12,5 @@ tasks {
 
 dependencies {
     implementation(project(":core"))
-    implementation(project(":gradle-release-plugin"))
+    implementation(project(":gradle-plugin"))
 }

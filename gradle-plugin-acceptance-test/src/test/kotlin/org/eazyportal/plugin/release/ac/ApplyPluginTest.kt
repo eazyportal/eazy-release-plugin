@@ -20,7 +20,7 @@ class ApplyPluginTest {
             .also {
                 it.plugins.apply {
                     apply("java")
-                    apply("org.eazyportal.plugin.release")
+                    apply("org.eazyportal.plugin.release-gradle-plugin")
                 }
             }
 

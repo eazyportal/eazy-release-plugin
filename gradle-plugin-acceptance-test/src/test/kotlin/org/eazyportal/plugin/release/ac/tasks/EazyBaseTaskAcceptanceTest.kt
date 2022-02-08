@@ -17,7 +17,7 @@ internal abstract class EazyBaseTaskAcceptanceTest {
         buildFile.writeText("""
             plugins {
                 `java`
-                id("org.eazyportal.plugin.release")
+                id("org.eazyportal.plugin.release-gradle-plugin")
             }
 
             release {

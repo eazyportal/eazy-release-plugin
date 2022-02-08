@@ -3,14 +3,18 @@
 
 == Modules
 
-=== eazy-release-plugin-core
+=== core
 
 This module is the `core` library which contains common classes for the other modules.
 
-=== eazyGradleReleasePlugin
+=== gradle-plugin
 
-This module is a `gradle` plugin implementation.
+This module is a `Gradle` plugin implementation.
 
-=== eazyMavenReleasePlugin
+=== jenkins-plugin
+
+This module is a `Jenkins` plugin implementation.
+
+=== maven-plugin
 
 This module is a `maven` plugin implementation.

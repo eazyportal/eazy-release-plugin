@@ -35,7 +35,7 @@ internal class EazyReleasePluginTest {
             .writeText("""
                 plugins {
                     id 'java'
-                    id 'org.eazyportal.plugin.release'
+                    id 'org.eazyportal.plugin.release-gradle-plugin'
                 }
             """.trimIndent())
 
@@ -61,7 +61,7 @@ internal class EazyReleasePluginTest {
             .writeText("""
                 plugins {
                     `kotlin-dsl`
-                    id("org.eazyportal.plugin.release")
+                    id("org.eazyportal.plugin.release-gradle-plugin")
                 }
             """.trimIndent())
 

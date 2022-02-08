@@ -1,12 +1,13 @@
 plugins {
-    id("eazy-kotlin-library-conventions") version("+")
+    id("eazy-kotlin-library-conventions")
+
     `java-gradle-plugin`
 }
 
 gradlePlugin {
     plugins {
-        create("eazy-release-gradle-plugin") {
-            id = "$group"
+        create("gradle-plugin") {
+            id = "$group-$name"
             implementationClass = "org.eazyportal.plugin.release.gradle.EazyReleasePlugin"
         }
     }
