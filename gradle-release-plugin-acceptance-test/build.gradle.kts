@@ -10,5 +10,5 @@ tasks {
 }
 
 dependencies {
-    implementation(project(":eazy-release-gradle-plugin"))
+    implementation(project(":gradle-release-plugin"))
 }

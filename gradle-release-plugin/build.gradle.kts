@@ -13,5 +13,5 @@ gradlePlugin {
 }
 
 dependencies {
-    api(project(":eazy-release-plugin-core"))
+    api(project(":core"))
 }

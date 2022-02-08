@@ -8,5 +8,5 @@ dependencies {
     implementation("org.apache.maven.plugin-tools", "maven-plugin-annotations", "+")
 
     // Dependencies
-    implementation(project(":eazy-release-plugin-core"))
+    implementation(project(":core"))
 }

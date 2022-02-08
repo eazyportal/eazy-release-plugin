@@ -38,7 +38,7 @@ tasks.withType(KotlinCompile::class.java).all {
 }
 
 dependencies {
-    implementation(project(":eazy-release-gradle-plugin"))
+    implementation(project(":gradle-release-plugin"))
 
     // Jenkins BOM
     implementation(platform("io.jenkins.tools.bom:bom-2.319.x:+"))
