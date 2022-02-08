@@ -42,6 +42,13 @@ dependencies {
     compileOnly("org.jenkins-ci.plugins.workflow", "workflow-step-api")
     compileOnly("org.jenkins-ci.plugins.workflow", "workflow-job")
 
-    // Test service dependencies
+    // Test
     testImplementation("org.jenkinsci.plugins", "pipeline-model-definition")
+
+    // Jenkins server dependencies
+    jenkinsServer("org.jenkins-ci.plugins.workflow", "workflow-basic-steps")
+    jenkinsServer("org.jenkins-ci.plugins.workflow", "workflow-cps")
+    jenkinsServer("org.jenkins-ci.plugins.workflow", "workflow-durable-task-step")
+    jenkinsServer("org.jenkins-ci.plugins.workflow", "workflow-multibranch")
+    jenkinsServer("org.jenkins-ci.plugins.workflow", "workflow-job")
 }
