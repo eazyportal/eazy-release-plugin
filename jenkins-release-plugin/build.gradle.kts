@@ -31,7 +31,9 @@ tasks.generateLicenseInfo {
 }
 
 dependencies {
-    implementation(project(":gradle-release-plugin"))
+    implementation(project(":core"))
+    // https://docs.gradle.org/current/userguide/cross_project_publications.html#sec:simple-sharing-artifacts-between-projects
+    implementation(project(mapOf("path" to ":gradle-release-plugin", "configuration" to "consumableConfiguration")))
 
     // Jenkins BOM
     implementation(platform("io.jenkins.tools.bom:bom-2.319.x:+"))

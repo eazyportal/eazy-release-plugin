@@ -12,6 +12,15 @@ gradlePlugin {
     }
 }
 
+// https://docs.gradle.org/current/userguide/cross_project_publications.html#sec:simple-sharing-artifacts-between-projects
+val consumableConfiguration: Configuration by configurations.creating {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+}
+artifacts {
+    add("consumableConfiguration", tasks.jar)
+}
+
 dependencies {
-    api(project(":core"))
+    implementation(project(":core"))
 }

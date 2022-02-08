@@ -10,5 +10,6 @@ tasks {
 }
 
 dependencies {
+    implementation(project(":core"))
     implementation(project(":gradle-release-plugin"))
 }
