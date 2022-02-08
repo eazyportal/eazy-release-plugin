@@ -1,7 +1,6 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    id("eazy-kotlin-library-conventions") version("+")
+    id("eazy-java-conventions") version("+")
+
     id("org.jenkins-ci.jpi") version("+")
 }
 
@@ -26,15 +25,9 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-tasks.withType(KotlinCompile::class.java).all {
-    dependsOn("localizer")
-
-    kotlinOptions {
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
-
-        jvmTarget = "1.8"
-    }
+// fix "Implicit dependencies between tasks" warning
+tasks.generateLicenseInfo {
+    dependsOn(tasks.jar)
 }
 
 dependencies {
