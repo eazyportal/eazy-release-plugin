@@ -50,14 +50,8 @@ class EazyReleasePlugin : Plugin<Project> {
                 it.mustRunAfter(buildTask)
             }
 
-            register(RELEASE_TASK_NAME, EazyReleaseBaseTask::class.java) {
-                it.dependsOn(SET_RELEASE_VERSION_TASK_NAME, buildTask, publishTask)
-
-                it.finalizedBy(SET_SNAPSHOT_VERSION_TASK_NAME, UPDATE_SCM_TASK_NAME)
-            }
-
             register(SET_SNAPSHOT_VERSION_TASK_NAME, SetSnapshotVersionTask::class.java, setSnapshotVersionAction).configure {
-                it.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME, RELEASE_TASK_NAME)
+                it.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME)
 
                 it.scmActions.set(extension.scmActions)
                 it.scmConfig.set(extension.scmConfig)
@@ -68,6 +62,10 @@ class EazyReleasePlugin : Plugin<Project> {
 
                 it.scmActions.set(extension.scmActions)
                 it.scmConfig.set(extension.scmConfig)
+            }
+
+            register(RELEASE_TASK_NAME, EazyReleaseBaseTask::class.java) {
+                it.dependsOn(SET_RELEASE_VERSION_TASK_NAME, buildTask, publishTask, SET_SNAPSHOT_VERSION_TASK_NAME, UPDATE_SCM_TASK_NAME)
             }
         }
     }
