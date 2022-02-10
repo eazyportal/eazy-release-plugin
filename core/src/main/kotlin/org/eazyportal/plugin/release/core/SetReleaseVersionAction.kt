@@ -62,7 +62,13 @@ open class SetReleaseVersionAction(
 
         val commits = scmActions.getCommits(workingDir, lastTag)
 
-        return versionIncrementProvider.provide(commits, conventionalCommitTypes)
+        val versionIncrement = versionIncrementProvider.provide(commits, conventionalCommitTypes)
+
+        if ((versionIncrement == null) || (versionIncrement == VersionIncrement.NONE)) {
+            throw IllegalArgumentException("There are no acceptable commits.")
+        }
+
+        return versionIncrement
     }
 
 }

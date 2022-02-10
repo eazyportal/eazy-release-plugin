@@ -1,5 +1,6 @@
 package org.eazyportal.plugin.release.core
 
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
 import org.eazyportal.plugin.release.core.scm.ScmActions
@@ -11,7 +12,9 @@ import org.eazyportal.plugin.release.core.version.model.Version
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.mock
@@ -19,16 +22,24 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.io.File
 
 internal class SetReleaseVersionActionTest {
 
-    companion object {
-        private const val GIT_TAG = "0.0.0"
-        private val RELEASE_001 = Version(0, 0, 1)
-        private val SNAPSHOT_001 = Version(0, 0, 1, Version.DEVELOPMENT_VERSION_SUFFIX)
+    private companion object {
+        val COMMITS = listOf("fix: message", "test: message")
+        const val GIT_TAG = "0.0.0"
+        val RELEASE_001 = Version(0, 0, 1)
+        val SNAPSHOT_001 = Version(0, 0, 1, Version.DEVELOPMENT_VERSION_SUFFIX)
+
+        @JvmStatic
+        fun invalidVersionIncrement() = listOf(
+            Arguments.of(null),
+            Arguments.of(VersionIncrement.NONE)
+        )
     }
 
     private val conventionalCommitTypes = ConventionalCommitType.DEFAULT_TYPES
@@ -59,16 +70,15 @@ internal class SetReleaseVersionActionTest {
     @Test
     fun test_execute_withGitFlow() {
         // GIVEN
-        val commits = listOf("build: message", "test: message")
-        val versionIncrement = VersionIncrement.NONE
+        val versionIncrement = VersionIncrement.PATCH
 
         underTest.scmConfig = ScmConfig.GIT_FLOW
 
         // WHEN
         whenever(projectActions.getVersion()).thenReturn(SNAPSHOT_001)
         whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
-        whenever(scmActions.getCommits(workingDir, GIT_TAG)).thenReturn(commits)
-        whenever(versionIncrementProvider.provide(commits, conventionalCommitTypes)).thenReturn(versionIncrement)
+        whenever(scmActions.getCommits(workingDir, GIT_TAG)).thenReturn(COMMITS)
+        whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)
         whenever(releaseVersionProvider.provide(SNAPSHOT_001, versionIncrement)).thenReturn(RELEASE_001)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("dummy"))
 
@@ -80,7 +90,7 @@ internal class SetReleaseVersionActionTest {
         verify(projectActions).getVersion()
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, GIT_TAG)
-        verify(versionIncrementProvider).provide(commits, conventionalCommitTypes)
+        verify(versionIncrementProvider).provide(COMMITS, conventionalCommitTypes)
         verify(releaseVersionProvider).provide(SNAPSHOT_001, versionIncrement)
         verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
         verify(scmActions).mergeNoCommit(workingDir, ScmConfig.GIT_FLOW.featureBranch)
@@ -95,16 +105,15 @@ internal class SetReleaseVersionActionTest {
     @Test
     fun test_execute_withTrunkBasedFlow() {
         // GIVEN
-        val commits = listOf("build: message", "test: message")
-        val versionIncrement = VersionIncrement.NONE
+        val versionIncrement = VersionIncrement.PATCH
 
         underTest.scmConfig = ScmConfig.TRUNK_BASED_FLOW
 
         // WHEN
         whenever(projectActions.getVersion()).thenReturn(SNAPSHOT_001)
         whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
-        whenever(scmActions.getCommits(workingDir, GIT_TAG)).thenReturn(commits)
-        whenever(versionIncrementProvider.provide(commits, conventionalCommitTypes)).thenReturn(versionIncrement)
+        whenever(scmActions.getCommits(workingDir, GIT_TAG)).thenReturn(COMMITS)
+        whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)
         whenever(releaseVersionProvider.provide(SNAPSHOT_001, versionIncrement)).thenReturn(RELEASE_001)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("dummy"))
 
@@ -115,7 +124,7 @@ internal class SetReleaseVersionActionTest {
         verify(projectActions).getVersion()
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, GIT_TAG)
-        verify(versionIncrementProvider).provide(commits, conventionalCommitTypes)
+        verify(versionIncrementProvider).provide(COMMITS, conventionalCommitTypes)
         verify(releaseVersionProvider).provide(SNAPSHOT_001, versionIncrement)
         verify(projectActions).setVersion(RELEASE_001)
         verify(projectActions).scmFilesToCommit()
@@ -128,14 +137,13 @@ internal class SetReleaseVersionActionTest {
     @Test
     fun test_execute_whenFailedToRetrieveTag() {
         // GIVEN
-        val commits = listOf("build: message", "test: message")
-        val versionIncrement = VersionIncrement.NONE
+        val versionIncrement = VersionIncrement.PATCH
 
         // WHEN
         whenever(projectActions.getVersion()).thenReturn(SNAPSHOT_001)
         whenever(scmActions.getLastTag(workingDir)).thenAnswer { throw ScmActionException(RuntimeException()) }
-        whenever(scmActions.getCommits(workingDir, null)).thenReturn(commits)
-        whenever(versionIncrementProvider.provide(commits, conventionalCommitTypes)).thenReturn(versionIncrement)
+        whenever(scmActions.getCommits(workingDir, null)).thenReturn(COMMITS)
+        whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)
         whenever(releaseVersionProvider.provide(SNAPSHOT_001, versionIncrement)).thenReturn(RELEASE_001)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("dummy"))
 
@@ -147,7 +155,7 @@ internal class SetReleaseVersionActionTest {
         verify(projectActions).getVersion()
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, null)
-        verify(versionIncrementProvider).provide(commits, conventionalCommitTypes)
+        verify(versionIncrementProvider).provide(COMMITS, conventionalCommitTypes)
         verify(releaseVersionProvider).provide(SNAPSHOT_001, versionIncrement)
         verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
         verify(scmActions).mergeNoCommit(workingDir, ScmConfig.GIT_FLOW.featureBranch)
@@ -157,6 +165,31 @@ internal class SetReleaseVersionActionTest {
         verify(scmActions).commit(eq(workingDir), any())
         verify(scmActions).tag(eq(workingDir), any())
         verifyNoMoreInteractions(projectActions, releaseVersionProvider, scmActions, versionIncrementProvider)
+    }
+
+    @MethodSource("invalidVersionIncrement")
+    @ParameterizedTest
+    fun test_execute_shouldFail_whenVersionIncrementIsInvalid(versionIncrement: VersionIncrement?) {
+        // GIVEN
+        // WHEN
+        whenever(projectActions.getVersion()).thenReturn(SNAPSHOT_001)
+        whenever(scmActions.getLastTag(workingDir)).thenAnswer { throw ScmActionException(RuntimeException()) }
+        whenever(scmActions.getCommits(workingDir, null)).thenReturn(COMMITS)
+        whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)
+
+        // THEN
+        assertThatThrownBy { underTest.execute(workingDir) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("There are no acceptable commits.")
+
+        verifyNoInteractions(releaseVersionProvider)
+        verify(scmActions).fetch(workingDir, ScmConfig.GIT_FLOW.remote)
+        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
+        verify(projectActions).getVersion()
+        verify(scmActions).getLastTag(workingDir)
+        verify(scmActions).getCommits(workingDir, null)
+        verify(versionIncrementProvider).provide(COMMITS, conventionalCommitTypes)
+        verifyNoMoreInteractions(projectActions, scmActions, versionIncrementProvider)
     }
 
 }

@@ -1,7 +1,6 @@
 package org.eazyportal.plugin.release.core.version
 
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement
 import org.junit.jupiter.api.BeforeEach
@@ -16,27 +15,24 @@ internal class VersionIncrementProviderTest {
     private companion object {
         @JvmStatic
         fun provide() = listOf(
-            Arguments.of(listOf("feature: message", "test: message", "invalid: message"), VersionIncrement.MINOR),
-            Arguments.of(listOf("fix: message", "test: message", "invalid: message"), VersionIncrement.PATCH),
-            Arguments.of(listOf("invalid: message", "test: message", "feature: message"), VersionIncrement.MINOR),
-            Arguments.of(listOf("invalid: message", "test: message", "fix: message"), VersionIncrement.PATCH),
+            Arguments.of(listOf("feature: message", "test: message", "invalid: message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.MINOR),
+            Arguments.of(listOf("fix: message", "test: message", "invalid: message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.PATCH),
+            Arguments.of(listOf("invalid: message", "test: message", "feature: message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.MINOR),
+            Arguments.of(listOf("invalid: message", "test: message", "fix: message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.PATCH),
 
-            Arguments.of(listOf("feature!: message", "test: message", "invalid: message"), VersionIncrement.MAJOR),
-            Arguments.of(listOf("fix!: message", "test: message", "invalid: message"), VersionIncrement.MAJOR),
-            Arguments.of(listOf("invalid: message", "test: message", "feature!: message"), VersionIncrement.MAJOR),
-            Arguments.of(listOf("invalid: message", "test: message", "fix!: message"), VersionIncrement.MAJOR),
+            Arguments.of(listOf("feature!: message", "test: message", "invalid: message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.MAJOR),
+            Arguments.of(listOf("fix!: message", "test: message", "invalid: message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.MAJOR),
+            Arguments.of(listOf("invalid: message", "test: message", "feature!: message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.MAJOR),
+            Arguments.of(listOf("invalid: message", "test: message", "fix!: message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.MAJOR),
 
-            Arguments.of(listOf("test: message", "invalid: message"), VersionIncrement.NONE)
-        )
+            Arguments.of(listOf("test: message", "invalid: message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.NONE),
 
-        @JvmStatic
-        fun provideShouldFailWhen() = listOf(
-            Arguments.of(listOf<String>(), ConventionalCommitType.DEFAULT_TYPES),
-            Arguments.of(listOf("custom: message"), ConventionalCommitType.DEFAULT_TYPES),
-            Arguments.of(listOf("invalid commit message"), ConventionalCommitType.DEFAULT_TYPES),
+            Arguments.of(listOf<String>(), ConventionalCommitType.DEFAULT_TYPES, null),
+            Arguments.of(listOf("custom: message"), ConventionalCommitType.DEFAULT_TYPES, null),
+            Arguments.of(listOf("invalid commit message"), ConventionalCommitType.DEFAULT_TYPES, null),
 
-            Arguments.of(listOf("feature: message"), listOf<ConventionalCommitType>()),
-            Arguments.of(listOf("feature: message"), listOf(ConventionalCommitType(listOf("test"), VersionIncrement.NONE))),
+            Arguments.of(listOf("feature: message"), listOf<ConventionalCommitType>(), null),
+            Arguments.of(listOf("feature: message"), listOf(ConventionalCommitType(listOf("test"), VersionIncrement.NONE)), null),
         )
     }
 
@@ -50,24 +46,13 @@ internal class VersionIncrementProviderTest {
 
     @MethodSource("provide")
     @ParameterizedTest
-    fun test_provide(commits: List<String>, expected: VersionIncrement) {
+    fun test_provide(commits: List<String>, conventionalCommitTypes: List<ConventionalCommitType>, expected: VersionIncrement?) {
         // GIVEN
         // WHEN
         // THEN
-        val actual = underTest.provide(commits)
+        val actual = underTest.provide(commits, conventionalCommitTypes)
 
         assertThat(actual).isEqualTo(expected)
-    }
-
-    @MethodSource("provideShouldFailWhen")
-    @ParameterizedTest
-    fun test_provide_shouldFail(commits: List<String>, conventionalCommitTypes: List<ConventionalCommitType>) {
-        // GIVEN
-        // WHEN
-        // THEN
-        assertThatThrownBy { underTest.provide(commits, conventionalCommitTypes) }
-            .isInstanceOf(IllegalArgumentException::class.java)
-            .hasMessage("There are no acceptable commits.")
     }
 
 }

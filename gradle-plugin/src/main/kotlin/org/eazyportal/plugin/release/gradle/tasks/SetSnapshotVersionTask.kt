@@ -10,7 +10,7 @@ open class SetSnapshotVersionTask @Inject constructor(
 
     @TaskAction
     fun run() {
-        logger.quiet("Setting version...")
+        logger.quiet("Setting SNAPSHOT version...")
 
         setSnapshotVersionAction.also {
             it.scmActions = scmActions.get()

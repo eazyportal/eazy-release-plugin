@@ -16,7 +16,7 @@ open class SetReleaseVersionTask @Inject constructor(
 
     @TaskAction
     fun run() {
-        logger.quiet("Setting version...")
+        logger.quiet("Setting release version...")
 
         setReleaseVersionAction.also {
             it.conventionalCommitTypes = conventionalCommitTypes.get()

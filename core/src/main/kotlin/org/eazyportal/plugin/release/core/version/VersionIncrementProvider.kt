@@ -11,12 +11,11 @@ class VersionIncrementProvider {
         private val LOGGER = LoggerFactory.getLogger(VersionIncrementProvider::class.java)
     }
 
-    fun provide(commits: List<String>, conventionalCommitTypes: List<ConventionalCommitType> = ConventionalCommitType.DEFAULT_TYPES): VersionIncrement {
+    fun provide(commits: List<String>, conventionalCommitTypes: List<ConventionalCommitType> = ConventionalCommitType.DEFAULT_TYPES): VersionIncrement? {
         return commits
             .mapNotNull { mapToCommitType(it) }
             .mapNotNull { mapToVersionIncrement(it, conventionalCommitTypes) }
             .minWithOrNull(compareBy { it.priority })
-            ?: throw IllegalArgumentException("There are no acceptable commits.")
     }
 
     private fun mapToCommitType(commit: String): String? {
