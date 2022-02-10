@@ -1,3 +1,3 @@
 plugins {
-    id("eazy-kotlin-conventions") version("+")
+    id("org.eazyportal.plugin.kotlin-project-convention") version("+")
 }

@@ -1,5 +1,5 @@
 plugins {
-    id("eazy-kotlin-library-conventions")
+    id("org.eazyportal.plugin.kotlin-library-convention")
 }
 
 dependencies {
