@@ -1,4 +1,4 @@
-rootProject.name = "eazy-release-plugin"
+rootProject.name = "eazyrelease-plugin"
 
 pluginManagement {
     repositories {
