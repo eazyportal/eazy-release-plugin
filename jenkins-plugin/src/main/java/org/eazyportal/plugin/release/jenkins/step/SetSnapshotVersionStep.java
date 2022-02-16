@@ -10,10 +10,9 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
-import org.eazyportal.plugin.release.core.SetReleaseVersionAction;
+import org.eazyportal.plugin.release.core.SetSnapshotVersionAction;
 import org.eazyportal.plugin.release.core.project.ProjectActions;
-import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider;
-import org.eazyportal.plugin.release.core.version.VersionIncrementProvider;
+import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfigAction;
 import org.eazyportal.plugin.release.jenkins.project.ProjectActionsProvider;
 import org.jenkinsci.Symbol;
@@ -24,10 +23,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
-public class SetReleaseVersionStep extends Builder implements SimpleBuildStep, Serializable {
+public class SetSnapshotVersionStep extends Builder implements SimpleBuildStep, Serializable {
 
     @DataBoundConstructor
-    public SetReleaseVersionStep() {
+    public SetSnapshotVersionStep() {
         // ignore
     }
 
@@ -41,24 +40,21 @@ public class SetReleaseVersionStep extends Builder implements SimpleBuildStep, S
 
         ReleaseStepConfigAction releaseStepConfigAction = run.getAction(ReleaseStepConfigAction.class);
 
-        SetReleaseVersionAction setReleaseVersionAction =
-            new SetReleaseVersionAction(projectActions, new ReleaseVersionProvider(), new VersionIncrementProvider());
+        SetSnapshotVersionAction setSnapshotVersionAction = new SetSnapshotVersionAction(projectActions, new SnapshotVersionProvider());
+        setSnapshotVersionAction.scmActions = releaseStepConfigAction.getScmActions();
+        setSnapshotVersionAction.scmConfig = releaseStepConfigAction.getScmConfig();
 
-        setReleaseVersionAction.conventionalCommitTypes = releaseStepConfigAction.getConventionalCommitTypes();
-        setReleaseVersionAction.scmActions = releaseStepConfigAction.getScmActions();
-        setReleaseVersionAction.scmConfig = releaseStepConfigAction.getScmConfig();
-
-        setReleaseVersionAction.execute(workingDir);
+        setSnapshotVersionAction.execute(workingDir);
     }
 
     @Extension
-    @Symbol("setReleaseVersion")
-    public static final class SetReleaseVersionStepDescriptor extends BuildStepDescriptor<Builder> {
+    @Symbol("setSnapshotVersion")
+    public static final class SetSnapshotVersionStepDescriptor extends BuildStepDescriptor<Builder> {
 
         @NotNull
         @Override
         public String getDisplayName() {
-            return "Set release version";
+            return "Set snapshot version";
         }
 
         @Override

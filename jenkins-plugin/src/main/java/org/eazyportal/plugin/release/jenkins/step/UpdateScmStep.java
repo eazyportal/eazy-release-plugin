@@ -10,12 +10,8 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
-import org.eazyportal.plugin.release.core.SetReleaseVersionAction;
-import org.eazyportal.plugin.release.core.project.ProjectActions;
-import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider;
-import org.eazyportal.plugin.release.core.version.VersionIncrementProvider;
+import org.eazyportal.plugin.release.core.UpdateScmAction;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfigAction;
-import org.eazyportal.plugin.release.jenkins.project.ProjectActionsProvider;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -24,10 +20,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
-public class SetReleaseVersionStep extends Builder implements SimpleBuildStep, Serializable {
+public class UpdateScmStep extends Builder implements SimpleBuildStep, Serializable {
 
     @DataBoundConstructor
-    public SetReleaseVersionStep() {
+    public UpdateScmStep() {
         // ignore
     }
 
@@ -37,28 +33,23 @@ public class SetReleaseVersionStep extends Builder implements SimpleBuildStep, S
 
         File workingDir = new File(workspace.toURI());
 
-        ProjectActions projectActions = ProjectActionsProvider.provide(workingDir);
-
         ReleaseStepConfigAction releaseStepConfigAction = run.getAction(ReleaseStepConfigAction.class);
 
-        SetReleaseVersionAction setReleaseVersionAction =
-            new SetReleaseVersionAction(projectActions, new ReleaseVersionProvider(), new VersionIncrementProvider());
+        UpdateScmAction updateScmAction = new UpdateScmAction();
+        updateScmAction.scmActions = releaseStepConfigAction.getScmActions();
+        updateScmAction.scmConfig = releaseStepConfigAction.getScmConfig();
 
-        setReleaseVersionAction.conventionalCommitTypes = releaseStepConfigAction.getConventionalCommitTypes();
-        setReleaseVersionAction.scmActions = releaseStepConfigAction.getScmActions();
-        setReleaseVersionAction.scmConfig = releaseStepConfigAction.getScmConfig();
-
-        setReleaseVersionAction.execute(workingDir);
+        updateScmAction.execute(workingDir);
     }
 
     @Extension
-    @Symbol("setReleaseVersion")
-    public static final class SetReleaseVersionStepDescriptor extends BuildStepDescriptor<Builder> {
+    @Symbol("updateScm")
+    public static final class UpdateScmStepDescriptor extends BuildStepDescriptor<Builder> {
 
         @NotNull
         @Override
         public String getDisplayName() {
-            return "Set release version";
+            return "Update SCM";
         }
 
         @Override
