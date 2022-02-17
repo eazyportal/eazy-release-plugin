@@ -1,12 +1,16 @@
 package org.eazyportal.plugin.release.jenkins;
 
 import hudson.model.Run;
-import hudson.model.TaskListener;
+import org.eazyportal.plugin.release.jenkins.action.SetReleaseVersionActionFactory;
+import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
+import org.eazyportal.plugin.release.jenkins.action.UpdateScmActionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -14,30 +18,36 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 class ReleasePluginRunListenerTest {
 
+    @Mock
+    private SetReleaseVersionActionFactory setReleaseVersionActionFactory;
+    @Mock
+    private SetSnapshotVersionActionFactory setSnapshotVersionActionFactory;
+    @Mock
+    private UpdateScmActionFactory updateScmActionFactory;
+
+    @InjectMocks
     private ReleasePluginRunListener underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new ReleasePluginRunListener();
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void test_onStarted() {
+    void test_onInitialize() {
         // GIVEN
         Run<?, ?> run = mock(Run.class);
-        TaskListener taskListener = mock(TaskListener.class);
-        ArgumentCaptor<ReleaseStepConfigAction> releaseStepConfigActionArgumentCaptor = ArgumentCaptor.forClass(ReleaseStepConfigAction.class);
 
         // WHEN
-        doNothing().when(run).addAction(releaseStepConfigActionArgumentCaptor.capture());
+        doNothing().when(run).addAction(any());
 
         // THEN
-        underTest.onStarted(run, taskListener);
+        underTest.onInitialize(run);
 
-        verify(run).addAction(releaseStepConfigActionArgumentCaptor.capture());
+        verify(run).addAction(setReleaseVersionActionFactory);
+        verify(run).addAction(setSnapshotVersionActionFactory);
+        verify(run).addAction(updateScmActionFactory);
         verifyNoMoreInteractions(run);
-
-        assertThat(releaseStepConfigActionArgumentCaptor.getValue()).isNotNull();
     }
 
 }

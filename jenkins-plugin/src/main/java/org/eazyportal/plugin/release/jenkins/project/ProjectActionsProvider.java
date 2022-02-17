@@ -1,5 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.project;
 
+import hudson.Extension;
 import org.eazyportal.plugin.release.core.project.ProjectActions;
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions;
 import org.eazyportal.plugin.release.jenkins.project.exception.InvalidProjectTypeException;
@@ -7,12 +8,10 @@ import org.eazyportal.plugin.release.jenkins.project.exception.InvalidProjectTyp
 import java.io.File;
 import java.nio.file.Path;
 
-public final class ProjectActionsProvider {
+@Extension
+public class ProjectActionsProvider {
 
-    private ProjectActionsProvider() {
-    }
-
-    public static ProjectActions provide(File projectDir) {
+    public ProjectActions provide(File projectDir) {
         if (isGradleProject(projectDir.toPath())) {
             return new GradleProjectActions(projectDir);
         }

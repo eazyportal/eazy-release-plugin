@@ -5,19 +5,21 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import org.eazyportal.plugin.release.jenkins.ReleaseStepConfigAction;
+import org.eazyportal.plugin.release.core.SetReleaseVersionAction;
+import org.eazyportal.plugin.release.jenkins.action.SetReleaseVersionActionFactory;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-class SetReleaseVersionStepTest extends BaseReleaseStepTest {
+class SetReleaseVersionStepTest {
 
     private SetReleaseVersionStep underTest;
 
@@ -26,22 +28,27 @@ class SetReleaseVersionStepTest extends BaseReleaseStepTest {
         underTest = new SetReleaseVersionStep();
     }
 
-    @Disabled("Tested class uses ProjectActionsProvider which cannot be mocked and SetReleaseVersionAction is instantiated inside causes issues.")
     @Test
     void test_perform() throws Exception {
-        Run<?, ?> run = mock(Run.class);
+        // GIVEN
         FilePath workspace = new FilePath(new File(""));
-        ReleaseStepConfigAction releaseStepConfigAction = createReleaseStepConfigActionMock();
+
+        Run<?, ?> run = mock(Run.class);
+        SetReleaseVersionActionFactory setReleaseVersionActionFactory = mock(SetReleaseVersionActionFactory.class);
+        SetReleaseVersionAction setReleaseVersionAction = mock(SetReleaseVersionAction.class);
 
         // WHEN
-        when(run.getAction(ReleaseStepConfigAction.class)).thenReturn(releaseStepConfigAction);
+        when(run.getAction(SetReleaseVersionActionFactory.class)).thenReturn(setReleaseVersionActionFactory);
+        when(setReleaseVersionActionFactory.create(any(File.class))).thenReturn(setReleaseVersionAction);
+        doNothing().when(setReleaseVersionAction).execute(any(File.class));
 
         // THEN
         underTest.perform(run, workspace, mock(EnvVars.class), mock(Launcher.class), mock(TaskListener.class));
 
-        verify(releaseStepConfigAction).getScmActions();
-        verify(releaseStepConfigAction).getScmConfig();
-        verifyNoMoreInteractions(releaseStepConfigAction);
+        verify(run).getAction(SetReleaseVersionActionFactory.class);
+        verify(setReleaseVersionActionFactory).create(any(File.class));
+        verify(setReleaseVersionAction).execute(any(File.class));
+        verifyNoMoreInteractions(run, setReleaseVersionAction, setReleaseVersionActionFactory);
     }
 
 }

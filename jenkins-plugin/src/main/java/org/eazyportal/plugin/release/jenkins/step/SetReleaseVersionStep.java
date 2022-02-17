@@ -10,12 +10,7 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
-import org.eazyportal.plugin.release.core.SetReleaseVersionAction;
-import org.eazyportal.plugin.release.core.project.ProjectActions;
-import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider;
-import org.eazyportal.plugin.release.core.version.VersionIncrementProvider;
-import org.eazyportal.plugin.release.jenkins.ReleaseStepConfigAction;
-import org.eazyportal.plugin.release.jenkins.project.ProjectActionsProvider;
+import org.eazyportal.plugin.release.jenkins.action.SetReleaseVersionActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -28,7 +23,7 @@ public class SetReleaseVersionStep extends Builder implements SimpleBuildStep, S
 
     @DataBoundConstructor
     public SetReleaseVersionStep() {
-        // ignore
+        // required by Jenkins
     }
 
     @Override
@@ -37,18 +32,9 @@ public class SetReleaseVersionStep extends Builder implements SimpleBuildStep, S
 
         File workingDir = new File(workspace.toURI());
 
-        ProjectActions projectActions = ProjectActionsProvider.provide(workingDir);
-
-        ReleaseStepConfigAction releaseStepConfigAction = run.getAction(ReleaseStepConfigAction.class);
-
-        SetReleaseVersionAction setReleaseVersionAction =
-            new SetReleaseVersionAction(projectActions, new ReleaseVersionProvider(), new VersionIncrementProvider());
-
-        setReleaseVersionAction.conventionalCommitTypes = releaseStepConfigAction.getConventionalCommitTypes();
-        setReleaseVersionAction.scmActions = releaseStepConfigAction.getScmActions();
-        setReleaseVersionAction.scmConfig = releaseStepConfigAction.getScmConfig();
-
-        setReleaseVersionAction.execute(workingDir);
+        run.getAction(SetReleaseVersionActionFactory.class)
+            .create(workingDir)
+            .execute(workingDir);
     }
 
     @Extension

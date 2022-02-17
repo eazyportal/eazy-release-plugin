@@ -5,19 +5,21 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import org.eazyportal.plugin.release.jenkins.ReleaseStepConfigAction;
+import org.eazyportal.plugin.release.core.SetSnapshotVersionAction;
+import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-class SetSnapshotVersionStepTest extends BaseReleaseStepTest {
+class SetSnapshotVersionStepTest {
 
     private SetSnapshotVersionStep underTest;
 
@@ -26,22 +28,27 @@ class SetSnapshotVersionStepTest extends BaseReleaseStepTest {
         underTest = new SetSnapshotVersionStep();
     }
 
-    @Disabled("Tested class uses ProjectActionsProvider which cannot be mocked and SetSnapshotVersionAction is instantiated inside causes issues.")
     @Test
     void test_perform() throws Exception {
-        Run<?, ?> run = mock(Run.class);
+        // GIVEN
         FilePath workspace = new FilePath(new File(""));
-        ReleaseStepConfigAction releaseStepConfigAction = createReleaseStepConfigActionMock();
+
+        Run<?, ?> run = mock(Run.class);
+        SetSnapshotVersionActionFactory setSnapshotVersionActionFactory = mock(SetSnapshotVersionActionFactory.class);
+        SetSnapshotVersionAction setSnapshotVersionAction = mock(SetSnapshotVersionAction.class);
 
         // WHEN
-        when(run.getAction(ReleaseStepConfigAction.class)).thenReturn(releaseStepConfigAction);
+        when(run.getAction(SetSnapshotVersionActionFactory.class)).thenReturn(setSnapshotVersionActionFactory);
+        when(setSnapshotVersionActionFactory.create(any(File.class))).thenReturn(setSnapshotVersionAction);
+        doNothing().when(setSnapshotVersionAction).execute(any(File.class));
 
         // THEN
         underTest.perform(run, workspace, mock(EnvVars.class), mock(Launcher.class), mock(TaskListener.class));
 
-        verify(releaseStepConfigAction).getScmActions();
-        verify(releaseStepConfigAction).getScmConfig();
-        verifyNoMoreInteractions(releaseStepConfigAction);
+        verify(run).getAction(SetSnapshotVersionActionFactory.class);
+        verify(setSnapshotVersionActionFactory).create(any(File.class));
+        verify(setSnapshotVersionAction).execute(any(File.class));
+        verifyNoMoreInteractions(run, setSnapshotVersionAction, setSnapshotVersionActionFactory);
     }
 
 }

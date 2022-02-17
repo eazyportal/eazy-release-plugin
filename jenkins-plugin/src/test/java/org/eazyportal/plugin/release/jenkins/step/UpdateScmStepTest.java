@@ -5,18 +5,21 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import org.eazyportal.plugin.release.jenkins.ReleaseStepConfigAction;
+import org.eazyportal.plugin.release.core.UpdateScmAction;
+import org.eazyportal.plugin.release.jenkins.action.UpdateScmActionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-class UpdateScmStepTest extends BaseReleaseStepTest {
+class UpdateScmStepTest {
 
     private UpdateScmStep underTest;
 
@@ -28,19 +31,24 @@ class UpdateScmStepTest extends BaseReleaseStepTest {
     @Test
     void test_perform() throws Exception {
         // GIVEN
-        Run<?, ?> run = mock(Run.class);
         FilePath workspace = new FilePath(new File(""));
-        ReleaseStepConfigAction releaseStepConfigAction = createReleaseStepConfigActionMock();
+
+        Run<?, ?> run = mock(Run.class);
+        UpdateScmActionFactory updateScmActionFactory = mock(UpdateScmActionFactory.class);
+        UpdateScmAction updateScmAction = mock(UpdateScmAction.class);
 
         // WHEN
-        when(run.getAction(ReleaseStepConfigAction.class)).thenReturn(releaseStepConfigAction);
+        when(run.getAction(UpdateScmActionFactory.class)).thenReturn(updateScmActionFactory);
+        when(updateScmActionFactory.create()).thenReturn(updateScmAction);
+        doNothing().when(updateScmAction).execute(any(File.class));
 
         // THEN
         underTest.perform(run, workspace, mock(EnvVars.class), mock(Launcher.class), mock(TaskListener.class));
 
-        verify(releaseStepConfigAction).getScmActions();
-        verify(releaseStepConfigAction).getScmConfig();
-        verifyNoMoreInteractions(releaseStepConfigAction);
+        verify(run).getAction(UpdateScmActionFactory.class);
+        verify(updateScmActionFactory).create();
+        verify(updateScmAction).execute(any(File.class));
+        verifyNoMoreInteractions(run, updateScmAction, updateScmActionFactory);
     }
 
 }

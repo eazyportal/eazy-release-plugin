@@ -5,19 +5,16 @@ import org.eazyportal.plugin.release.core.scm.GitActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ReleaseStepConfigActionTest {
+class ReleaseStepConfigTest {
 
-    @Mock
-    private ReleaseStepConfigAction underTest;
+    private ReleaseStepConfig underTest;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        underTest = new ReleaseStepConfig();
     }
 
     @Test

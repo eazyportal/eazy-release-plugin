@@ -10,8 +10,7 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
-import org.eazyportal.plugin.release.core.UpdateScmAction;
-import org.eazyportal.plugin.release.jenkins.ReleaseStepConfigAction;
+import org.eazyportal.plugin.release.jenkins.action.UpdateScmActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -24,7 +23,7 @@ public class UpdateScmStep extends Builder implements SimpleBuildStep, Serializa
 
     @DataBoundConstructor
     public UpdateScmStep() {
-        // ignore
+        // required by Jenkins
     }
 
     @Override
@@ -33,13 +32,9 @@ public class UpdateScmStep extends Builder implements SimpleBuildStep, Serializa
 
         File workingDir = new File(workspace.toURI());
 
-        ReleaseStepConfigAction releaseStepConfigAction = run.getAction(ReleaseStepConfigAction.class);
-
-        UpdateScmAction updateScmAction = new UpdateScmAction();
-        updateScmAction.scmActions = releaseStepConfigAction.getScmActions();
-        updateScmAction.scmConfig = releaseStepConfigAction.getScmConfig();
-
-        updateScmAction.execute(workingDir);
+        run.getAction(UpdateScmActionFactory.class)
+            .create()
+            .execute(workingDir);
     }
 
     @Extension

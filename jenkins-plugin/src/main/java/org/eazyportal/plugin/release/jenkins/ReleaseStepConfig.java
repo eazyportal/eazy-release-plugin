@@ -10,7 +10,7 @@ import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
 import java.io.Serializable;
 import java.util.List;
 
-public class ReleaseStepConfigAction extends InvisibleAction implements Serializable {
+public class ReleaseStepConfig extends InvisibleAction implements Serializable {
 
     private final transient List<ConventionalCommitType> conventionalCommitTypes = ConventionalCommitType.getDEFAULT_TYPES();
     private final transient ScmActions scmActions = new GitActions(new CliCommandExecutor());

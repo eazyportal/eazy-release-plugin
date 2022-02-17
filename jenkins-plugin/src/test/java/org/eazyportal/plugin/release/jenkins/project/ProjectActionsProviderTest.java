@@ -18,15 +18,19 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ProjectActionsProviderTest {
 
+    private ProjectActionsProvider underTest;
+
     private File workingDir;
 
     @BeforeEach
     void setUp() {
+        underTest = new ProjectActionsProvider();
+
         workingDir = Files.createTempDir();
     }
 
     @AfterEach
-    void testDown() {
+    void tearDown() {
         workingDir.deleteOnExit();
     }
 
@@ -38,7 +42,7 @@ class ProjectActionsProviderTest {
 
         // WHEN
         // THEN
-        ProjectActions actual = ProjectActionsProvider.provide(workingDir);
+        ProjectActions actual = underTest.provide(workingDir);
 
         assertThat(actual).isInstanceOf(GradleProjectActions.class);
     }
@@ -48,7 +52,7 @@ class ProjectActionsProviderTest {
         // GIVEN
         // WHEN
         // THEN
-        assertThatThrownBy(() -> ProjectActionsProvider.provide(workingDir))
+        assertThatThrownBy(() -> underTest.provide(workingDir))
             .isInstanceOf(InvalidProjectTypeException.class)
             .hasMessage("Unable to identify the project type.");
     }

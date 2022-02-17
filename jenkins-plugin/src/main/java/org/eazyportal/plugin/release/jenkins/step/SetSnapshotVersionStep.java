@@ -10,11 +10,7 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
-import org.eazyportal.plugin.release.core.SetSnapshotVersionAction;
-import org.eazyportal.plugin.release.core.project.ProjectActions;
-import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider;
-import org.eazyportal.plugin.release.jenkins.ReleaseStepConfigAction;
-import org.eazyportal.plugin.release.jenkins.project.ProjectActionsProvider;
+import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -27,7 +23,7 @@ public class SetSnapshotVersionStep extends Builder implements SimpleBuildStep, 
 
     @DataBoundConstructor
     public SetSnapshotVersionStep() {
-        // ignore
+        // required by Jenkins
     }
 
     @Override
@@ -36,15 +32,9 @@ public class SetSnapshotVersionStep extends Builder implements SimpleBuildStep, 
 
         File workingDir = new File(workspace.toURI());
 
-        ProjectActions projectActions = ProjectActionsProvider.provide(workingDir);
-
-        ReleaseStepConfigAction releaseStepConfigAction = run.getAction(ReleaseStepConfigAction.class);
-
-        SetSnapshotVersionAction setSnapshotVersionAction = new SetSnapshotVersionAction(projectActions, new SnapshotVersionProvider());
-        setSnapshotVersionAction.scmActions = releaseStepConfigAction.getScmActions();
-        setSnapshotVersionAction.scmConfig = releaseStepConfigAction.getScmConfig();
-
-        setSnapshotVersionAction.execute(workingDir);
+        run.getAction(SetSnapshotVersionActionFactory.class)
+            .create(workingDir)
+            .execute(workingDir);
     }
 
     @Extension
