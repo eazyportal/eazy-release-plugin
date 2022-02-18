@@ -7,13 +7,13 @@ import hudson.model.listeners.RunListener;
 import org.eazyportal.plugin.release.jenkins.action.SetReleaseVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.UpdateScmActionFactory;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Extension
 public class ReleasePluginRunListener extends RunListener<Run<?, ?>> {
 
-    private static final Logger LOGGER = Logger.getLogger(ReleasePluginRunListener.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReleasePluginRunListener.class);
 
     @Inject
     private SetReleaseVersionActionFactory setReleaseVersionActionFactory;

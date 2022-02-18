@@ -31,7 +31,9 @@ tasks.generateLicenseInfo {
 }
 
 dependencies {
-    implementation(project(":core"))
+    implementation(project(":core")) {
+        exclude("org.slf4j", "slf4j-api") // Jenkins uses an old version
+    }
     // https://docs.gradle.org/current/userguide/cross_project_publications.html#sec:simple-sharing-artifacts-between-projects
     implementation(project(mapOf("path" to ":gradle-plugin", "configuration" to "consumableConfiguration")))
 
