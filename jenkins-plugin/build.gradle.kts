@@ -40,7 +40,6 @@ dependencies {
     // Jenkins BOM
     implementation(platform("io.jenkins.tools.bom:bom-2.319.x:+"))
 
-    compileOnly("org.jenkins-ci.plugins", "plugin", "4.12")
     compileOnly("org.jenkins-ci.plugins.workflow", "workflow-step-api")
     compileOnly("org.jenkins-ci.plugins.workflow", "workflow-job")
 
