@@ -7,6 +7,9 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
+import org.junit.jupiter.api.condition.DisabledOnOs
+import org.junit.jupiter.api.condition.EnabledOnOs
+import org.junit.jupiter.api.condition.OS.WINDOWS
 import java.nio.file.Files
 
 @TestInstance(PER_CLASS)
@@ -22,14 +25,26 @@ internal class CliCommandExecutorTest {
         workingDir.delete()
     }
 
+    @EnabledOnOs(WINDOWS)
     @Test
-    fun test_cliExecute() {
+    fun test_cliExecute_windows() {
         // GIVEN
         // WHEN
         val actual = underTest.execute(workingDir, "ping", "127.0.0.1", "-n", "1")
 
         // THEN
         assertThat(actual).contains("Packets: Sent = 1, Received = 1, Lost = 0 (0% loss)")
+    }
+
+    @DisabledOnOs(WINDOWS)
+    @Test
+    fun test_cliExecute_linux() {
+        // GIVEN
+        // WHEN
+        val actual = underTest.execute(workingDir, "ping", "127.0.0.1", "-c", "1")
+
+        // THEN
+        assertThat(actual).contains("1 packets transmitted, 1 received, 0% packet loss")
     }
 
     @Test
@@ -39,7 +54,7 @@ internal class CliCommandExecutorTest {
         // THEN
         assertThatThrownBy { underTest.execute(workingDir, "ping") }
             .isInstanceOf(CliExecutionException::class.java)
-            .hasMessageContaining("Ping the specified host until stopped.") // -t
+            .hasMessageContaining("Usage: ping")
     }
 
 }
