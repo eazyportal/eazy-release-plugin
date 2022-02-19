@@ -1,1 +1,3 @@
-group = "org.eazyportal.plugin"
+plugins {
+    id("org.eazyportal.plugin.kotlin-project-convention") version("+")
+}

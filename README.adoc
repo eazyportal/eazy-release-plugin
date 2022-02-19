@@ -1,1 +1,20 @@
 = EazyReleasePlugin
+:toc:
+
+== Modules
+
+=== core
+
+This module is the `core` library which contains common classes for the other modules.
+
+=== gradle-plugin
+
+This module is a `Gradle` plugin implementation.
+
+=== jenkins-plugin
+
+This module is a `Jenkins` plugin implementation.
+
+=== maven-plugin
+
+This module is a `maven` plugin implementation.
