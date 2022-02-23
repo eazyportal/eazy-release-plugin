@@ -1,6 +1,6 @@
 package org.eazyportal.plugin.release.core
 
-import org.eazyportal.plugin.release.core.project.ProjectActions
+import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 
 open class SetReleaseVersionAction(
-    private val projectActions: ProjectActions,
+    private val projectActionsFactory: ProjectActionsFactory,
     private val releaseVersionProvider: ReleaseVersionProvider,
     private val versionIncrementProvider: VersionIncrementProvider
 ) : ReleaseAction {
@@ -32,6 +32,8 @@ open class SetReleaseVersionAction(
         if (scmConfig.releaseBranch != scmConfig.featureBranch) {
             scmActions.checkout(workingDir, scmConfig.featureBranch)
         }
+
+        val projectActions = projectActionsFactory.create(workingDir);
 
         val currentVersion = projectActions.getVersion()
         val versionIncrement = getVersionIncrement(workingDir)

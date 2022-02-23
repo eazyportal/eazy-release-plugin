@@ -43,9 +43,9 @@ internal class UpdateScmActionTest {
     @ParameterizedTest
     fun test_execute(scmConfig: ScmConfig) {
         // GIVEN
+        // WHEN
         underTest.scmConfig = scmConfig
 
-        // WHEN
         // THEN
         underTest.execute(workingDir)
 

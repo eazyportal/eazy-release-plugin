@@ -39,14 +39,14 @@ class SetReleaseVersionStepTest {
 
         // WHEN
         when(run.getAction(SetReleaseVersionActionFactory.class)).thenReturn(setReleaseVersionActionFactory);
-        when(setReleaseVersionActionFactory.create(any(File.class))).thenReturn(setReleaseVersionAction);
+        when(setReleaseVersionActionFactory.create()).thenReturn(setReleaseVersionAction);
         doNothing().when(setReleaseVersionAction).execute(any(File.class));
 
         // THEN
         underTest.perform(run, workspace, mock(EnvVars.class), mock(Launcher.class), mock(TaskListener.class));
 
         verify(run).getAction(SetReleaseVersionActionFactory.class);
-        verify(setReleaseVersionActionFactory).create(any(File.class));
+        verify(setReleaseVersionActionFactory).create();
         verify(setReleaseVersionAction).execute(any(File.class));
         verifyNoMoreInteractions(run, setReleaseVersionAction, setReleaseVersionActionFactory);
     }

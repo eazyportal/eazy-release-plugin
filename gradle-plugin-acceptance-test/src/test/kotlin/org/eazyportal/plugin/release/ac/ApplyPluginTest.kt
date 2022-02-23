@@ -3,7 +3,9 @@ package org.eazyportal.plugin.release.ac
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.project.ProjectActions
+import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
+import org.eazyportal.plugin.release.gradle.project.GradleProjectActionsFactory
 import org.eazyportal.plugin.release.gradle.tasks.EazyReleaseBaseTask
 import org.eazyportal.plugin.release.gradle.tasks.SetReleaseVersionTask
 import org.eazyportal.plugin.release.gradle.tasks.SetSnapshotVersionTask
@@ -49,16 +51,21 @@ class ApplyPluginTest {
             assertThat(it.getByName(EazyReleasePlugin.RELEASE_TASK_NAME))
                 .isInstanceOf(EazyReleaseBaseTask::class.java)
         }
+
+        project.extensions
+            .getByType(ExtraPropertiesExtension::class.java)
+            .get(EazyReleasePlugin.PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY)
+            .let { assertThat(it).isInstanceOf(GradleProjectActionsFactory::class.java) }
     }
 
     @Test
     fun test_withCustomProjectActions() {
         // GIVEN
-        val projectActions = mock<ProjectActions>()
+        val projectActionsFactory = mock<ProjectActionsFactory>()
 
         // WHEN
         project.extensions.getByType(ExtraPropertiesExtension::class.java).apply {
-            set(EazyReleasePlugin.PROJECT_ACTIONS_EXTRA_PROPERTY, projectActions)
+            set(EazyReleasePlugin.PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY, projectActionsFactory)
         }
 
         // THEN
@@ -69,8 +76,8 @@ class ApplyPluginTest {
 
         project.extensions
             .getByType(ExtraPropertiesExtension::class.java)
-            .get(EazyReleasePlugin.PROJECT_ACTIONS_EXTRA_PROPERTY)
-            .let { assertThat(it).isEqualTo(projectActions) }
+            .get(EazyReleasePlugin.PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY)
+            .let { assertThat(it).isEqualTo(projectActionsFactory) }
     }
 
     @Test
@@ -78,7 +85,7 @@ class ApplyPluginTest {
         // GIVEN
         // WHEN
         project.extensions.getByType(ExtraPropertiesExtension::class.java).apply {
-            set(EazyReleasePlugin.PROJECT_ACTIONS_EXTRA_PROPERTY, "invalid")
+            set(EazyReleasePlugin.PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY, "invalid")
         }
 
         // THEN

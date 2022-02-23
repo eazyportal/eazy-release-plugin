@@ -3,12 +3,12 @@ package org.eazyportal.plugin.release.gradle
 import org.eazyportal.plugin.release.core.SetReleaseVersionAction
 import org.eazyportal.plugin.release.core.SetSnapshotVersionAction
 import org.eazyportal.plugin.release.core.UpdateScmAction
-import org.eazyportal.plugin.release.core.project.ProjectActions
+import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
-import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
+import org.eazyportal.plugin.release.gradle.project.GradleProjectActionsFactory
 import org.eazyportal.plugin.release.gradle.tasks.EazyReleaseBaseTask
 import org.eazyportal.plugin.release.gradle.tasks.SetReleaseVersionTask
 import org.eazyportal.plugin.release.gradle.tasks.SetSnapshotVersionTask
@@ -25,25 +25,25 @@ class EazyReleasePlugin : Plugin<Project> {
         const val SET_SNAPSHOT_VERSION_TASK_NAME = "setSnapshotVersion"
         const val UPDATE_SCM_TASK_NAME = "updateScm"
 
-        const val PROJECT_ACTIONS_EXTRA_PROPERTY = "projectActions"
+        const val PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY = "projectActionsFactory"
     }
 
     override fun apply(project: Project) {
         project.plugins.apply("maven-publish")
 
-        val projectActions: ProjectActions
+        val projectActionsFactory: ProjectActionsFactory
         project.extensions.getByType(ExtraPropertiesExtension::class.java).apply {
-            if (!has(PROJECT_ACTIONS_EXTRA_PROPERTY)) {
-                set(PROJECT_ACTIONS_EXTRA_PROPERTY, GradleProjectActions(project.rootDir))
+            if (!has(PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY)) {
+                set(PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY, GradleProjectActionsFactory())
             }
 
-            projectActions = get(PROJECT_ACTIONS_EXTRA_PROPERTY) as ProjectActions
+            projectActionsFactory = get(PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY) as ProjectActionsFactory
         }
 
         val extension = project.extensions.create("release", EazyReleasePluginExtension::class.java)
 
-        val setReleaseVersionAction = SetReleaseVersionAction(projectActions, ReleaseVersionProvider(), VersionIncrementProvider())
-        val setSnapshotVersionAction = SetSnapshotVersionAction(projectActions, SnapshotVersionProvider())
+        val setReleaseVersionAction = SetReleaseVersionAction(projectActionsFactory, ReleaseVersionProvider(), VersionIncrementProvider())
+        val setSnapshotVersionAction = SetSnapshotVersionAction(projectActionsFactory, SnapshotVersionProvider())
         val updateScmAction = UpdateScmAction()
 
         project.tasks.apply {

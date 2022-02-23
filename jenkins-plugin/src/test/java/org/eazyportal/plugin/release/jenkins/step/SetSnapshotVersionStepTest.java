@@ -39,14 +39,14 @@ class SetSnapshotVersionStepTest {
 
         // WHEN
         when(run.getAction(SetSnapshotVersionActionFactory.class)).thenReturn(setSnapshotVersionActionFactory);
-        when(setSnapshotVersionActionFactory.create(any(File.class))).thenReturn(setSnapshotVersionAction);
+        when(setSnapshotVersionActionFactory.create()).thenReturn(setSnapshotVersionAction);
         doNothing().when(setSnapshotVersionAction).execute(any(File.class));
 
         // THEN
         underTest.perform(run, workspace, mock(EnvVars.class), mock(Launcher.class), mock(TaskListener.class));
 
         verify(run).getAction(SetSnapshotVersionActionFactory.class);
-        verify(setSnapshotVersionActionFactory).create(any(File.class));
+        verify(setSnapshotVersionActionFactory).create();
         verify(setSnapshotVersionAction).execute(any(File.class));
         verifyNoMoreInteractions(run, setSnapshotVersionAction, setSnapshotVersionActionFactory);
     }
