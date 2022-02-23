@@ -1,42 +1,96 @@
 package org.eazyportal.plugin.release.ac
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
 import org.eazyportal.plugin.release.gradle.tasks.EazyReleaseBaseTask
 import org.eazyportal.plugin.release.gradle.tasks.SetReleaseVersionTask
 import org.eazyportal.plugin.release.gradle.tasks.SetSnapshotVersionTask
 import org.eazyportal.plugin.release.gradle.tasks.UpdateScmTask
 import org.gradle.api.Project
+import org.gradle.api.internal.plugins.PluginApplicationException
+import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
 
 class ApplyPluginTest {
+
+    private lateinit var project: Project
+
+    @BeforeEach
+    fun setUp() {
+        project = ProjectBuilder.builder()
+            .build()
+    }
 
     @Test
     fun test() {
         // GIVEN
-        val project: Project = ProjectBuilder.builder()
-            .build()
-            .also {
-                it.plugins.apply {
-                    apply("java")
-                    apply("org.eazyportal.plugin.release-gradle-plugin")
-                }
-            }
+        project.plugins.apply {
+            apply("java")
+            apply("org.eazyportal.plugin.release-gradle-plugin")
+        }
 
         // WHEN
         // THEN
-        assertThat(project.tasks.getByName(EazyReleasePlugin.SET_RELEASE_VERSION_TASK_NAME))
-            .isInstanceOf(SetReleaseVersionTask::class.java)
+        project.tasks.let {
+            assertThat(it.getByName(EazyReleasePlugin.SET_RELEASE_VERSION_TASK_NAME))
+                .isInstanceOf(SetReleaseVersionTask::class.java)
 
-        assertThat(project.tasks.getByName(EazyReleasePlugin.SET_SNAPSHOT_VERSION_TASK_NAME))
-            .isInstanceOf(SetSnapshotVersionTask::class.java)
+            assertThat(it.getByName(EazyReleasePlugin.SET_SNAPSHOT_VERSION_TASK_NAME))
+                .isInstanceOf(SetSnapshotVersionTask::class.java)
 
-        assertThat(project.tasks.getByName(EazyReleasePlugin.UPDATE_SCM_TASK_NAME))
-            .isInstanceOf(UpdateScmTask::class.java)
+            assertThat(it.getByName(EazyReleasePlugin.UPDATE_SCM_TASK_NAME))
+                .isInstanceOf(UpdateScmTask::class.java)
 
-        assertThat(project.tasks.getByName(EazyReleasePlugin.RELEASE_TASK_NAME))
-            .isInstanceOf(EazyReleaseBaseTask::class.java)
+            assertThat(it.getByName(EazyReleasePlugin.RELEASE_TASK_NAME))
+                .isInstanceOf(EazyReleaseBaseTask::class.java)
+        }
+    }
+
+    @Test
+    fun test_withCustomProjectActions() {
+        // GIVEN
+        val projectActions = mock<ProjectActions>()
+
+        // WHEN
+        project.extensions.getByType(ExtraPropertiesExtension::class.java).apply {
+            set(EazyReleasePlugin.PROJECT_ACTIONS_EXTRA_PROPERTY, projectActions)
+        }
+
+        // THEN
+        project.plugins.apply {
+            apply("java")
+            apply("org.eazyportal.plugin.release-gradle-plugin")
+        }
+
+        project.extensions
+            .getByType(ExtraPropertiesExtension::class.java)
+            .get(EazyReleasePlugin.PROJECT_ACTIONS_EXTRA_PROPERTY)
+            .let { assertThat(it).isEqualTo(projectActions) }
+    }
+
+    @Test
+    fun test_withInvalidProjectActions() {
+        // GIVEN
+        // WHEN
+        project.extensions.getByType(ExtraPropertiesExtension::class.java).apply {
+            set(EazyReleasePlugin.PROJECT_ACTIONS_EXTRA_PROPERTY, "invalid")
+        }
+
+        // THEN
+        assertThatThrownBy {
+            project.plugins.apply {
+                apply("java")
+                apply("org.eazyportal.plugin.release-gradle-plugin")
+            }
+        }
+        .isInstanceOf(PluginApplicationException::class.java)
+        .cause
+        .hasMessageContaining("class java.lang.String cannot be cast to class ${ProjectActions::class.java.name}")
     }
 
 }

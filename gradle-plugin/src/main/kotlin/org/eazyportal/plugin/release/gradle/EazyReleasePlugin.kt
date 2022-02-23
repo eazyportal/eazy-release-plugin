@@ -3,6 +3,7 @@ package org.eazyportal.plugin.release.gradle
 import org.eazyportal.plugin.release.core.SetReleaseVersionAction
 import org.eazyportal.plugin.release.core.SetSnapshotVersionAction
 import org.eazyportal.plugin.release.core.UpdateScmAction
+import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider
@@ -14,6 +15,7 @@ import org.eazyportal.plugin.release.gradle.tasks.SetSnapshotVersionTask
 import org.eazyportal.plugin.release.gradle.tasks.UpdateScmTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtraPropertiesExtension
 
 class EazyReleasePlugin : Plugin<Project> {
 
@@ -22,14 +24,23 @@ class EazyReleasePlugin : Plugin<Project> {
         const val SET_RELEASE_VERSION_TASK_NAME = "setReleaseVersion"
         const val SET_SNAPSHOT_VERSION_TASK_NAME = "setSnapshotVersion"
         const val UPDATE_SCM_TASK_NAME = "updateScm"
+
+        const val PROJECT_ACTIONS_EXTRA_PROPERTY = "projectActions"
     }
 
     override fun apply(project: Project) {
         project.plugins.apply("maven-publish")
 
-        val extension = project.extensions.create("release", EazyReleasePluginExtension::class.java)
+        val projectActions: ProjectActions
+        project.extensions.getByType(ExtraPropertiesExtension::class.java).apply {
+            if (!has(PROJECT_ACTIONS_EXTRA_PROPERTY)) {
+                set(PROJECT_ACTIONS_EXTRA_PROPERTY, GradleProjectActions(project.rootDir))
+            }
 
-        val projectActions = GradleProjectActions(project.rootDir)
+            projectActions = get(PROJECT_ACTIONS_EXTRA_PROPERTY) as ProjectActions
+        }
+
+        val extension = project.extensions.create("release", EazyReleasePluginExtension::class.java)
 
         val setReleaseVersionAction = SetReleaseVersionAction(projectActions, ReleaseVersionProvider(), VersionIncrementProvider())
         val setSnapshotVersionAction = SetSnapshotVersionAction(projectActions, SnapshotVersionProvider())
