@@ -34,7 +34,6 @@ internal class EazyReleasePluginTest {
         workingDir.resolve("build.gradle")
             .writeText("""
                 plugins {
-                    id 'java'
                     id 'org.eazyportal.plugin.release-gradle-plugin'
                 }
             """.trimIndent())
@@ -47,6 +46,7 @@ internal class EazyReleasePluginTest {
         assertThat(actual.task(":tasks")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
         assertThat(actual.output).contains(
             "Eazy-release tasks",
+            EazyReleasePlugin.RELEASE_BUILD_TASK_NAME,
             EazyReleasePlugin.RELEASE_TASK_NAME,
             EazyReleasePlugin.SET_RELEASE_VERSION_TASK_NAME,
             EazyReleasePlugin.SET_SNAPSHOT_VERSION_TASK_NAME,
@@ -60,7 +60,6 @@ internal class EazyReleasePluginTest {
         workingDir.resolve("build.gradle.kts")
             .writeText("""
                 plugins {
-                    `kotlin-dsl`
                     id("org.eazyportal.plugin.release-gradle-plugin")
                 }
             """.trimIndent())
@@ -73,6 +72,7 @@ internal class EazyReleasePluginTest {
         assertThat(actual.task(":tasks")!!.outcome).isEqualTo(TaskOutcome.SUCCESS)
         assertThat(actual.output).contains(
             "Eazy-release tasks",
+            EazyReleasePlugin.RELEASE_BUILD_TASK_NAME,
             EazyReleasePlugin.RELEASE_TASK_NAME,
             EazyReleasePlugin.SET_RELEASE_VERSION_TASK_NAME,
             EazyReleasePlugin.SET_SNAPSHOT_VERSION_TASK_NAME,

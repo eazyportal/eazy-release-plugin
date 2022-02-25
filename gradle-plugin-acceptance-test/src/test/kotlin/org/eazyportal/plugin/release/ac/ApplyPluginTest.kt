@@ -32,7 +32,6 @@ class ApplyPluginTest {
     fun test() {
         // GIVEN
         project.plugins.apply {
-            apply("java")
             apply("org.eazyportal.plugin.release-gradle-plugin")
         }
 
@@ -70,7 +69,6 @@ class ApplyPluginTest {
 
         // THEN
         project.plugins.apply {
-            apply("java")
             apply("org.eazyportal.plugin.release-gradle-plugin")
         }
 
@@ -91,7 +89,6 @@ class ApplyPluginTest {
         // THEN
         assertThatThrownBy {
             project.plugins.apply {
-                apply("java")
                 apply("org.eazyportal.plugin.release-gradle-plugin")
             }
         }

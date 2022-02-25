@@ -20,6 +20,7 @@ import org.gradle.api.plugins.ExtraPropertiesExtension
 class EazyReleasePlugin : Plugin<Project> {
 
     companion object {
+        const val RELEASE_BUILD_TASK_NAME = "releaseBuild"
         const val RELEASE_TASK_NAME = "release"
         const val SET_RELEASE_VERSION_TASK_NAME = "setReleaseVersion"
         const val SET_SNAPSHOT_VERSION_TASK_NAME = "setSnapshotVersion"
@@ -29,8 +30,6 @@ class EazyReleasePlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
-        project.plugins.apply("maven-publish")
-
         val projectActionsFactory: ProjectActionsFactory
         project.extensions.getByType(ExtraPropertiesExtension::class.java).apply {
             if (!has(PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY)) {
@@ -53,16 +52,14 @@ class EazyReleasePlugin : Plugin<Project> {
                 it.scmConfig.set(extension.scmConfig)
             }
 
-            val buildTask = getByName("build").also {
+            register(RELEASE_BUILD_TASK_NAME, EazyReleaseBaseTask::class.java).configure {
                 it.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME)
-            }
 
-            val publishTask = getByName("publish").also {
-                it.mustRunAfter(buildTask)
+                it.dependsOn("build", "publish")
             }
 
             register(SET_SNAPSHOT_VERSION_TASK_NAME, SetSnapshotVersionTask::class.java, setSnapshotVersionAction).configure {
-                it.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME)
+                it.mustRunAfter(RELEASE_BUILD_TASK_NAME)
 
                 it.scmActions.set(extension.scmActions)
                 it.scmConfig.set(extension.scmConfig)
@@ -76,7 +73,7 @@ class EazyReleasePlugin : Plugin<Project> {
             }
 
             register(RELEASE_TASK_NAME, EazyReleaseBaseTask::class.java) {
-                it.dependsOn(SET_RELEASE_VERSION_TASK_NAME, buildTask, publishTask, SET_SNAPSHOT_VERSION_TASK_NAME, UPDATE_SCM_TASK_NAME)
+                it.dependsOn(SET_RELEASE_VERSION_TASK_NAME, RELEASE_BUILD_TASK_NAME, SET_SNAPSHOT_VERSION_TASK_NAME, UPDATE_SCM_TASK_NAME)
             }
         }
     }
