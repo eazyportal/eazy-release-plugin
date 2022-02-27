@@ -28,6 +28,15 @@ open class GitActions(
         execute(workingDir, "commit", "-m", message)
     }
 
+    fun execute(workingDir: File, vararg gitCommands: String): String {
+        try {
+            return commandExecutor.execute(workingDir, GIT_EXECUTABLE, *gitCommands)
+        }
+        catch (exception: Exception) {
+            throw ScmActionException(exception)
+        }
+    }
+
     override fun fetch(workingDir: File, remote: String) {
         execute(workingDir, "fetch", remote)
     }
@@ -64,15 +73,6 @@ open class GitActions(
 
     override fun tag(workingDir: File, vararg commands: String) {
         execute(workingDir, "tag", *commands)
-    }
-
-    internal fun execute(workingDir: File, vararg gitCommands: String): String {
-        try {
-            return commandExecutor.execute(workingDir, GIT_EXECUTABLE, *gitCommands)
-        }
-        catch (exception: Exception) {
-            throw ScmActionException(exception)
-        }
     }
 
 }

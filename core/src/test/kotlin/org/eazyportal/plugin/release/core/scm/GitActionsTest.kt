@@ -61,6 +61,22 @@ internal class GitActionsTest {
     }
 
     @Test
+    fun test_checkout() {
+        // GIVEN
+        val toRef = "master"
+
+        // WHEN
+        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "checkout", toRef))
+            .thenReturn("")
+
+        // THEN
+        underTest.checkout(workingDir, toRef)
+
+        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "checkout", toRef)
+        verifyNoMoreInteractions(commandExecutor)
+    }
+
+    @Test
     fun test_commit() {
         // GIVEN
         val message = "commit message"
@@ -108,6 +124,22 @@ internal class GitActionsTest {
             .hasMessage(errorMessage)
 
         verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "log")
+        verifyNoMoreInteractions(commandExecutor)
+    }
+
+    @Test
+    fun test_fetch() {
+        // GIVEN
+        val remote = "origin"
+
+        // WHEN
+        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "fetch", remote))
+            .thenReturn("")
+
+        // THEN
+        underTest.fetch(workingDir, remote)
+
+        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "fetch", remote)
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -204,6 +236,22 @@ internal class GitActionsTest {
         assertThat(actual).isEqualTo(TAGS)
 
         verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", COMMIT_HASH_1)
+        verifyNoMoreInteractions(commandExecutor)
+    }
+
+    @Test
+    fun test_mergeNoCommit() {
+        // GIVEN
+        val fromBranch = "master"
+
+        // WHEN
+        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch))
+            .thenReturn("")
+
+        // THEN
+        underTest.checkout(workingDir, fromBranch)
+
+        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch)
         verifyNoMoreInteractions(commandExecutor)
     }
 
