@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 
-class ApplyPluginTest {
+class ApplyPluginAcceptanceTest {
 
     private lateinit var project: Project
 
