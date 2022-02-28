@@ -49,6 +49,7 @@ internal class UpdateScmActionTest {
         // THEN
         underTest.execute(workingDir)
 
+        verify(scmActions).getSubmodules(workingDir)
         verify(scmActions).push(workingDir, scmConfig.remote, scmConfig.releaseBranch, scmConfig.featureBranch)
         verifyNoMoreInteractions(scmActions)
     }

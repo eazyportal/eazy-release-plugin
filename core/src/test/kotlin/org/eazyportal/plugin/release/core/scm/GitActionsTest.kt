@@ -3,6 +3,7 @@ package org.eazyportal.plugin.release.core.scm
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.executor.CommandExecutor
+import org.eazyportal.plugin.release.core.scm.GitActions.Companion.GIT_EXECUTABLE
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -50,13 +51,13 @@ internal class GitActionsTest {
         val filePaths = arrayOf(".")
 
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "add", *filePaths))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "add", *filePaths))
             .thenReturn("")
 
         // THEN
         underTest.add(workingDir, *filePaths)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "add", *filePaths)
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "add", *filePaths)
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -66,13 +67,13 @@ internal class GitActionsTest {
         val toRef = "master"
 
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "checkout", toRef))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "checkout", toRef))
             .thenReturn("")
 
         // THEN
         underTest.checkout(workingDir, toRef)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "checkout", toRef)
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "checkout", toRef)
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -82,13 +83,13 @@ internal class GitActionsTest {
         val message = "commit message"
 
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "commit", "-m", message))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "commit", "-m", message))
             .thenReturn("")
 
         // THEN
         underTest.commit(workingDir, message)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "commit", "-m", message)
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "commit", "-m", message)
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -98,14 +99,14 @@ internal class GitActionsTest {
         val response = "dummy response"
 
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "log")).thenReturn(response)
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "log")).thenReturn(response)
 
         // THEN
         val actual = underTest.execute(workingDir, "log")
 
         assertThat(actual).isEqualTo(response)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "log")
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "log")
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -115,7 +116,7 @@ internal class GitActionsTest {
         val errorMessage = "error message"
 
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "log")).thenThrow(RuntimeException(errorMessage))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "log")).thenThrow(RuntimeException(errorMessage))
 
         // THEN
         assertThatThrownBy { underTest.execute(workingDir, "log") }
@@ -123,7 +124,7 @@ internal class GitActionsTest {
             .cause
             .hasMessage(errorMessage)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "log")
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "log")
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -133,13 +134,13 @@ internal class GitActionsTest {
         val remote = "origin"
 
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "fetch", remote))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "fetch", remote, "--tags", "--prune", "--prune-tags", "--recurse-submodules"))
             .thenReturn("")
 
         // THEN
         underTest.fetch(workingDir, remote)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "fetch", remote)
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "fetch", remote, "--tags", "--prune", "--prune-tags", "--recurse-submodules")
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -147,7 +148,7 @@ internal class GitActionsTest {
     fun test_getCommits() {
         // GIVEN
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "log", "--pretty=format:%s", "HEAD"))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "log", "--pretty=format:%s", "HEAD"))
             .thenReturn("$COMMIT_MESSAGE_1\n$COMMIT_MESSAGE_2\r\n$COMMIT_MESSAGE_3")
 
         // THEN
@@ -155,7 +156,7 @@ internal class GitActionsTest {
 
         assertThat(actual).isEqualTo(COMMIT_MESSAGES)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "log", "--pretty=format:%s", "HEAD")
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "log", "--pretty=format:%s", "HEAD")
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -163,7 +164,7 @@ internal class GitActionsTest {
     fun test_getCommits_withRefs() {
         // GIVEN
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "log", "--pretty=format:%s", "$COMMIT_HASH_1..$COMMIT_HASH_2"))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "log", "--pretty=format:%s", "$COMMIT_HASH_1..$COMMIT_HASH_2"))
             .thenReturn(COMMIT_MESSAGES.joinToString(System.lineSeparator()))
 
         // THEN
@@ -171,7 +172,7 @@ internal class GitActionsTest {
 
         assertThat(actual).isEqualTo(COMMIT_MESSAGES)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "log", "--pretty=format:%s", "$COMMIT_HASH_1..$COMMIT_HASH_2")
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "log", "--pretty=format:%s", "$COMMIT_HASH_1..$COMMIT_HASH_2")
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -179,7 +180,7 @@ internal class GitActionsTest {
     fun test_getLastTag() {
         // GIVEN
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "describe", "--abbrev=0", "--tags", "HEAD"))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "describe", "--abbrev=0", "--tags", "HEAD"))
             .thenReturn(TAG_1)
 
         // THEN
@@ -187,7 +188,7 @@ internal class GitActionsTest {
 
         assertThat(actual).isEqualTo(TAG_1)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "describe", "--abbrev=0", "--tags", "HEAD")
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "describe", "--abbrev=0", "--tags", "HEAD")
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -195,7 +196,7 @@ internal class GitActionsTest {
     fun test_getLastTag_withRef() {
         // GIVEN
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "describe", "--abbrev=0", "--tags", COMMIT_HASH_1))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "describe", "--abbrev=0", "--tags", COMMIT_HASH_1))
             .thenReturn(TAG_1)
 
         // THEN
@@ -203,7 +204,28 @@ internal class GitActionsTest {
 
         assertThat(actual).isEqualTo(TAG_1)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "describe", "--abbrev=0", "--tags", COMMIT_HASH_1)
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "describe", "--abbrev=0", "--tags", COMMIT_HASH_1)
+        verifyNoMoreInteractions(commandExecutor)
+    }
+
+    @Test
+    fun test_getSubmodules() {
+        // GIVEN
+        val submodules = listOf("ui-project", "examples-project")
+        val response = listOf(
+            " 2ef7bde608ce5404e97d5f042f95f89f1c232871 ui-project (heads/master)",
+            " 2ef7bde608ce5404e97d5f042f95f89f1c232871 examples-project (heads/master)"
+        )
+
+        // WHEN
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "submodule")).thenReturn(response.joinToString(System.lineSeparator()))
+
+        // THEN
+        val actual = underTest.getSubmodules(workingDir)
+
+        assertThat(actual).isEqualTo(submodules)
+
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "submodule")
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -211,7 +233,7 @@ internal class GitActionsTest {
     fun test_getTags() {
         // GIVEN
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", "HEAD"))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", "HEAD"))
             .thenReturn("$TAG_1\n$TAG_2\r\n$TAG_3")
 
         // THEN
@@ -219,7 +241,7 @@ internal class GitActionsTest {
 
         assertThat(actual).isEqualTo(TAGS)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", "HEAD")
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", "HEAD")
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -227,7 +249,7 @@ internal class GitActionsTest {
     fun test_getGitTags_withRef() {
         // GIVEN
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", COMMIT_HASH_1))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", COMMIT_HASH_1))
             .thenReturn(TAGS.joinToString(System.lineSeparator()))
 
         // THEN
@@ -235,7 +257,7 @@ internal class GitActionsTest {
 
         assertThat(actual).isEqualTo(TAGS)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", COMMIT_HASH_1)
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "tag", "--sort=-creatordate", "--contains", COMMIT_HASH_1)
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -245,13 +267,13 @@ internal class GitActionsTest {
         val fromBranch = "master"
 
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch))
             .thenReturn("")
 
         // THEN
-        underTest.checkout(workingDir, fromBranch)
+        underTest.mergeNoCommit(workingDir, fromBranch)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch)
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch)
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -262,13 +284,13 @@ internal class GitActionsTest {
         val branch = "release-branch"
 
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "push", "--atomic", "--tags", remote, "$branch:$branch"))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "push", "--atomic", "--tags", "--recurse-submodules=on-demand", remote, "$branch:$branch"))
             .thenReturn("")
 
         // THEN
         underTest.push(workingDir, remote, branch)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "push", "--atomic", "--tags", remote, "$branch:$branch")
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "push", "--atomic", "--tags", "--recurse-submodules=on-demand", remote, "$branch:$branch")
         verifyNoMoreInteractions(commandExecutor)
     }
 
@@ -278,13 +300,13 @@ internal class GitActionsTest {
         val commands = arrayOf("0.0.1")
 
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", *commands))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "tag", *commands))
             .thenReturn("")
 
         // THEN
         underTest.tag(workingDir, *commands)
 
-        verify(commandExecutor).execute(workingDir, GitActions.GIT_EXECUTABLE, "tag", *commands)
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "tag", *commands)
         verifyNoMoreInteractions(commandExecutor)
     }
 

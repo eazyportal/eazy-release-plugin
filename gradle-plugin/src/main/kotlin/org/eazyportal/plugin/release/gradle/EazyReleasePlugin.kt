@@ -52,10 +52,15 @@ class EazyReleasePlugin : Plugin<Project> {
                 it.scmConfig.set(extension.scmConfig)
             }
 
-            register(RELEASE_BUILD_TASK_NAME, EazyReleaseBaseTask::class.java).configure {
-                it.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME)
+            register(RELEASE_BUILD_TASK_NAME, EazyReleaseBaseTask::class.java).configure { task ->
+                task.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME)
 
-                it.dependsOn("build", "publish")
+                val buildTasks = project.allprojects
+                    .mapNotNull { it.tasks.findByName("build") }
+                val publishTasks = project.allprojects
+                    .mapNotNull { it.tasks.findByName("publish") }
+
+                task.dependsOn(buildTasks, publishTasks)
             }
 
             register(SET_SNAPSHOT_VERSION_TASK_NAME, SetSnapshotVersionTask::class.java, setSnapshotVersionAction).configure {

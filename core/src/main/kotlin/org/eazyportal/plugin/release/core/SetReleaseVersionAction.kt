@@ -7,6 +7,8 @@ import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider
+import org.eazyportal.plugin.release.core.version.model.Version
+import org.eazyportal.plugin.release.core.version.model.VersionComparator
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -29,30 +31,58 @@ open class SetReleaseVersionAction(
     override fun execute(workingDir: File) {
         scmActions.fetch(workingDir, scmConfig.remote)
 
-        if (scmConfig.releaseBranch != scmConfig.featureBranch) {
-            scmActions.checkout(workingDir, scmConfig.featureBranch)
+        checkoutFeatureBranch(workingDir)
+
+        val submodulesDir = scmActions.getSubmodules(workingDir)
+            .map { workingDir.resolve(it) }
+            .onEach { checkoutFeatureBranch(workingDir) }
+
+        val allProjectsDir = listOf(*submodulesDir.toTypedArray(), workingDir)
+
+        val releaseVersion = getReleaseVersion(allProjectsDir)
+
+        allProjectsDir.onEach {
+            val projectActions = projectActionsFactory.create(it)
+
+            if (scmConfig.releaseBranch != scmConfig.featureBranch) {
+                scmActions.checkout(it, scmConfig.releaseBranch)
+
+                scmActions.mergeNoCommit(it, scmConfig.featureBranch)
+            }
+
+            projectActions.setVersion(releaseVersion)
+
+            scmActions.add(it, *projectActions.scmFilesToCommit())
+            scmActions.commit(it, "Release version: $releaseVersion")
         }
 
-        val projectActions = projectActionsFactory.create(workingDir);
-
-        val currentVersion = projectActions.getVersion()
-        val versionIncrement = getVersionIncrement(workingDir)
-        val releaseVersion = releaseVersionProvider.provide(currentVersion, versionIncrement)
-
-        if (scmConfig.releaseBranch != scmConfig.featureBranch) {
-            scmActions.checkout(workingDir, scmConfig.releaseBranch)
-
-            scmActions.mergeNoCommit(workingDir, scmConfig.featureBranch)
-        }
-
-        projectActions.setVersion(releaseVersion)
-
-        scmActions.add(workingDir, *projectActions.scmFilesToCommit())
-        scmActions.commit(workingDir, "Release version: $releaseVersion")
-        scmActions.tag(workingDir, "-a", releaseVersion.toString(), "-m", "v${releaseVersion}")
+        scmActions.tag(workingDir, "-a", releaseVersion.toString(), "-m", "v$releaseVersion")
     }
 
-    private fun getVersionIncrement(workingDir: File): VersionIncrement {
+    private fun checkoutFeatureBranch(projectDir: File) {
+        if (scmConfig.releaseBranch != scmConfig.featureBranch) {
+            scmActions.checkout(projectDir, scmConfig.featureBranch)
+        }
+    }
+
+    private fun getReleaseVersion(projectDirs: List<File>): Version = projectDirs
+        .mapNotNull {
+            val projectActions = projectActionsFactory.create(it)
+
+            val currentVersion = projectActions.getVersion()
+            val versionIncrement = getVersionIncrement(it)
+
+            if ((versionIncrement == null) || (versionIncrement == VersionIncrement.NONE)) {
+                null
+            }
+            else {
+                releaseVersionProvider.provide(currentVersion, versionIncrement)
+            }
+        }
+        .maxWithOrNull(VersionComparator())
+        ?: throw IllegalArgumentException("There are no acceptable commits.")
+
+    private fun getVersionIncrement(workingDir: File): VersionIncrement? {
         val lastTag = try {
             scmActions.getLastTag(workingDir)
         }
@@ -62,15 +92,8 @@ open class SetReleaseVersionAction(
             null
         }
 
-        val commits = scmActions.getCommits(workingDir, lastTag)
-
-        val versionIncrement = versionIncrementProvider.provide(commits, conventionalCommitTypes)
-
-        if ((versionIncrement == null) || (versionIncrement == VersionIncrement.NONE)) {
-            throw IllegalArgumentException("There are no acceptable commits.")
-        }
-
-        return versionIncrement
+        return scmActions.getCommits(workingDir, lastTag)
+            .let { versionIncrementProvider.provide(it, conventionalCommitTypes) }
     }
 
 }

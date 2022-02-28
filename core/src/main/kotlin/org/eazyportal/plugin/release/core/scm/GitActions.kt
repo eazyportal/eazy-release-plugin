@@ -38,7 +38,7 @@ open class GitActions(
     }
 
     override fun fetch(workingDir: File, remote: String) {
-        execute(workingDir, "fetch", remote)
+        execute(workingDir, "fetch", remote, "--tags", "--prune", "--prune-tags", "--recurse-submodules")
     }
 
     override fun getCommits(workingDir: File, fromRef: String?, toRef: String?): List<String> {
@@ -51,6 +51,15 @@ open class GitActions(
 
     override fun getLastTag(workingDir: File, fromRef: String?): String {
         return execute(workingDir, "describe", "--abbrev=0", "--tags", (fromRef ?: "HEAD"))
+    }
+
+    override fun getSubmodules(workingDir: File): List<String> {
+        return execute(workingDir, "submodule")
+            .lines()
+            .map { it.replace(Regex("""^[\s\W]?\w+\s(.*?)\s?(\(.*\))?${'$'}"""), "$1") }
+            .filter { it.isNotBlank() }
+            .map { it.trim() }
+            .toList()
     }
 
     override fun getTags(workingDir: File, fromRef: String?): List<String> {
@@ -68,7 +77,7 @@ open class GitActions(
             .map { "$it:$it" }
             .toTypedArray()
 
-        execute(workingDir, "push", "--atomic", "--tags", remote, *branchesRefs)
+        execute(workingDir, "push", "--atomic", "--tags", "--recurse-submodules=on-demand", remote, *branchesRefs)
     }
 
     override fun tag(workingDir: File, vararg commands: String) {

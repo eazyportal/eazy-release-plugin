@@ -63,6 +63,7 @@ internal class SetSnapshotVersionActionTest {
         // THEN
         underTest.execute(workingDir)
 
+        verify(scmActions).getSubmodules(workingDir)
         verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
         verify(projectActionsFactory).create(workingDir)
         verify(projectActions).getVersion()
@@ -92,6 +93,7 @@ internal class SetSnapshotVersionActionTest {
         // THEN
         underTest.execute(workingDir)
 
+        verify(scmActions).getSubmodules(workingDir)
         verify(projectActionsFactory).create(workingDir)
         verify(projectActions).getVersion()
         verify(snapshotVersionProvider).provide(RELEASE_001)

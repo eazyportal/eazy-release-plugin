@@ -15,25 +15,29 @@ class SetSnapshotVersionAction(
     lateinit var scmConfig: ScmConfig
 
     override fun execute(workingDir: File) {
-        if (scmConfig.releaseBranch != scmConfig.featureBranch) {
-            scmActions.checkout(workingDir, scmConfig.releaseBranch)
+        val submodulesDir = scmActions.getSubmodules(workingDir)
+            .map { workingDir.resolve(it) }
+
+        listOf(*submodulesDir.toTypedArray(), workingDir).onEach {
+            if (scmConfig.releaseBranch != scmConfig.featureBranch) {
+                scmActions.checkout(it, scmConfig.releaseBranch)
+            }
+
+            val projectActions = projectActionsFactory.create(it)
+            val currentVersion = projectActions.getVersion()
+            val snapshotVersion  = snapshotVersionProvider.provide(currentVersion)
+
+            if (scmConfig.releaseBranch != scmConfig.featureBranch) {
+                scmActions.checkout(it, scmConfig.featureBranch)
+
+                scmActions.mergeNoCommit(it, scmConfig.releaseBranch)
+            }
+
+            projectActions.setVersion(snapshotVersion)
+
+            scmActions.add(it, *projectActions.scmFilesToCommit())
+            scmActions.commit(it, "New snapshot version: $snapshotVersion")
         }
-
-        val projectActions = projectActionsFactory.create(workingDir)
-
-        val currentVersion = projectActions.getVersion()
-        val snapshotVersion  = snapshotVersionProvider.provide(currentVersion)
-
-        if (scmConfig.releaseBranch != scmConfig.featureBranch) {
-            scmActions.checkout(workingDir, scmConfig.featureBranch)
-
-            scmActions.mergeNoCommit(workingDir, scmConfig.releaseBranch)
-        }
-
-        projectActions.setVersion(snapshotVersion)
-
-        scmActions.add(workingDir, *projectActions.scmFilesToCommit())
-        scmActions.commit(workingDir, "New snapshot version: $snapshotVersion")
     }
 
 }

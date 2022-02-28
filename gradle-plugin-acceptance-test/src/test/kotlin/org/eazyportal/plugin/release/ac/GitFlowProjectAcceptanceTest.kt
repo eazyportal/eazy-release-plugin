@@ -14,27 +14,28 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
     @Test
     fun test_initializeRepository() {
         // GIVEN
-        createGradleRunner(PROJECT_DIR, "init", "--dsl", "kotlin")
+        SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "init")
+
+        createGradleRunner(ORIGIN_PROJECT_DIR, "init", "--dsl", "kotlin")
             .build()
 
-        PROJECT_DIR.copyIntoFromResources("build.gradle.kts")
-        PROJECT_DIR.copyIntoFromResources("settings.gradle.kts")
-        PROJECT_DIR.copyIntoFromResources(GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME)
+        ORIGIN_PROJECT_DIR.copyIntoFromResources("build.gradle.kts")
+        ORIGIN_PROJECT_DIR.copyIntoFromResources("settings.gradle.kts")
+        ORIGIN_PROJECT_DIR.copyIntoFromResources(GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME)
 
         // WHEN
-        SCM_ACTIONS.add(PROJECT_DIR, ".")
-        SCM_ACTIONS.commit(PROJECT_DIR, "initial commit")
+        SCM_ACTIONS.add(ORIGIN_PROJECT_DIR, ".")
+        SCM_ACTIONS.commit(ORIGIN_PROJECT_DIR, "initial commit")
 
         // THEN
-        assertThat(SCM_ACTIONS.getCommits(PROJECT_DIR)).containsExactly("initial commit")
+        assertThat(SCM_ACTIONS.getCommits(ORIGIN_PROJECT_DIR)).containsExactly("initial commit")
 
-        SCM_ACTIONS.execute(PROJECT_DIR, "checkout", "-b", "feature")
+        SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "checkout", "-b", "feature")
 
-        PROJECT_DIR.copyRecursively(ORIGIN_PROJECT_DIR)
+        SCM_ACTIONS.execute(WORKING_DIR, "clone", ORIGIN_PROJECT_DIR.resolve(".git").path, PROJECT_NAME)
+
         // Checking out to a different branch will fix: "remote: error: refusing to update checked out branch: refs/heads/feature"
         SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "checkout", "-b", "tmp")
-
-        SCM_ACTIONS.execute(PROJECT_DIR, "remote", "add", "origin", ORIGIN_PROJECT_DIR.resolve(".git").path)
     }
 
     @Order(1)
@@ -78,8 +79,8 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
         )
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status")
-            .let {
-                assertThat(it.lines()).containsSubsequence(
+            .run {
+                assertThat(lines()).containsSubsequence(
                     "On branch master",
                     "nothing to commit, working tree clean"
                 )
@@ -108,9 +109,9 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
         )
 
         PROJECT_DIR.resolve("build/libs/")
-            .let {
-                assertThat(it.resolve("$PROJECT_NAME-0.1.0.jar").exists()).isTrue
-                assertThat(it.resolve("$PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
+            .run {
+                assertThat(resolve("$PROJECT_NAME-0.1.0.jar").exists()).isTrue
+                assertThat(resolve("$PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
             }
     }
 
@@ -130,8 +131,8 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
         )
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status")
-            .let {
-                assertThat(it.lines()).containsSubsequence(
+            .run {
+                assertThat(lines()).containsSubsequence(
                     "On branch feature",
                     "nothing to commit, working tree clean"
                 )

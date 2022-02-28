@@ -22,6 +22,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
@@ -90,7 +91,8 @@ internal class SetReleaseVersionActionTest {
 
         verify(scmActions).fetch(workingDir, ScmConfig.GIT_FLOW.remote)
         verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
-        verify(projectActionsFactory).create(workingDir)
+        verify(projectActionsFactory, times(2)).create(workingDir)
+        verify(scmActions).getSubmodules(workingDir)
         verify(projectActions).getVersion()
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, GIT_TAG)
@@ -127,7 +129,8 @@ internal class SetReleaseVersionActionTest {
         underTest.execute(workingDir)
 
         verify(scmActions).fetch(workingDir, ScmConfig.TRUNK_BASED_FLOW.remote)
-        verify(projectActionsFactory).create(workingDir)
+        verify(scmActions).getSubmodules(workingDir)
+        verify(projectActionsFactory, times(2)).create(workingDir)
         verify(projectActions).getVersion()
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, GIT_TAG)
@@ -161,7 +164,8 @@ internal class SetReleaseVersionActionTest {
 
         verify(scmActions).fetch(workingDir, ScmConfig.GIT_FLOW.remote)
         verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
-        verify(projectActionsFactory).create(workingDir)
+        verify(scmActions).getSubmodules(workingDir)
+        verify(projectActionsFactory, times(2)).create(workingDir)
         verify(projectActions).getVersion()
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, null)
@@ -198,6 +202,7 @@ internal class SetReleaseVersionActionTest {
         verifyNoInteractions(releaseVersionProvider)
         verify(scmActions).fetch(workingDir, ScmConfig.GIT_FLOW.remote)
         verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
+        verify(scmActions).getSubmodules(workingDir)
         verify(projectActionsFactory).create(workingDir)
         verify(projectActions).getVersion()
         verify(scmActions).getLastTag(workingDir)

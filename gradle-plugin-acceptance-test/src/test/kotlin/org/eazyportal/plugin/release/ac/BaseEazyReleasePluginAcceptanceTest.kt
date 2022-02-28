@@ -4,7 +4,6 @@ import org.eazyportal.plugin.release.core.executor.CliCommandExecutor
 import org.eazyportal.plugin.release.core.scm.GitActions
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.TestInfo
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -37,16 +36,14 @@ internal abstract class BaseEazyReleasePluginAcceptanceTest {
 
             PROJECT_DIR = WORKING_DIR.resolve(PROJECT_NAME)
                 .also { Files.createDirectories(it.toPath()) }
-
-            SCM_ACTIONS.execute(PROJECT_DIR, "init")
         }
     }
 
-    internal fun File.copyIntoFromResources(fileName: String, testInfo: TestInfo? = null) {
-        val fileContent = "${this@BaseEazyReleasePluginAcceptanceTest::class.java.simpleName}/${testInfo?.testMethod?.get()?.name ?: ""}/$fileName"
+    internal fun File.copyIntoFromResources(fileName: String, subFolder: String = "") {
+        val fileContent = "${this@BaseEazyReleasePluginAcceptanceTest::class.java.simpleName}/$subFolder/$fileName"
             .let {
                 BaseEazyReleasePluginAcceptanceTest::class.java.classLoader.getResource(it)
-                    ?: throw IllegalArgumentException("Resource is not found: $fileName")
+                    ?: throw IllegalArgumentException("Resource is not found in classpath: $it")
             }
             .let { File(it.toURI()) }
             .readText()
