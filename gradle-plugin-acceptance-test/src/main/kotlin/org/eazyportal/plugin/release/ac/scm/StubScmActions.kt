@@ -1,4 +1,4 @@
-package org.eazyportal.plugin.release.ac.stubs
+package org.eazyportal.plugin.release.ac.scm
 
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import java.io.File

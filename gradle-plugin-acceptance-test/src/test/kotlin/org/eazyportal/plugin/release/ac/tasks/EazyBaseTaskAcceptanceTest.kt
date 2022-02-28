@@ -1,6 +1,6 @@
 package org.eazyportal.plugin.release.ac.tasks
 
-import org.eazyportal.plugin.release.ac.stubs.StubScmActions
+import org.eazyportal.plugin.release.ac.scm.StubScmActions
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
 import org.junit.jupiter.api.BeforeEach
 import java.io.File

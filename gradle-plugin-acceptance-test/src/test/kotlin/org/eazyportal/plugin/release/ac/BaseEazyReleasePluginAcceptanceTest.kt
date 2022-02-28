@@ -1,7 +1,9 @@
 package org.eazyportal.plugin.release.ac
 
+import org.assertj.core.api.Assertions
 import org.eazyportal.plugin.release.core.executor.CliCommandExecutor
 import org.eazyportal.plugin.release.core.scm.GitActions
+import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
@@ -56,10 +58,29 @@ internal abstract class BaseEazyReleasePluginAcceptanceTest {
             }
     }
 
-    fun createGradleRunner(projectDir: File, vararg arguments: String): GradleRunner = GradleRunner.create()
-        .forwardOutput()
-        .withPluginClasspath()
-        .withProjectDir(projectDir)
-        .withArguments(*arguments)
+    internal fun createGradleRunner(projectDir: File, vararg arguments: String): GradleRunner =
+        GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withProjectDir(projectDir)
+            .withArguments(*arguments)
+
+    internal fun File.initializeGradleProject(subFolder: String = "") {
+        createGradleRunner(this, "init", "--dsl", "kotlin")
+            .build()
+
+        copyIntoFromResources("build.gradle.kts", subFolder)
+        copyIntoFromResources("settings.gradle.kts", subFolder)
+        copyIntoFromResources(GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME, subFolder)
+    }
+
+    internal fun Pair<File, File>.verifyGitCommitsAndTags() =
+        listOf(
+            arrayOf("log", "--pretty=format:%s", "master"),
+            arrayOf("log", "--pretty=format:%s", "feature"),
+            arrayOf("tag")
+        ).forEach {
+            Assertions.assertThat(SCM_ACTIONS.execute(first, *it)).isEqualTo(SCM_ACTIONS.execute(second, *it))
+        }
 
 }

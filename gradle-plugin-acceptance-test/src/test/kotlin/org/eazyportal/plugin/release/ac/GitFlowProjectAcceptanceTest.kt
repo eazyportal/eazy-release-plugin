@@ -14,14 +14,11 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
     @Test
     fun test_initializeRepository() {
         // GIVEN
-        SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "init")
+        ORIGIN_PROJECT_DIR.run {
+            SCM_ACTIONS.execute(this, "init")
 
-        createGradleRunner(ORIGIN_PROJECT_DIR, "init", "--dsl", "kotlin")
-            .build()
-
-        ORIGIN_PROJECT_DIR.copyIntoFromResources("build.gradle.kts")
-        ORIGIN_PROJECT_DIR.copyIntoFromResources("settings.gradle.kts")
-        ORIGIN_PROJECT_DIR.copyIntoFromResources(GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME)
+            initializeGradleProject()
+        }
 
         // WHEN
         SCM_ACTIONS.add(ORIGIN_PROJECT_DIR, ".")
@@ -157,13 +154,8 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
             "1 actionable task: 1 executed"
         )
 
-        listOf(
-            arrayOf("log", "--pretty=format:%s", "master"),
-            arrayOf("log", "--pretty=format:%s", "feature"),
-            arrayOf("tag")
-        ).forEach {
-            assertThat(SCM_ACTIONS.execute(PROJECT_DIR, *it)).isEqualTo(SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, *it))
-        }
+        listOf(PROJECT_DIR to ORIGIN_PROJECT_DIR)
+            .forEach { it.verifyGitCommitsAndTags() }
     }
 
     @Order(20)
@@ -194,6 +186,9 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
             "> Task :release",
             "8 actionable tasks: 8 executed"
         )
+
+        listOf(PROJECT_DIR to ORIGIN_PROJECT_DIR)
+            .forEach { it.verifyGitCommitsAndTags() }
     }
 
 }
