@@ -21,7 +21,7 @@ internal abstract class EazyBaseTaskAcceptanceTest {
                 id("org.eazyportal.plugin.release-gradle-plugin")
             }
 
-            release {
+            eazyRelease {
                 scmActions = ${StubScmActions::class.java.name}()
             }
         """.trimIndent())

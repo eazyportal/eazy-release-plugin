@@ -1,23 +1,19 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
-import org.eazyportal.plugin.release.core.UpdateScmAction
+import org.eazyportal.plugin.release.gradle.UpdateScmActionFactory
 import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 open class UpdateScmTask @Inject constructor(
-    private val updateScmAction: UpdateScmAction
+    private val updateScmActionFactory: UpdateScmActionFactory
 ) : EazyReleaseBaseTask() {
 
     @TaskAction
     fun run() {
         logger.quiet("Updating scm...")
 
-        updateScmAction.also {
-            it.scmActions = scmActions.get()
-            it.scmConfig = scmConfig.get()
-        }
-
-        updateScmAction.execute(project.rootDir)
+        updateScmActionFactory.create(extension)
+            .run { execute(project.rootDir) }
     }
 
 }
