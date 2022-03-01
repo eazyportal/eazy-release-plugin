@@ -1,4 +1,4 @@
-package org.eazyportal.plugin.release.ac.stubs
+package org.eazyportal.plugin.release.ac.scm
 
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import java.io.File
@@ -6,6 +6,7 @@ import java.io.File
 class StubScmActions(
     private val commits: List<String> = listOf("fix: message", "feature: message", "chore: message"),
     private val lastTag: String = "0.1.1",
+    private val submodules: List<String> = listOf(),
     private val tags: List<String> = listOf("0.1.1", "stable")
 ) : ScmActions {
 
@@ -20,6 +21,8 @@ class StubScmActions(
     override fun getCommits(workingDir: File, fromRef: String?, toRef: String?): List<String> = commits
 
     override fun getLastTag(workingDir: File, fromRef: String?): String = lastTag
+
+    override fun getSubmodules(workingDir: File): List<String> = submodules
 
     override fun getTags(workingDir: File, fromRef: String?): List<String> = tags
 

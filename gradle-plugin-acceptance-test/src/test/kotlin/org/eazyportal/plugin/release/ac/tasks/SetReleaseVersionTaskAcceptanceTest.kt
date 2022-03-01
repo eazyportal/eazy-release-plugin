@@ -14,10 +14,10 @@ internal class SetReleaseVersionTaskAcceptanceTest : EazyBaseTaskAcceptanceTest(
 
     @BeforeEach
     fun setUp() {
-        gradlePropertiesFile.writeText("version = ${Version(1, 0, 0)}")
+        GRADLE_PROPERTIES_FILE.writeText("version = ${Version(1, 0, 0)}")
 
         gradleRunner = GradleRunner.create()
-            .withProjectDir(workingDir)
+            .withProjectDir(PROJECT_DIR)
             .withArguments(SET_RELEASE_VERSION_TASK_NAME)
             .withPluginClasspath()
     }
@@ -32,7 +32,7 @@ internal class SetReleaseVersionTaskAcceptanceTest : EazyBaseTaskAcceptanceTest(
         assertThat(actual.task(":$SET_RELEASE_VERSION_TASK_NAME")?.outcome)
             .isEqualTo(TaskOutcome.SUCCESS)
 
-        assertThat(gradlePropertiesFile.readText())
+        assertThat(GRADLE_PROPERTIES_FILE.readText())
             .isEqualTo("version = ${Version(1, 1, 0)}")
     }
 

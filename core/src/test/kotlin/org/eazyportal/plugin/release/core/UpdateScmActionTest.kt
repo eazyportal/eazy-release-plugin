@@ -43,12 +43,13 @@ internal class UpdateScmActionTest {
     @ParameterizedTest
     fun test_execute(scmConfig: ScmConfig) {
         // GIVEN
+        // WHEN
         underTest.scmConfig = scmConfig
 
-        // WHEN
         // THEN
         underTest.execute(workingDir)
 
+        verify(scmActions).getSubmodules(workingDir)
         verify(scmActions).push(workingDir, scmConfig.remote, scmConfig.releaseBranch, scmConfig.featureBranch)
         verifyNoMoreInteractions(scmActions)
     }

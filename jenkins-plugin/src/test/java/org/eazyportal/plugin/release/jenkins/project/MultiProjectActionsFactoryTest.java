@@ -2,8 +2,8 @@ package org.eazyportal.plugin.release.jenkins.project;
 
 import com.google.common.io.Files;
 import org.eazyportal.plugin.release.core.project.ProjectActions;
+import org.eazyportal.plugin.release.core.project.exception.InvalidProjectTypeException;
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions;
-import org.eazyportal.plugin.release.jenkins.project.exception.InvalidProjectTypeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,15 +16,15 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ProjectActionsProviderTest {
+class MultiProjectActionsFactoryTest {
 
-    private ProjectActionsProvider underTest;
+    private MultiProjectActionsFactory underTest;
 
     private File workingDir;
 
     @BeforeEach
     void setUp() {
-        underTest = new ProjectActionsProvider();
+        underTest = new MultiProjectActionsFactory();
 
         workingDir = Files.createTempDir();
     }
@@ -36,13 +36,13 @@ class ProjectActionsProviderTest {
 
     @CsvSource({ GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME, "build.gradle", "build.gradle.kts" })
     @ParameterizedTest
-    void test_provide_GradleProject(String fileName) throws IOException {
+    void test_provide_GradleProject(String fileName) throws IOException, InvalidProjectTypeException {
         // GIVEN
         new File(workingDir, fileName).createNewFile();
 
         // WHEN
         // THEN
-        ProjectActions actual = underTest.provide(workingDir);
+        ProjectActions actual = underTest.create(workingDir);
 
         assertThat(actual).isInstanceOf(GradleProjectActions.class);
     }
@@ -52,7 +52,7 @@ class ProjectActionsProviderTest {
         // GIVEN
         // WHEN
         // THEN
-        assertThatThrownBy(() -> underTest.provide(workingDir))
+        assertThatThrownBy(() -> underTest.create(workingDir))
             .isInstanceOf(InvalidProjectTypeException.class)
             .hasMessage("Unable to identify the project type.");
     }

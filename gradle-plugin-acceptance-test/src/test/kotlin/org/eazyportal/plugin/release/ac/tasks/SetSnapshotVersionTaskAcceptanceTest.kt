@@ -14,10 +14,10 @@ internal class SetSnapshotVersionTaskAcceptanceTest : EazyBaseTaskAcceptanceTest
 
     @BeforeEach
     fun setUp() {
-        gradlePropertiesFile.writeText("version = ${Version(1, 0, 0)}")
+        GRADLE_PROPERTIES_FILE.writeText("version = ${Version(1, 0, 0)}")
 
         gradleRunner = GradleRunner.create()
-            .withProjectDir(workingDir)
+            .withProjectDir(PROJECT_DIR)
             .withArguments(SET_SNAPSHOT_VERSION_TASK_NAME)
             .withPluginClasspath()
     }
@@ -32,7 +32,7 @@ internal class SetSnapshotVersionTaskAcceptanceTest : EazyBaseTaskAcceptanceTest
         assertThat(actual.task(":$SET_SNAPSHOT_VERSION_TASK_NAME")?.outcome)
             .isEqualTo(TaskOutcome.SUCCESS)
 
-        assertThat(gradlePropertiesFile.readText())
+        assertThat(GRADLE_PROPERTIES_FILE.readText())
             .isEqualTo("version = ${Version(1, 0, 1, Version.DEVELOPMENT_VERSION_SUFFIX)}")
     }
 

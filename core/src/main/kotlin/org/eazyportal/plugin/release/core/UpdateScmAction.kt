@@ -10,7 +10,12 @@ class UpdateScmAction : ReleaseAction {
     lateinit var scmConfig: ScmConfig
 
     override fun execute(workingDir: File) {
-        scmActions.push(workingDir, scmConfig.remote, scmConfig.releaseBranch, scmConfig.featureBranch)
+        val submodulesDir = scmActions.getSubmodules(workingDir)
+            .map { workingDir.resolve(it) }
+
+        listOf(workingDir, *submodulesDir.toTypedArray()).forEach {
+            scmActions.push(it, scmConfig.remote, scmConfig.releaseBranch, scmConfig.featureBranch)
+        }
     }
 
 }

@@ -16,6 +16,8 @@ interface ScmActions {
 
     fun getLastTag(workingDir: File, fromRef: String? = null): String
 
+    fun getSubmodules(workingDir: File): List<String>
+
     fun getTags(workingDir: File, fromRef: String? = null): List<String>
 
     fun mergeNoCommit(workingDir: File, fromBranch: String)

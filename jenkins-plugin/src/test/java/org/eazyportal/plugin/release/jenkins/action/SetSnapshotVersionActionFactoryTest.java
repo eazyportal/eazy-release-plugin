@@ -1,19 +1,16 @@
 package org.eazyportal.plugin.release.jenkins.action;
 
 import org.eazyportal.plugin.release.core.SetSnapshotVersionAction;
-import org.eazyportal.plugin.release.core.project.ProjectActions;
 import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
-import org.eazyportal.plugin.release.jenkins.project.ProjectActionsProvider;
+import org.eazyportal.plugin.release.jenkins.project.MultiProjectActionsFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -25,7 +22,7 @@ import static org.mockito.Mockito.when;
 class SetSnapshotVersionActionFactoryTest {
 
     @Mock
-    private transient ProjectActionsProvider projectActionsProvider;
+    private transient MultiProjectActionsFactory multiProjectActionsFactory;
     @Mock
     private transient ReleaseStepConfig releaseStepConfig;
     @Mock
@@ -42,27 +39,22 @@ class SetSnapshotVersionActionFactoryTest {
     @Test
     void test_create() {
         // GIVEN
-        File workingDir = new File("");
-
-        ProjectActions projectActions = mock(ProjectActions.class);
         ScmActions scmActions = mock(ScmActions.class);
 
         // WHEN
-        when(projectActionsProvider.provide(workingDir)).thenReturn(projectActions);
         when(releaseStepConfig.getScmActions()).thenReturn(scmActions);
         when(releaseStepConfig.getScmConfig()).thenReturn(ScmConfig.getGIT_FLOW());
 
         // THEN
-        SetSnapshotVersionAction actual = underTest.create(workingDir);
+        SetSnapshotVersionAction actual = underTest.create();
 
         assertThat(actual.getScmActions()).isEqualTo(scmActions);
         assertThat(actual.getScmConfig()).isEqualTo(ScmConfig.getGIT_FLOW());
 
-        verifyNoInteractions(projectActions, scmActions, snapshotVersionProvider);
-        verify(projectActionsProvider).provide(workingDir);
+        verifyNoInteractions(multiProjectActionsFactory, scmActions, snapshotVersionProvider);
         verify(releaseStepConfig).getScmActions();
         verify(releaseStepConfig).getScmConfig();
-        verifyNoMoreInteractions(projectActionsProvider, releaseStepConfig);
+        verifyNoMoreInteractions(releaseStepConfig);
     }
 
 }

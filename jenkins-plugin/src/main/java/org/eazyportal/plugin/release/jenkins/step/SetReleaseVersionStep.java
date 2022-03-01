@@ -33,7 +33,7 @@ public class SetReleaseVersionStep extends Builder implements SimpleBuildStep, S
         File workingDir = new File(workspace.toURI());
 
         run.getAction(SetReleaseVersionActionFactory.class)
-            .create(workingDir)
+            .create()
             .execute(workingDir);
     }
 

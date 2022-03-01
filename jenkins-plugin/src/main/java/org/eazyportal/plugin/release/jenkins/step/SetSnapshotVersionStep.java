@@ -33,7 +33,7 @@ public class SetSnapshotVersionStep extends Builder implements SimpleBuildStep, 
         File workingDir = new File(workspace.toURI());
 
         run.getAction(SetSnapshotVersionActionFactory.class)
-            .create(workingDir)
+            .create()
             .execute(workingDir);
     }
 

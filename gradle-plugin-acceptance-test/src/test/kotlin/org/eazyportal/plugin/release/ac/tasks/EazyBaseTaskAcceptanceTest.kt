@@ -1,26 +1,21 @@
 package org.eazyportal.plugin.release.ac.tasks
 
-import org.eazyportal.plugin.release.ac.stubs.StubScmActions
-import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
+import org.eazyportal.plugin.release.ac.BasicAcceptanceTest
+import org.eazyportal.plugin.release.ac.scm.StubScmActions
 import org.junit.jupiter.api.BeforeEach
-import java.io.File
-import java.nio.file.Files
 
-internal abstract class EazyBaseTaskAcceptanceTest {
-
-    protected val workingDir: File = Files.createTempDirectory("").toFile()
-    protected val buildFile = workingDir.resolve("build.gradle.kts")
-    protected val gradlePropertiesFile = workingDir.resolve(GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME)
+internal abstract class EazyBaseTaskAcceptanceTest : BasicAcceptanceTest() {
 
     @BeforeEach
-    fun baseSetUp() {
-        buildFile.writeText("""
+    fun setUpBasicTaskAcceptanceTests() {
+        BUILD_FILE.writeText("""
             plugins {
                 `java`
+                `maven-publish`
                 id("org.eazyportal.plugin.release-gradle-plugin")
             }
 
-            release {
+            eazyRelease {
                 scmActions = ${StubScmActions::class.java.name}()
             }
         """.trimIndent())

@@ -2,19 +2,18 @@ package org.eazyportal.plugin.release.gradle.tasks
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.eazyportal.plugin.release.core.scm.ScmActions
-import org.eazyportal.plugin.release.core.scm.model.ScmConfig
+import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
+import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
 
 internal abstract class EazyReleaseBaseTaskTest<in T: EazyReleaseBaseTask> {
 
     protected val project: Project = ProjectBuilder.builder()
         .build()
-    protected val scmActions: ScmActions = Mockito.mock(ScmActions::class.java)
-    protected val scmConfig: ScmConfig = ScmConfig.GIT_FLOW
+    protected val extension: EazyReleasePluginExtension =
+        project.extensions.create(EazyReleasePlugin.EXTENSION_NAME, EazyReleasePluginExtension::class.java)
 
     protected lateinit var underTest: @UnsafeVariance T
 
