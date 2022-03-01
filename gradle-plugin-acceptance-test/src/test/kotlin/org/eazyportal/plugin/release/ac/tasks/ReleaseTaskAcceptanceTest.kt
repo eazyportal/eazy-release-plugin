@@ -17,10 +17,10 @@ internal class ReleaseTaskAcceptanceTest : EazyBaseTaskAcceptanceTest() {
 
     @BeforeEach
     fun setUp() {
-        gradlePropertiesFile.writeText("version = ${Version(1, 0, 0)}")
+        GRADLE_PROPERTIES_FILE.writeText("version = ${Version(1, 0, 0)}")
 
         gradleRunner = GradleRunner.create()
-            .withProjectDir(workingDir)
+            .withProjectDir(PROJECT_DIR)
             .withArguments(RELEASE_TASK_NAME)
             .withPluginClasspath()
     }
@@ -44,7 +44,7 @@ internal class ReleaseTaskAcceptanceTest : EazyBaseTaskAcceptanceTest() {
         assertThat(actual.task(":$RELEASE_TASK_NAME")?.outcome)
             .isEqualTo(TaskOutcome.SUCCESS)
 
-        assertThat(gradlePropertiesFile.readText())
+        assertThat(GRADLE_PROPERTIES_FILE.readText())
             .isEqualTo("version = ${Version(1, 1, 1, Version.DEVELOPMENT_VERSION_SUFFIX)}")
     }
 

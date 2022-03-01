@@ -1,6 +1,6 @@
-package org.eazyportal.plugin.release.ac
+package org.eazyportal.plugin.release.ac.project
 
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.Order
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 
 @TestMethodOrder(value = OrderAnnotation::class)
-internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTest() {
+internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
 
     @Order(0)
     @Test
@@ -25,7 +25,7 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
         SCM_ACTIONS.commit(ORIGIN_PROJECT_DIR, "initial commit")
 
         // THEN
-        assertThat(SCM_ACTIONS.getCommits(ORIGIN_PROJECT_DIR)).containsExactly("initial commit")
+        Assertions.assertThat(SCM_ACTIONS.getCommits(ORIGIN_PROJECT_DIR)).containsExactly("initial commit")
 
         SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "checkout", "-b", "feature")
 
@@ -44,7 +44,7 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
             .buildAndFail()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "Setting release version...",
             "Ignoring missing Git tag from release version calculation.",
             "Ignoring invalid commit: initial commit",
@@ -69,7 +69,7 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
             .build()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :setReleaseVersion",
             "Setting release version...",
             "1 actionable task: 1 executed"
@@ -77,15 +77,15 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status")
             .run {
-                assertThat(lines()).containsSubsequence(
+                Assertions.assertThat(lines()).containsSubsequence(
                     "On branch master",
                     "nothing to commit, working tree clean"
                 )
             }
-        assertThat(SCM_ACTIONS.getCommits(PROJECT_DIR).first()).isEqualTo("Release version: 0.1.0")
-        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
+        Assertions.assertThat(SCM_ACTIONS.getCommits(PROJECT_DIR).first()).isEqualTo("Release version: 0.1.0")
+        Assertions.assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
 
-        assertThat(GradleProjectActions(PROJECT_DIR).getVersion()).hasToString("0.1.0")
+        Assertions.assertThat(GradleProjectActions(PROJECT_DIR).getVersion()).hasToString("0.1.0")
     }
 
     @Order(11)
@@ -97,7 +97,7 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
             .build()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :jar",
             "> Task :build",
             "> Task :publish",
@@ -107,8 +107,8 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
 
         PROJECT_DIR.resolve("build/libs/")
             .run {
-                assertThat(resolve("$PROJECT_NAME-0.1.0.jar").exists()).isTrue
-                assertThat(resolve("$PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
+                Assertions.assertThat(resolve("$PROJECT_NAME-0.1.0.jar").exists()).isTrue
+                Assertions.assertThat(resolve("$PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
             }
     }
 
@@ -121,7 +121,7 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
             .build()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :setSnapshotVersion",
             "Setting SNAPSHOT version...",
             "1 actionable task: 1 executed"
@@ -129,15 +129,15 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status")
             .run {
-                assertThat(lines()).containsSubsequence(
+                Assertions.assertThat(lines()).containsSubsequence(
                     "On branch feature",
                     "nothing to commit, working tree clean"
                 )
             }
-        assertThat(SCM_ACTIONS.getCommits(PROJECT_DIR).first()).isEqualTo("New snapshot version: 0.1.1-SNAPSHOT")
-        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
+        Assertions.assertThat(SCM_ACTIONS.getCommits(PROJECT_DIR).first()).isEqualTo("New snapshot version: 0.1.1-SNAPSHOT")
+        Assertions.assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
 
-        assertThat(GradleProjectActions(PROJECT_DIR).getVersion()).hasToString("0.1.1-SNAPSHOT")
+        Assertions.assertThat(GradleProjectActions(PROJECT_DIR).getVersion()).hasToString("0.1.1-SNAPSHOT")
     }
 
     @Order(13)
@@ -149,7 +149,7 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
             .build()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :updateScm",
             "1 actionable task: 1 executed"
         )
@@ -172,7 +172,7 @@ internal class GitFlowProjectAcceptanceTest : BaseEazyReleasePluginAcceptanceTes
             .build()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :setReleaseVersion",
             "Setting release version...",
             "> Task :jar",

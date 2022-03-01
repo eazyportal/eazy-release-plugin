@@ -1,7 +1,7 @@
-package org.eazyportal.plugin.release.ac
+package org.eazyportal.plugin.release.ac.project
 
-import org.assertj.core.api.Assertions.assertThat
-import org.eazyportal.plugin.release.ac.project.StubProjectActionsFactory
+import org.assertj.core.api.Assertions
+import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.Order
@@ -11,13 +11,10 @@ import java.io.File
 import java.nio.file.Files
 
 @TestMethodOrder(value = OrderAnnotation::class)
-internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseEazyReleasePluginAcceptanceTest() {
+internal class GitFlowProjectWithSubmodulesAcceptanceTest : BaseProjectAcceptanceTest() {
 
     private companion object {
         const val SUBMODULE_PROJECT_NAME = "submodule-project"
-
-        @JvmStatic
-        val PROJECT_ACTIONS_FACTORY = StubProjectActionsFactory()
 
         @JvmStatic
         lateinit var ALL_PROJECT_DIRS: List<File>
@@ -29,7 +26,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseEazyReleas
         @BeforeAll
         @JvmStatic
         fun initialize() {
-            BaseEazyReleasePluginAcceptanceTest.initialize()
+            BaseProjectAcceptanceTest.initialize()
 
             ORIGIN_SUBMODULE_PROJECT_DIR = WORKING_DIR.resolve("origin/$SUBMODULE_PROJECT_NAME")
                 .also { Files.createDirectories(it.toPath()) }
@@ -45,26 +42,20 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseEazyReleas
     @Test
     fun test_initializeRepository() {
         // GIVEN
-        ORIGIN_PROJECT_DIR.run {
-            SCM_ACTIONS.execute(this, "init")
-
-            initializeGradleProject(PROJECT_NAME)
-        }
-
-        ORIGIN_SUBMODULE_PROJECT_DIR.run {
-            SCM_ACTIONS.execute(this, "init")
-
-            copyIntoFromResources("version.json", SUBMODULE_PROJECT_NAME)
-        }
-
         listOf(ORIGIN_PROJECT_DIR, ORIGIN_SUBMODULE_PROJECT_DIR)
             .forEach { projectDir ->
+                SCM_ACTIONS.execute(projectDir, "init")
+
+                SCM_ACTIONS.execute(projectDir, "init")
+
+                projectDir.initializeGradleProject(projectDir.name)
+
                 // WHEN
                 SCM_ACTIONS.add(projectDir, ".")
                 SCM_ACTIONS.commit(projectDir, "initial commit")
 
                 // THEN
-                assertThat(SCM_ACTIONS.getCommits(projectDir)).containsExactly("initial commit")
+                Assertions.assertThat(SCM_ACTIONS.getCommits(projectDir)).containsExactly("initial commit")
 
                 SCM_ACTIONS.execute(projectDir, "checkout", "-b", "feature")
             }
@@ -80,9 +71,8 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseEazyReleas
         SCM_ACTIONS.execute(WORKING_DIR, "clone", "--recurse-submodules", originProjectGitDirPath, PROJECT_NAME)
 
         // Checking out to a different branch will fix: "remote: error: refusing to update checked out branch: refs/heads/feature"
-        listOf(ORIGIN_PROJECT_DIR, ORIGIN_SUBMODULE_PROJECT_DIR).forEach { projectDir ->
-            SCM_ACTIONS.execute(projectDir, "checkout", "-b", "tmp")
-        }
+        listOf(ORIGIN_PROJECT_DIR, ORIGIN_SUBMODULE_PROJECT_DIR)
+            .forEach { SCM_ACTIONS.execute(it, "checkout", "-b", "tmp") }
     }
 
     @Order(1)
@@ -94,7 +84,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseEazyReleas
             .buildAndFail()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "Setting release version...",
             "Ignoring missing Git tag from release version calculation.",
             "Ignoring invalid commit: initial commit",
@@ -119,24 +109,24 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseEazyReleas
             .build()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :setReleaseVersion",
             "Setting release version...",
             "1 actionable task: 1 executed"
         )
 
-        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
+        Assertions.assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
         ALL_PROJECT_DIRS.forEach { projectDir ->
             SCM_ACTIONS.execute(projectDir, "status")
                 .run {
-                    assertThat(lines()).containsSubsequence(
+                    Assertions.assertThat(lines()).containsSubsequence(
                         "On branch master",
                         "nothing to commit, working tree clean"
                     )
                 }
-            assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("Release version: 0.1.0")
+            Assertions.assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("Release version: 0.1.0")
 
-            assertThat(PROJECT_ACTIONS_FACTORY.create(projectDir).getVersion()).hasToString("0.1.0")
+            Assertions.assertThat(GradleProjectActions(projectDir).getVersion()).hasToString("0.1.0")
         }
     }
 
@@ -149,28 +139,27 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseEazyReleas
             .build()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :jar",
             "> Task :build",
             "> Task :publish",
+            "> Task :submodule-project:jar",
             "> Task :submodule-project:build",
-            "Hello from custom build task!",
             "> Task :submodule-project:publish",
-            "Hello from custom publish task!",
             "> Task :releaseBuild",
-            "7 actionable tasks: 7 executed"
+            "9 actionable tasks: 9 executed"
         )
 
         PROJECT_DIR.resolve("build/libs/")
             .run {
-                assertThat(resolve("$PROJECT_NAME-0.1.0.jar").exists()).isTrue
-                assertThat(resolve("$PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
+                Assertions.assertThat(resolve("$PROJECT_NAME-0.1.0.jar").exists()).isTrue
+                Assertions.assertThat(resolve("$PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
             }
 
         SUBMODULE_PROJECT_DIR.resolve("build/libs/")
             .run {
-                assertThat(resolve("$SUBMODULE_PROJECT_NAME-0.1.0.jar").exists()).isFalse
-                assertThat(resolve("$SUBMODULE_PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
+                Assertions.assertThat(resolve("$SUBMODULE_PROJECT_NAME-0.1.0.jar").exists()).isTrue
+                Assertions.assertThat(resolve("$SUBMODULE_PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
             }
     }
 
@@ -183,26 +172,24 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseEazyReleas
             .build()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :setSnapshotVersion",
             "Setting SNAPSHOT version...",
             "1 actionable task: 1 executed"
         )
 
-        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
+        Assertions.assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
         ALL_PROJECT_DIRS.forEach { projectDir ->
             SCM_ACTIONS.execute(projectDir, "status")
                 .run {
-                    assertThat(lines()).containsSubsequence(
+                    Assertions.assertThat(lines()).containsSubsequence(
                         "On branch feature",
                         "nothing to commit, working tree clean"
                     )
                 }
-            assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("New snapshot version: 0.1.1-SNAPSHOT")
+            Assertions.assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("New snapshot version: 0.1.1-SNAPSHOT")
 
-            PROJECT_ACTIONS_FACTORY.create(projectDir)
-                .getVersion()
-                .run { assertThat(this).hasToString("0.1.1-SNAPSHOT") }
+            Assertions.assertThat(GradleProjectActions(projectDir).getVersion()).hasToString("0.1.1-SNAPSHOT")
         }
     }
 
@@ -215,7 +202,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseEazyReleas
             .build()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :updateScm",
             "1 actionable task: 1 executed"
         )
@@ -228,7 +215,8 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseEazyReleas
     @Test
     fun test_release() {
         // GIVEN
-        SUBMODULE_PROJECT_DIR.copyIntoFromResources("README.adoc", SUBMODULE_PROJECT_NAME)
+        SUBMODULE_PROJECT_DIR
+            .copyIntoFromResources("src/main/java/org/eazyportal/plugin/release/test/dummy/service/DummyService.java", SUBMODULE_PROJECT_NAME)
 
         // WHEN
         SCM_ACTIONS.add(SUBMODULE_PROJECT_DIR, ".")
@@ -238,23 +226,22 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseEazyReleas
             .build()
 
         // THEN
-        assertThat(buildResult.output.lines()).containsSubsequence(
+        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :setReleaseVersion",
             "Setting release version...",
             "> Task :jar",
             "> Task :build",
             "> Task :publish",
+            "> Task :submodule-project:jar",
             "> Task :submodule-project:build",
-            "Hello from custom build task!",
             "> Task :submodule-project:publish",
-            "Hello from custom publish task!",
             "> Task :releaseBuild",
             "> Task :setSnapshotVersion",
             "Setting SNAPSHOT version...",
             "> Task :updateScm",
             "Updating scm...",
             "> Task :release",
-            "10 actionable tasks: 9 executed, 1 up-to-date"
+            "13 actionable tasks: 12 executed, 1 up-to-date"
         )
 
         listOf(PROJECT_DIR to ORIGIN_PROJECT_DIR, SUBMODULE_PROJECT_DIR to ORIGIN_SUBMODULE_PROJECT_DIR)

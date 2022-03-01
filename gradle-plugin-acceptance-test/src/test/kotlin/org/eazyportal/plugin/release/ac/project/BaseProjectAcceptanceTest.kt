@@ -1,4 +1,4 @@
-package org.eazyportal.plugin.release.ac
+package org.eazyportal.plugin.release.ac.project
 
 import org.assertj.core.api.Assertions
 import org.eazyportal.plugin.release.core.executor.CliCommandExecutor
@@ -12,7 +12,7 @@ import java.io.File
 import java.nio.file.Files
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal abstract class BaseEazyReleasePluginAcceptanceTest {
+internal abstract class BaseProjectAcceptanceTest {
 
     companion object {
         const val PROJECT_NAME = "dummy-project"
@@ -42,9 +42,9 @@ internal abstract class BaseEazyReleasePluginAcceptanceTest {
     }
 
     internal fun File.copyIntoFromResources(fileName: String, subFolder: String = "") {
-        val fileContent = "${this@BaseEazyReleasePluginAcceptanceTest::class.java.simpleName}/$subFolder/$fileName"
+        val fileContent = "${this@BaseProjectAcceptanceTest::class.java.simpleName}/$subFolder/$fileName"
             .let {
-                BaseEazyReleasePluginAcceptanceTest::class.java.classLoader.getResource(it)
+                BaseProjectAcceptanceTest::class.java.classLoader.getResource(it)
                     ?: throw IllegalArgumentException("Resource is not found in classpath: $it")
             }
             .let { File(it.toURI()) }
