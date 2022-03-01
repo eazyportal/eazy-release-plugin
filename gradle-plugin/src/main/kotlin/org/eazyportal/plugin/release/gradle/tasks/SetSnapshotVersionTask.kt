@@ -12,7 +12,7 @@ open class SetSnapshotVersionTask @Inject constructor(
     fun run() {
         logger.quiet("Setting SNAPSHOT version...")
 
-        setSnapshotVersionActionFactory.create(projectActionsFactory, extension)
+        setSnapshotVersionActionFactory.create(extension)
             .run { execute(project.rootDir) }
     }
 

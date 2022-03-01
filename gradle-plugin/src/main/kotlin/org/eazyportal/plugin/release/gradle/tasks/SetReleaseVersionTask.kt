@@ -12,7 +12,7 @@ open class SetReleaseVersionTask @Inject constructor(
     fun run() {
         logger.quiet("Setting release version...")
 
-        setReleaseVersionActionFactory.create(projectActionsFactory, extension)
+        setReleaseVersionActionFactory.create(extension)
             .run { execute(project.rootDir) }
     }
 

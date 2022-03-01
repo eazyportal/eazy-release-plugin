@@ -2,12 +2,9 @@ package org.eazyportal.plugin.release.gradle.tasks
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
-import org.eazyportal.plugin.release.gradle.project.GradleProjectActionsFactory
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
 
@@ -17,12 +14,6 @@ internal abstract class EazyReleaseBaseTaskTest<in T: EazyReleaseBaseTask> {
         .build()
     protected val extension: EazyReleasePluginExtension =
         project.extensions.create(EazyReleasePlugin.EXTENSION_NAME, EazyReleasePluginExtension::class.java)
-    protected val projectActionsFactory: ProjectActionsFactory =
-        GradleProjectActionsFactory().also {
-            project.extensions.getByType(ExtraPropertiesExtension::class.java)
-                .set(EazyReleasePlugin.PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY, it)
-        }
-
 
     protected lateinit var underTest: @UnsafeVariance T
 

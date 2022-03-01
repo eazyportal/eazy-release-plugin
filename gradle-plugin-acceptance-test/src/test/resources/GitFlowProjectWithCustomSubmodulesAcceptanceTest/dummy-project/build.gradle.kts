@@ -1,5 +1,4 @@
 import org.eazyportal.plugin.release.ac.project.StubProjectActionsFactory
-import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
 
 plugins {
     `java`
@@ -7,7 +6,9 @@ plugins {
     id("org.eazyportal.plugin.release-gradle-plugin")
 }
 
-project.ext.set(EazyReleasePlugin.PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY, StubProjectActionsFactory())
+eazyRelease {
+    projectActionsFactory = StubProjectActionsFactory()
+}
 
 publishing {
     repositories {

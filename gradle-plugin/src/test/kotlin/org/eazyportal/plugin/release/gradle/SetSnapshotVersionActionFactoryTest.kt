@@ -7,9 +7,6 @@ import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -24,18 +21,19 @@ internal class SetSnapshotVersionActionFactoryTest {
 
     @Test
     fun test_create() {
-        val projectActionsFactory = mock<ProjectActionsFactory>()
         val extension = mock<EazyReleasePluginExtension>()
 
+        val projectActionsFactory = mock<ProjectActionsFactory>()
         val scmActions = mock<ScmActions>()
         val scmConfig = mock<ScmConfig>()
 
         // WHEN
+        whenever(extension.projectActionsFactory).thenReturn(projectActionsFactory)
         whenever(extension.scmActions).thenReturn(scmActions)
         whenever(extension.scmConfig).thenReturn(scmConfig)
 
         // THEN
-        val actual = underTest.create(projectActionsFactory, extension)
+        val actual = underTest.create(extension)
 
         assertThat(actual.scmActions).isEqualTo(scmActions)
         assertThat(actual.scmConfig).isEqualTo(scmConfig)

@@ -18,7 +18,6 @@ class EazyReleasePlugin : Plugin<Project> {
         const val UPDATE_SCM_TASK_NAME = "updateScm"
 
         const val EXTENSION_NAME = "eazyRelease"
-        const val PROJECT_ACTIONS_FACTORY_EXTRA_PROPERTY = "projectActionsFactory"
     }
 
     override fun apply(project: Project) {
