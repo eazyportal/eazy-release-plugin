@@ -19,6 +19,9 @@ abstract class EazyReleasePluginExtension {
     var projectActionsFactory: ProjectActionsFactory = GradleProjectActionsFactory()
 
     @get:Input
+    var releaseBuildTasks: List<String> = listOf("build", "publish")
+
+    @get:Input
     var scmActions: ScmActions = GitActions(CliCommandExecutor())
 
     @get:Input
