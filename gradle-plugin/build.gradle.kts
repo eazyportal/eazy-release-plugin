@@ -22,6 +22,11 @@ artifacts {
     add("consumableConfiguration", tasks.jar)
 }
 
+tasks {
+    findByName("publishMavenPublicationToGithubRepository")?.enabled = false
+    findByName("publishMavenPublicationToMavenLocalRepository")?.enabled = false
+}
+
 dependencies {
     implementation(project(":core"))
 }
