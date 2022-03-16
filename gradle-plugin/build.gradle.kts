@@ -7,7 +7,7 @@ plugins {
 gradlePlugin {
     plugins {
         create("gradle-plugin") {
-            id = "$group-$name"
+            id = group.toString()
             implementationClass = "org.eazyportal.plugin.release.gradle.EazyReleasePlugin"
         }
     }
@@ -20,6 +20,11 @@ val consumableConfiguration: Configuration by configurations.creating {
 }
 artifacts {
     add("consumableConfiguration", tasks.jar)
+}
+
+tasks {
+    findByName("publishMavenPublicationToGithubRepository")?.enabled = false
+    findByName("publishMavenPublicationToMavenLocalRepository")?.enabled = false
 }
 
 dependencies {

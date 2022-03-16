@@ -34,7 +34,7 @@ internal class EazyReleasePluginTest {
         workingDir.resolve("build.gradle")
             .writeText("""
                 plugins {
-                    id 'org.eazyportal.plugin.release-gradle-plugin'
+                    id 'org.eazyportal.plugin.release'
                 }
             """.trimIndent())
 
@@ -60,7 +60,7 @@ internal class EazyReleasePluginTest {
         workingDir.resolve("build.gradle.kts")
             .writeText("""
                 plugins {
-                    id("org.eazyportal.plugin.release-gradle-plugin")
+                    id("org.eazyportal.plugin.release")
                 }
             """.trimIndent())
 

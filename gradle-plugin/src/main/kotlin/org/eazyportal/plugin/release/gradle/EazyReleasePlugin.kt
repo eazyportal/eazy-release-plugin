@@ -29,12 +29,13 @@ class EazyReleasePlugin : Plugin<Project> {
             register(RELEASE_BUILD_TASK_NAME, EazyReleaseBaseTask::class.java).configure { task ->
                 task.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME)
 
-                val buildTasks = project.allprojects
-                    .mapNotNull { it.tasks.findByName("build") }
-                val publishTasks = project.allprojects
-                    .mapNotNull { it.tasks.findByName("publish") }
-
-                task.dependsOn(buildTasks, publishTasks)
+                task.extension.releaseBuildTasks
+                    .flatMap { releaseBuildTask ->
+                        project.allprojects.mapNotNull {
+                            it.tasks.findByName(releaseBuildTask)?.path
+                        }
+                    }
+                    .run { task.dependsOn(this) }
             }
 
             register(SET_SNAPSHOT_VERSION_TASK_NAME, SetSnapshotVersionTask::class.java, SetSnapshotVersionActionFactory()).configure {

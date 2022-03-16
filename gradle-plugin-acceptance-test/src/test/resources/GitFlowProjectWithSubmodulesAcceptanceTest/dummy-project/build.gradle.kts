@@ -1,7 +1,7 @@
 plugins {
     `java`
     `maven-publish`
-    id("org.eazyportal.plugin.release-gradle-plugin")
+    id("org.eazyportal.plugin.release")
 }
 
 project.allprojects {

@@ -12,7 +12,7 @@ internal abstract class EazyBaseTaskAcceptanceTest : BasicAcceptanceTest() {
             plugins {
                 `java`
                 `maven-publish`
-                id("org.eazyportal.plugin.release-gradle-plugin")
+                id("org.eazyportal.plugin.release")
             }
 
             eazyRelease {
