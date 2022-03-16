@@ -7,7 +7,7 @@ plugins {
 gradlePlugin {
     plugins {
         create("gradle-plugin") {
-            id = "$group-$name"
+            id = group.toString()
             implementationClass = "org.eazyportal.plugin.release.gradle.EazyReleasePlugin"
         }
     }

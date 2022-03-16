@@ -18,7 +18,7 @@ class ApplyPluginAcceptanceTest {
             .build()
 
         // WHEN
-        project.plugins.apply("org.eazyportal.plugin.release-gradle-plugin")
+        project.plugins.apply("org.eazyportal.plugin.release")
 
         // THEN
         project.tasks.run {
