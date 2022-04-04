@@ -5,7 +5,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import org.eazyportal.plugin.release.core.UpdateScmAction;
+import org.eazyportal.plugin.release.core.action.UpdateScmAction;
 import org.eazyportal.plugin.release.jenkins.action.UpdateScmActionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

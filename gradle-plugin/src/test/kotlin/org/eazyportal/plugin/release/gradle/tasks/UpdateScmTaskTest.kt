@@ -1,8 +1,8 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
-import org.eazyportal.plugin.release.core.UpdateScmAction
+import org.eazyportal.plugin.release.core.action.UpdateScmAction
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
-import org.eazyportal.plugin.release.gradle.UpdateScmActionFactory
+import org.eazyportal.plugin.release.gradle.action.UpdateScmActionFactory
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock

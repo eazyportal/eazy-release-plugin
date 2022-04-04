@@ -1,6 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.action;
 
-import org.eazyportal.plugin.release.core.SetReleaseVersionAction;
+import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction;
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType;
 import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
