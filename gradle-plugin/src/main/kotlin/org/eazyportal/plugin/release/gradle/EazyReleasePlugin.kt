@@ -1,5 +1,8 @@
 package org.eazyportal.plugin.release.gradle
 
+import org.eazyportal.plugin.release.gradle.action.SetReleaseVersionActionFactory
+import org.eazyportal.plugin.release.gradle.action.SetSnapshotVersionActionFactory
+import org.eazyportal.plugin.release.gradle.action.UpdateScmActionFactory
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 import org.eazyportal.plugin.release.gradle.tasks.EazyReleaseBaseTask
 import org.eazyportal.plugin.release.gradle.tasks.SetReleaseVersionTask

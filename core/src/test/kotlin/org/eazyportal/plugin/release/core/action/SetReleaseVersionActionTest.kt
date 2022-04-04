@@ -1,6 +1,6 @@
-package org.eazyportal.plugin.release.core
+package org.eazyportal.plugin.release.core.action
 
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.Assertions
 import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
@@ -11,6 +11,8 @@ import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider
 import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement
+import org.eazyportal.plugin.release.core.version.model.VersionIncrement.NONE
+import org.eazyportal.plugin.release.core.version.model.VersionIncrement.PATCH
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -40,7 +42,7 @@ internal class SetReleaseVersionActionTest {
         @JvmStatic
         fun invalidVersionIncrement() = listOf(
             Arguments.of(null),
-            Arguments.of(VersionIncrement.NONE)
+            Arguments.of(NONE)
         )
     }
 
@@ -75,7 +77,7 @@ internal class SetReleaseVersionActionTest {
     fun test_execute_withGitFlow() {
         // GIVEN
         val projectActions = mock<ProjectActions>()
-        val versionIncrement = VersionIncrement.PATCH
+        val versionIncrement = PATCH
 
         // WHEN
         underTest.scmConfig = ScmConfig.GIT_FLOW
@@ -114,7 +116,7 @@ internal class SetReleaseVersionActionTest {
     fun test_execute_withTrunkBasedFlow() {
         // GIVEN
         val projectActions = mock<ProjectActions>()
-        val versionIncrement = VersionIncrement.PATCH
+        val versionIncrement = PATCH
 
         // WHEN
         underTest.scmConfig = ScmConfig.TRUNK_BASED_FLOW
@@ -150,7 +152,7 @@ internal class SetReleaseVersionActionTest {
     fun test_execute_whenFailedToRetrieveTag() {
         // GIVEN
         val projectActions = mock<ProjectActions>()
-        val versionIncrement = VersionIncrement.PATCH
+        val versionIncrement = PATCH
 
         // WHEN
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
@@ -197,7 +199,7 @@ internal class SetReleaseVersionActionTest {
         whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)
 
         // THEN
-        assertThatThrownBy { underTest.execute(workingDir) }
+        Assertions.assertThatThrownBy { underTest.execute(workingDir) }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("There are no acceptable commits.")
 

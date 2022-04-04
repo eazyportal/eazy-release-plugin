@@ -1,4 +1,4 @@
-package org.eazyportal.plugin.release.core
+package org.eazyportal.plugin.release.core.action
 
 import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
@@ -10,6 +10,7 @@ import org.eazyportal.plugin.release.core.version.VersionIncrementProvider
 import org.eazyportal.plugin.release.core.version.model.Version
 import org.eazyportal.plugin.release.core.version.model.VersionComparator
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement
+import org.eazyportal.plugin.release.core.version.model.VersionIncrement.NONE
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -72,7 +73,7 @@ open class SetReleaseVersionAction(
             val currentVersion = projectActions.getVersion()
             val versionIncrement = getVersionIncrement(it)
 
-            if ((versionIncrement == null) || (versionIncrement == VersionIncrement.NONE)) {
+            if ((versionIncrement == null) || (versionIncrement == NONE)) {
                 null
             }
             else {

@@ -1,8 +1,8 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
-import org.eazyportal.plugin.release.core.SetReleaseVersionAction
+import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin.Companion.SET_RELEASE_VERSION_TASK_NAME
-import org.eazyportal.plugin.release.gradle.SetReleaseVersionActionFactory
+import org.eazyportal.plugin.release.gradle.action.SetReleaseVersionActionFactory
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock

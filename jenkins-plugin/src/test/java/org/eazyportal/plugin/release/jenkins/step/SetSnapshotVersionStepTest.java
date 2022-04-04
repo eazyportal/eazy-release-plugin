@@ -5,7 +5,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import org.eazyportal.plugin.release.core.SetSnapshotVersionAction;
+import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction;
 import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

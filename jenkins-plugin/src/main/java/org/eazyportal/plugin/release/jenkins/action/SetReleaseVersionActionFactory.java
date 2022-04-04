@@ -3,7 +3,7 @@ package org.eazyportal.plugin.release.jenkins.action;
 import com.google.inject.Inject;
 import hudson.Extension;
 import hudson.model.InvisibleAction;
-import org.eazyportal.plugin.release.core.SetReleaseVersionAction;
+import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction;
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider;
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;

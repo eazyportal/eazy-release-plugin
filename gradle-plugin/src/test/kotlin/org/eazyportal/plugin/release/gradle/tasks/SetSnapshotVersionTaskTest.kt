@@ -1,8 +1,8 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
-import org.eazyportal.plugin.release.core.SetSnapshotVersionAction
+import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
-import org.eazyportal.plugin.release.gradle.SetSnapshotVersionActionFactory
+import org.eazyportal.plugin.release.gradle.action.SetSnapshotVersionActionFactory
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock

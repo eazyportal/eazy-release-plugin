@@ -1,4 +1,4 @@
-package org.eazyportal.plugin.release.core
+package org.eazyportal.plugin.release.core.action
 
 import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.project.ProjectActionsFactory

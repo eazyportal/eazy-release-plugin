@@ -1,6 +1,6 @@
-package org.eazyportal.plugin.release.gradle
+package org.eazyportal.plugin.release.gradle.action
 
-import org.eazyportal.plugin.release.core.SetSnapshotVersionAction
+import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 

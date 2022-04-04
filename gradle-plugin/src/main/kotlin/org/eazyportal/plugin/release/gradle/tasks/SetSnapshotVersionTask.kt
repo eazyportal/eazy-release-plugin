@@ -1,6 +1,6 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
-import org.eazyportal.plugin.release.gradle.SetSnapshotVersionActionFactory
+import org.eazyportal.plugin.release.gradle.action.SetSnapshotVersionActionFactory
 import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
