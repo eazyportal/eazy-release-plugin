@@ -9,7 +9,6 @@ import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
@@ -28,18 +27,15 @@ internal class SetSnapshotVersionActionTest {
     @Mock
     private lateinit var projectActionsFactory: ProjectActionsFactory
     @Mock
-    private lateinit var snapshotVersionProvider: SnapshotVersionProvider
-    @Mock
     private lateinit var scmActions: ScmActions
+    @Mock
+    private lateinit var snapshotVersionProvider: SnapshotVersionProvider
 
-    @InjectMocks
     private lateinit var underTest: SetSnapshotVersionAction
 
     @BeforeEach
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-
-        underTest.scmActions = scmActions
     }
 
     @Test
@@ -47,9 +43,14 @@ internal class SetSnapshotVersionActionTest {
         // GIVEN
         val projectActions = mock<ProjectActions>()
 
-        // WHEN
-        underTest.scmConfig = ScmConfig.GIT_FLOW
+        underTest = SetSnapshotVersionAction(
+            projectActionsFactory,
+            scmActions,
+            ScmConfig.GIT_FLOW,
+            snapshotVersionProvider
+        )
 
+        // WHEN
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.RELEASE_001)
         whenever(snapshotVersionProvider.provide(VersionFixtures.RELEASE_001)).thenReturn(VersionFixtures.SNAPSHOT_002)
@@ -77,9 +78,14 @@ internal class SetSnapshotVersionActionTest {
         // GIVEN
         val projectActions = mock<ProjectActions>()
 
-        // WHEN
-        underTest.scmConfig = ScmConfig.TRUNK_BASED_FLOW
+        underTest = SetSnapshotVersionAction(
+            projectActionsFactory,
+            scmActions,
+            ScmConfig.TRUNK_BASED_FLOW,
+            snapshotVersionProvider
+        )
 
+        // WHEN
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.RELEASE_001)
         whenever(snapshotVersionProvider.provide(VersionFixtures.RELEASE_001)).thenReturn(VersionFixtures.SNAPSHOT_002)

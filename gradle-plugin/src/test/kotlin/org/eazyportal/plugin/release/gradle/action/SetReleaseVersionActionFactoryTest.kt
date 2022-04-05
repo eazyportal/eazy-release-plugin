@@ -51,9 +51,6 @@ internal class SetReleaseVersionActionFactoryTest {
         // THEN
         val actual = underTest.create(extension)
 
-        Assertions.assertThat(actual.conventionalCommitTypes).isEqualTo(conventionalCommitTypes)
-        Assertions.assertThat(actual.scmActions).isEqualTo(scmActions)
-        Assertions.assertThat(actual.scmConfig).isEqualTo(scmConfig)
         Assertions.assertThat(actual).hasNoNullFieldsOrProperties()
     }
 

@@ -21,11 +21,12 @@ public class SetSnapshotVersionActionFactory extends InvisibleAction implements 
     private transient SnapshotVersionProvider snapshotVersionProvider;
 
     public SetSnapshotVersionAction create() {
-        SetSnapshotVersionAction setSnapshotVersionAction = new SetSnapshotVersionAction(multiProjectActionsFactory, snapshotVersionProvider);
-        setSnapshotVersionAction.scmActions = releaseStepConfig.getScmActions();
-        setSnapshotVersionAction.scmConfig = releaseStepConfig.getScmConfig();
-
-        return setSnapshotVersionAction;
+        return new SetSnapshotVersionAction(
+            multiProjectActionsFactory,
+            releaseStepConfig.getScmActions(),
+            releaseStepConfig.getScmConfig(),
+            snapshotVersionProvider
+        );
     }
 
 }

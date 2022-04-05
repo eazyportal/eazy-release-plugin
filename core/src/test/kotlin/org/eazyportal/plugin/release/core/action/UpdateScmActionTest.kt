@@ -31,23 +31,20 @@ internal class UpdateScmActionTest {
     @Mock
     private lateinit var scmActions: ScmActions
 
-    @InjectMocks
     private lateinit var underTest: UpdateScmAction
 
     @BeforeEach
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-
-        underTest.scmActions = scmActions
     }
 
     @MethodSource("execute")
     @ParameterizedTest
     fun test_execute(scmConfig: ScmConfig) {
         // GIVEN
-        // WHEN
-        underTest.scmConfig = scmConfig
+        underTest = UpdateScmAction(scmActions, scmConfig)
 
+        // WHEN
         // THEN
         underTest.execute(workingDir)
 

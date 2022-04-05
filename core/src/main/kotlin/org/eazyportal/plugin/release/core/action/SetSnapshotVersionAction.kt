@@ -8,11 +8,10 @@ import java.io.File
 
 class SetSnapshotVersionAction(
     private val projectActionsFactory: ProjectActionsFactory,
+    private val scmActions: ScmActions,
+    private val scmConfig: ScmConfig,
     private val snapshotVersionProvider: SnapshotVersionProvider
 ) : ReleaseAction {
-
-    lateinit var scmActions: ScmActions
-    lateinit var scmConfig: ScmConfig
 
     override fun execute(workingDir: File) {
         val submodulesDir = scmActions.getSubmodules(workingDir)

@@ -24,14 +24,14 @@ public class SetReleaseVersionActionFactory extends InvisibleAction implements S
     private transient VersionIncrementProvider versionIncrementProvider;
 
     public SetReleaseVersionAction create() {
-        SetReleaseVersionAction setReleaseVersionAction =
-            new SetReleaseVersionAction(multiProjectActionsFactory, releaseVersionProvider, versionIncrementProvider);
-
-        setReleaseVersionAction.conventionalCommitTypes = releaseStepConfig.getConventionalCommitTypes();
-        setReleaseVersionAction.scmActions = releaseStepConfig.getScmActions();
-        setReleaseVersionAction.scmConfig = releaseStepConfig.getScmConfig();
-
-        return setReleaseVersionAction;
+        return new SetReleaseVersionAction(
+            releaseStepConfig.getConventionalCommitTypes(),
+            multiProjectActionsFactory,
+            releaseVersionProvider,
+            releaseStepConfig.getScmActions(),
+            releaseStepConfig.getScmConfig(),
+            versionIncrementProvider
+        );
     }
 
 }

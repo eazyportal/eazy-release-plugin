@@ -48,8 +48,7 @@ class SetSnapshotVersionActionFactoryTest {
         // THEN
         SetSnapshotVersionAction actual = underTest.create();
 
-        assertThat(actual.getScmActions()).isEqualTo(scmActions);
-        assertThat(actual.getScmConfig()).isEqualTo(ScmConfig.getGIT_FLOW());
+        assertThat(actual).hasNoNullFieldsOrProperties();
 
         verifyNoInteractions(multiProjectActionsFactory, scmActions, snapshotVersionProvider);
         verify(releaseStepConfig).getScmActions();

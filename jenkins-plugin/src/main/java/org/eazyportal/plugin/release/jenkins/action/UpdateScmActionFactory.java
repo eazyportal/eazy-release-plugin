@@ -15,12 +15,10 @@ public class UpdateScmActionFactory extends InvisibleAction implements Serializa
     private transient ReleaseStepConfig releaseStepConfig;
 
     public UpdateScmAction create() {
-        UpdateScmAction updateScmAction = new UpdateScmAction();
-
-        updateScmAction.scmActions = releaseStepConfig.getScmActions();
-        updateScmAction.scmConfig = releaseStepConfig.getScmConfig();
-
-        return updateScmAction;
+        return new UpdateScmAction(
+            releaseStepConfig.getScmActions(),
+            releaseStepConfig.getScmConfig()
+            );
     }
 
 }
