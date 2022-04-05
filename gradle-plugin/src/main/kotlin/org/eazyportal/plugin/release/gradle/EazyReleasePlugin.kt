@@ -1,5 +1,6 @@
 package org.eazyportal.plugin.release.gradle
 
+import org.eazyportal.plugin.release.core.ProjectDescriptorFactory
 import org.eazyportal.plugin.release.gradle.action.FinalizeReleaseVersionActionFactory
 import org.eazyportal.plugin.release.gradle.action.FinalizeSnapshotVersionActionFactory
 import org.eazyportal.plugin.release.gradle.action.PrepareRepositoryForReleaseActionFactory
@@ -29,10 +30,13 @@ class EazyReleasePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.extensions.create(EXTENSION_NAME, EazyReleasePluginExtension::class.java)
 
+        val projectDescriptorFactory = ProjectDescriptorFactory()
+
         project.tasks.apply {
             register(
                 SET_RELEASE_VERSION_TASK_NAME,
                 SetReleaseVersionTask::class.java,
+                projectDescriptorFactory,
                 PrepareRepositoryForReleaseActionFactory(),
                 SetReleaseVersionActionFactory(),
                 FinalizeReleaseVersionActionFactory()
@@ -53,13 +57,14 @@ class EazyReleasePlugin : Plugin<Project> {
             register(
                 SET_SNAPSHOT_VERSION_TASK_NAME,
                 SetSnapshotVersionTask::class.java,
+                projectDescriptorFactory,
                 SetSnapshotVersionActionFactory(),
                 FinalizeSnapshotVersionActionFactory()
             ).configure {
                 it.mustRunAfter(RELEASE_BUILD_TASK_NAME)
             }
 
-            register(UPDATE_SCM_TASK_NAME, UpdateScmTask::class.java, UpdateScmActionFactory()).configure {
+            register(UPDATE_SCM_TASK_NAME, UpdateScmTask::class.java, projectDescriptorFactory, UpdateScmActionFactory()).configure {
                 it.mustRunAfter(SET_SNAPSHOT_VERSION_TASK_NAME)
             }
 

@@ -28,6 +28,8 @@ class ReleasePluginRunListenerTest {
     @Mock
     private PrepareRepositoryForReleaseActionFactory prepareRepositoryForReleaseActionFactory;
     @Mock
+    private ProjectDescriptorFactory projectDescriptorFactory;
+    @Mock
     private SetReleaseVersionActionFactory setReleaseVersionActionFactory;
     @Mock
     private SetSnapshotVersionActionFactory setSnapshotVersionActionFactory;
@@ -56,6 +58,7 @@ class ReleasePluginRunListenerTest {
         verify(run).addAction(finalizeReleaseVersionActionFactory);
         verify(run).addAction(finalizeSnapshotVersionActionFactory);
         verify(run).addAction(prepareRepositoryForReleaseActionFactory);
+        verify(run).addAction(projectDescriptorFactory);
         verify(run).addAction(setReleaseVersionActionFactory);
         verify(run).addAction(setSnapshotVersionActionFactory);
         verify(run).addAction(updateScmActionFactory);

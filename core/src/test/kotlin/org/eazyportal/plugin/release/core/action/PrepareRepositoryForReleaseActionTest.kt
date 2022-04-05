@@ -4,22 +4,17 @@ import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.io.TempDir
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
-import java.io.File
 
-internal class PrepareRepositoryForReleaseActionTest {
+internal class PrepareRepositoryForReleaseActionTest : ReleaseActionBaseTest() {
 
     private companion object {
         const val SUBMODULE_NAME = "ui"
     }
-
-    @TempDir
-    private lateinit var workingDir: File
 
     @Mock
     private lateinit var scmActions: ScmActions

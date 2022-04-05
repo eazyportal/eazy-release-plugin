@@ -10,6 +10,9 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
+import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
+import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
+import org.eazyportal.plugin.release.jenkins.action.FinalizeReleaseVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.FinalizeSnapshotVersionActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
@@ -19,10 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
-public class FinalizeSnapshotVersionStep extends Builder implements SimpleBuildStep, Serializable {
+public class CommitVersionStep extends Builder implements SimpleBuildStep, Serializable {
 
     @DataBoundConstructor
-    public FinalizeSnapshotVersionStep() {
+    public CommitVersionStep() {
         // required by Jenkins
     }
 
@@ -32,19 +35,29 @@ public class FinalizeSnapshotVersionStep extends Builder implements SimpleBuildS
 
         File workingDir = new File(workspace.toURI());
 
-        run.getAction(FinalizeSnapshotVersionActionFactory.class)
-            .create()
-            .execute(workingDir);
+        ProjectDescriptor projectDescriptor = run.getAction(ProjectDescriptorFactory.class)
+            .create(workingDir);
+
+        if (projectDescriptor.getRootProject().getProjectActions().getVersion().isRelease()) {
+            run.getAction(FinalizeReleaseVersionActionFactory.class)
+                .create()
+                .execute(projectDescriptor);
+        }
+        else {
+            run.getAction(FinalizeSnapshotVersionActionFactory.class)
+                .create()
+                .execute(projectDescriptor);
+        }
     }
 
     @Extension
-    @Symbol("finalizeSnapshotVersion")
-    public static final class FinalizeSnapshotVersionStepDescriptor extends BuildStepDescriptor<Builder> {
+    @Symbol("commitVersion")
+    public static final class CommitVersionStepDescriptor extends BuildStepDescriptor<Builder> {
 
         @NotNull
         @Override
         public String getDisplayName() {
-            return "Finalize SNAPSHOT version";
+            return "Commit current version";
         }
 
         @Override

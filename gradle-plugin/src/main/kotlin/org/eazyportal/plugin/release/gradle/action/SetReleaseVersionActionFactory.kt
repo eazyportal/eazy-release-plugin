@@ -10,7 +10,6 @@ class SetReleaseVersionActionFactory : ReleaseActionFactory<SetReleaseVersionAct
     override fun create(extension: EazyReleasePluginExtension): SetReleaseVersionAction =
         SetReleaseVersionAction(
             extension.conventionalCommitTypes,
-            extension.projectActionsFactory,
             ReleaseVersionProvider(),
             extension.scmActions,
             extension.scmConfig,

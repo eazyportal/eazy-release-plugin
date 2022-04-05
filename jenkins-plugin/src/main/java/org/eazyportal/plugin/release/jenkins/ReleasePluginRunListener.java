@@ -25,6 +25,8 @@ public class ReleasePluginRunListener extends RunListener<Run<?, ?>> {
     @Inject
     private PrepareRepositoryForReleaseActionFactory prepareRepositoryForReleaseActionFactory;
     @Inject
+    private ProjectDescriptorFactory projectDescriptorFactory;
+    @Inject
     private SetReleaseVersionActionFactory setReleaseVersionActionFactory;
     @Inject
     private SetSnapshotVersionActionFactory setSnapshotVersionActionFactory;
@@ -40,6 +42,7 @@ public class ReleasePluginRunListener extends RunListener<Run<?, ?>> {
         run.addAction(finalizeReleaseVersionActionFactory);
         run.addAction(finalizeSnapshotVersionActionFactory);
         run.addAction(prepareRepositoryForReleaseActionFactory);
+        run.addAction(projectDescriptorFactory);
         run.addAction(setReleaseVersionActionFactory);
         run.addAction(setSnapshotVersionActionFactory);
         run.addAction(updateScmActionFactory);

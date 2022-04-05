@@ -1,12 +1,12 @@
 package org.eazyportal.plugin.release.core.action
 
+import org.eazyportal.plugin.release.core.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.model.ProjectDescriptorMockBuilder
 import org.eazyportal.plugin.release.core.project.ProjectActions
-import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.core.scm.ScmActions
-import org.eazyportal.plugin.release.core.version.model.Version
+import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.io.TempDir
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -17,22 +17,9 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
-import java.io.File
 
-internal class FinalizeReleaseVersionActionTest {
+internal class FinalizeReleaseVersionActionTest : ReleaseActionBaseTest() {
 
-    private companion object {
-        const val FILE_TO_COMMIT = "."
-        const val SUBMODULE_NAME = "ui"
-        @JvmStatic
-        val RELEASE_001 = Version(0, 0, 1)
-    }
-
-    @TempDir
-    private lateinit var workingDir: File
-
-    @Mock
-    private lateinit var projectActionsFactory: ProjectActionsFactory
     @Mock
     private lateinit var scmActions: ScmActions
 
@@ -49,24 +36,23 @@ internal class FinalizeReleaseVersionActionTest {
         // GIVEN
         val projectActions: ProjectActions = mock()
 
+        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
+
         // WHEN
-        whenever(projectActionsFactory.create(any())).thenReturn(projectActions)
-        whenever(projectActions.getVersion()).thenReturn(RELEASE_001)
-        whenever(scmActions.getSubmodules(workingDir)).thenReturn(listOf(SUBMODULE_NAME))
+        whenever(projectActions.getVersion()).thenReturn(VersionFixtures.RELEASE_001)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf(FILE_TO_COMMIT))
 
         // THEN
-        underTest.execute(workingDir)
+        underTest.execute(projectDescriptor)
 
-        verify(projectActionsFactory, times(2)).create(workingDir)
         verify(projectActions).getVersion()
-        verify(scmActions).getSubmodules(workingDir)
-        verify(projectActionsFactory).create(workingDir.resolve(SUBMODULE_NAME))
         verify(projectActions, times(2)).scmFilesToCommit()
-        verify(scmActions, times(2)).add(any(), eq(FILE_TO_COMMIT))
-        verify(scmActions, times(2)).commit(any(), eq("Release version: $RELEASE_001"))
+        projectDescriptor.allProjects.forEach {
+            verify(scmActions).add(it.dir, FILE_TO_COMMIT)
+            verify(scmActions).commit(it.dir, "Release version: ${VersionFixtures.RELEASE_001}")
+        }
         verify(scmActions).tag(eq(workingDir), any())
-        verifyNoMoreInteractions(projectActions, projectActionsFactory, scmActions)
+        verifyNoMoreInteractions(projectActions, scmActions)
     }
 
 }

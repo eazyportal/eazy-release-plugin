@@ -1,8 +1,9 @@
 package org.eazyportal.plugin.release.core.action
 
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.eazyportal.plugin.release.core.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.model.ProjectDescriptorMockBuilder
 import org.eazyportal.plugin.release.core.project.ProjectActions
-import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
@@ -12,30 +13,32 @@ import org.eazyportal.plugin.release.core.version.VersionIncrementProvider
 import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement.NONE
-import org.eazyportal.plugin.release.core.version.model.VersionIncrement.PATCH
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
-import java.io.File
 
-internal class SetReleaseVersionActionTest {
+internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
+
     private companion object {
         @JvmStatic
         val COMMITS = listOf("fix: message", "test: message")
+        @JvmStatic
+        val CONVENTIONAL_COMMIT_TYPES = ConventionalCommitType.DEFAULT_TYPES
         const val GIT_TAG = "0.0.0"
-        const val SUBMODULE_NAME = "ui"
+        @JvmStatic
+        val VERSION_INCREMENT = VersionIncrement.PATCH
 
         @JvmStatic
         fun invalidVersionIncrement() = listOf(
@@ -44,12 +47,6 @@ internal class SetReleaseVersionActionTest {
         )
     }
 
-    @TempDir
-    private lateinit var workingDir: File
-
-    private val conventionalCommitTypes = ConventionalCommitType.DEFAULT_TYPES
-    @Mock
-    private lateinit var projectActionsFactory: ProjectActionsFactory
     @Mock
     private lateinit var releaseVersionProvider: ReleaseVersionProvider
     @Mock
@@ -67,98 +64,90 @@ internal class SetReleaseVersionActionTest {
     @Test
     fun test_execute_withGitFlow() {
         // GIVEN
-        val submoduleDir = workingDir.resolve(SUBMODULE_NAME)
-
         val projectActions: ProjectActions = mock()
-        val versionIncrement = PATCH
+        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
         underTest = createSetReleaseVersionAction(ScmConfig.GIT_FLOW)
 
         // WHEN
-        whenever(scmActions.getSubmodules(workingDir)).thenReturn(listOf(SUBMODULE_NAME))
-
-        whenever(projectActionsFactory.create(any())).thenReturn(projectActions)
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.SNAPSHOT_001)
 
-        whenever(scmActions.getLastTag(submoduleDir)).then {  throw ScmActionException(null) }
-        whenever(scmActions.getCommits(submoduleDir, null)).thenReturn(COMMITS)
-        whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
-        whenever(scmActions.getCommits(workingDir, GIT_TAG)).thenReturn(COMMITS)
+        projectDescriptor.subProjects.forEach {
+            whenever(scmActions.getLastTag(it.dir)).then {  throw ScmActionException(null) }
+            whenever(scmActions.getCommits(it.dir, null)).thenReturn(COMMITS)
+        }
 
-        whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)
-        whenever(releaseVersionProvider.provide(VersionFixtures.SNAPSHOT_001, versionIncrement)).thenReturn(VersionFixtures.RELEASE_001)
+        whenever(scmActions.getLastTag(projectDescriptor.rootProject.dir)).thenReturn(GIT_TAG)
+        whenever(scmActions.getCommits(projectDescriptor.rootProject.dir, GIT_TAG)).thenReturn(COMMITS)
+
+        whenever(versionIncrementProvider.provide(COMMITS, CONVENTIONAL_COMMIT_TYPES)).thenReturn(VERSION_INCREMENT)
+        whenever(releaseVersionProvider.provide(VersionFixtures.SNAPSHOT_001, VERSION_INCREMENT)).thenReturn(VersionFixtures.RELEASE_001)
 
         // THEN
-        underTest.execute(workingDir)
+        underTest.execute(projectDescriptor)
 
-        verify(scmActions).getSubmodules(workingDir)
+        projectDescriptor.subProjects.forEach {
+            verify(scmActions).getLastTag(it.dir)
+            verify(scmActions).getCommits(it.dir, null)
+        }
 
-        verify(projectActionsFactory, times(2)).create(submoduleDir)
-        verify(scmActions).getLastTag(submoduleDir)
-        verify(scmActions).getCommits(submoduleDir, null)
-
-        verify(projectActionsFactory, times(2)).create(workingDir)
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, GIT_TAG)
 
         verify(projectActions, times(2)).getVersion()
-        verify(versionIncrementProvider, times(2)).provide(COMMITS, conventionalCommitTypes)
+        verify(versionIncrementProvider, times(2)).provide(COMMITS, CONVENTIONAL_COMMIT_TYPES)
 
-        verify(scmActions).checkout(submoduleDir, ScmConfig.GIT_FLOW.releaseBranch)
-        verify(scmActions).mergeNoCommit(submoduleDir, ScmConfig.GIT_FLOW.featureBranch)
-        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
-        verify(scmActions).mergeNoCommit(workingDir, ScmConfig.GIT_FLOW.featureBranch)
+        projectDescriptor.allProjects.forEach {
+            verify(scmActions).checkout(it.dir, ScmConfig.GIT_FLOW.releaseBranch)
+            verify(scmActions).mergeNoCommit(it.dir, ScmConfig.GIT_FLOW.featureBranch)
+        }
 
-        verify(releaseVersionProvider, times(2)).provide(VersionFixtures.SNAPSHOT_001, versionIncrement)
+        verify(releaseVersionProvider, times(2)).provide(VersionFixtures.SNAPSHOT_001, VERSION_INCREMENT)
         verify(projectActions, times(2)).setVersion(VersionFixtures.RELEASE_001)
 
-        verifyNoMoreInteractions(projectActions, projectActionsFactory, releaseVersionProvider, scmActions, versionIncrementProvider)
+        verifyNoMoreInteractions(projectActions, releaseVersionProvider, scmActions, versionIncrementProvider)
     }
 
     @Test
     fun test_execute_withTrunkBasedFlow() {
         // GIVEN
-        val submoduleDir = workingDir.resolve(SUBMODULE_NAME)
-
         val projectActions: ProjectActions = mock()
-        val versionIncrement = PATCH
+        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
         underTest = createSetReleaseVersionAction(ScmConfig.TRUNK_BASED_FLOW)
 
         // WHEN
-        whenever(scmActions.getSubmodules(workingDir)).thenReturn(listOf(SUBMODULE_NAME))
-
-        whenever(projectActionsFactory.create(any())).thenReturn(projectActions)
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.SNAPSHOT_001)
 
-        whenever(scmActions.getLastTag(submoduleDir)).then {  throw ScmActionException(null) }
-        whenever(scmActions.getCommits(submoduleDir, null)).thenReturn(COMMITS)
-        whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
-        whenever(scmActions.getCommits(workingDir, GIT_TAG)).thenReturn(COMMITS)
+        projectDescriptor.subProjects.forEach {
+            whenever(scmActions.getLastTag(it.dir)).then {  throw ScmActionException(null) }
+            whenever(scmActions.getCommits(it.dir, null)).thenReturn(COMMITS)
+        }
 
-        whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)
-        whenever(releaseVersionProvider.provide(VersionFixtures.SNAPSHOT_001, versionIncrement)).thenReturn(VersionFixtures.RELEASE_001)
+        whenever(scmActions.getLastTag(projectDescriptor.rootProject.dir)).thenReturn(GIT_TAG)
+        whenever(scmActions.getCommits(projectDescriptor.rootProject.dir, GIT_TAG)).thenReturn(COMMITS)
+
+        whenever(versionIncrementProvider.provide(COMMITS, CONVENTIONAL_COMMIT_TYPES)).thenReturn(VERSION_INCREMENT)
+        whenever(releaseVersionProvider.provide(VersionFixtures.SNAPSHOT_001, VERSION_INCREMENT)).thenReturn(VersionFixtures.RELEASE_001)
 
         // THEN
-        underTest.execute(workingDir)
+        underTest.execute(projectDescriptor)
 
-        verify(scmActions).getSubmodules(workingDir)
+        projectDescriptor.subProjects.forEach {
+            verify(scmActions).getLastTag(it.dir)
+            verify(scmActions).getCommits(it.dir, null)
+        }
 
-        verify(projectActionsFactory, times(2)).create(submoduleDir)
-        verify(scmActions).getLastTag(submoduleDir)
-        verify(scmActions).getCommits(submoduleDir, null)
-
-        verify(projectActionsFactory, times(2)).create(workingDir)
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, GIT_TAG)
 
         verify(projectActions, times(2)).getVersion()
-        verify(versionIncrementProvider, times(2)).provide(COMMITS, conventionalCommitTypes)
+        verify(versionIncrementProvider, times(2)).provide(COMMITS, CONVENTIONAL_COMMIT_TYPES)
 
-        verify(releaseVersionProvider, times(2)).provide(VersionFixtures.SNAPSHOT_001, versionIncrement)
+        verify(releaseVersionProvider, times(2)).provide(VersionFixtures.SNAPSHOT_001, VERSION_INCREMENT)
         verify(projectActions, times(2)).setVersion(VersionFixtures.RELEASE_001)
 
-        verifyNoMoreInteractions(projectActions, projectActionsFactory, releaseVersionProvider, scmActions, versionIncrementProvider)
+        verifyNoMoreInteractions(projectActions, releaseVersionProvider, scmActions, versionIncrementProvider)
     }
 
     @MethodSource("invalidVersionIncrement")
@@ -166,35 +155,32 @@ internal class SetReleaseVersionActionTest {
     fun test_execute_shouldFail_whenVersionIncrementIsInvalid(versionIncrement: VersionIncrement?) {
         // GIVEN
         val projectActions: ProjectActions = mock()
+        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
         underTest = createSetReleaseVersionAction()
 
         // WHEN
-        whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.SNAPSHOT_001)
-        whenever(scmActions.getLastTag(workingDir)).then { throw ScmActionException(RuntimeException()) }
-        whenever(scmActions.getCommits(workingDir, null)).thenReturn(COMMITS)
-        whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)
+        whenever(scmActions.getLastTag(any(), anyOrNull())).then { throw ScmActionException(RuntimeException()) }
+        whenever(scmActions.getCommits(any(), anyOrNull(), anyOrNull())).thenReturn(COMMITS)
+        whenever(versionIncrementProvider.provide(COMMITS, CONVENTIONAL_COMMIT_TYPES)).thenReturn(versionIncrement)
 
         // THEN
-        assertThatThrownBy { underTest.execute(workingDir) }
+        assertThatThrownBy { underTest.execute(projectDescriptor) }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("There are no acceptable commits.")
 
         verifyNoInteractions(releaseVersionProvider)
-        verify(scmActions).getSubmodules(workingDir)
-        verify(projectActionsFactory).create(workingDir)
-        verify(projectActions).getVersion()
-        verify(scmActions).getLastTag(workingDir)
-        verify(scmActions).getCommits(workingDir, null)
-        verify(versionIncrementProvider).provide(COMMITS, conventionalCommitTypes)
-        verifyNoMoreInteractions(projectActions, projectActionsFactory, scmActions, versionIncrementProvider)
+        verify(projectActions, times(2)).getVersion()
+        verify(scmActions, times(2)).getLastTag(any(), anyOrNull())
+        verify(scmActions, times(2)).getCommits(any(), anyOrNull(), anyOrNull())
+        verify(versionIncrementProvider, times(2)).provide(COMMITS, CONVENTIONAL_COMMIT_TYPES)
+        verifyNoMoreInteractions(projectActions, scmActions, versionIncrementProvider)
     }
 
     private fun createSetReleaseVersionAction(scmConfig: ScmConfig = ScmConfig.GIT_FLOW) =
         SetReleaseVersionAction(
-            conventionalCommitTypes,
-            projectActionsFactory,
+            CONVENTIONAL_COMMIT_TYPES,
             releaseVersionProvider,
             scmActions,
             scmConfig,
