@@ -7,9 +7,11 @@ import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 class SetSnapshotVersionActionFactory {
 
     fun create(extension: EazyReleasePluginExtension): SetSnapshotVersionAction =
-        SetSnapshotVersionAction(extension.projectActionsFactory, SnapshotVersionProvider()).apply {
-            scmActions = extension.scmActions
-            scmConfig = extension.scmConfig
-        }
+        SetSnapshotVersionAction(
+            extension.projectActionsFactory,
+            extension.scmActions,
+            extension.scmConfig,
+            SnapshotVersionProvider()
+        )
 
 }

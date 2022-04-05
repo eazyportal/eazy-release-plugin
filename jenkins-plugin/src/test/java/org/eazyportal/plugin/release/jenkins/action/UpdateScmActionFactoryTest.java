@@ -42,8 +42,7 @@ class UpdateScmActionFactoryTest {
         // THEN
         UpdateScmAction actual = underTest.create();
 
-        assertThat(actual.getScmActions()).isEqualTo(scmActions);
-        assertThat(actual.getScmConfig()).isEqualTo(ScmConfig.getGIT_FLOW());
+        assertThat(actual).hasNoNullFieldsOrProperties();
 
         verifyNoInteractions(scmActions);
         verify(releaseStepConfig).getScmActions();

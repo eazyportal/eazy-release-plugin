@@ -15,8 +15,11 @@ import org.slf4j.LoggerFactory
 import java.io.File
 
 open class SetReleaseVersionAction(
+    private val conventionalCommitTypes: List<ConventionalCommitType>,
     private val projectActionsFactory: ProjectActionsFactory,
     private val releaseVersionProvider: ReleaseVersionProvider,
+    private val scmActions: ScmActions,
+    private val scmConfig: ScmConfig,
     private val versionIncrementProvider: VersionIncrementProvider
 ) : ReleaseAction {
 
@@ -24,10 +27,6 @@ open class SetReleaseVersionAction(
         @JvmStatic
         private val LOGGER = LoggerFactory.getLogger(SetReleaseVersionAction::class.java)
     }
-
-    lateinit var conventionalCommitTypes: List<ConventionalCommitType>
-    lateinit var scmActions: ScmActions
-    lateinit var scmConfig: ScmConfig
 
     override fun execute(workingDir: File) {
         scmActions.fetch(workingDir, scmConfig.remote)

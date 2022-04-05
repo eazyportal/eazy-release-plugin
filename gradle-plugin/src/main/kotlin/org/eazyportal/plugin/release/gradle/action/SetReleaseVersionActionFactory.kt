@@ -8,10 +8,13 @@ import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 class SetReleaseVersionActionFactory {
 
     fun create(extension: EazyReleasePluginExtension): SetReleaseVersionAction =
-        SetReleaseVersionAction(extension.projectActionsFactory, ReleaseVersionProvider(), VersionIncrementProvider()).apply {
-            conventionalCommitTypes = extension.conventionalCommitTypes
-            scmActions = extension.scmActions
-            scmConfig = extension.scmConfig
-        }
+        SetReleaseVersionAction(
+            extension.conventionalCommitTypes,
+            extension.projectActionsFactory,
+            ReleaseVersionProvider(),
+            extension.scmActions,
+            extension.scmConfig,
+            VersionIncrementProvider()
+        )
 
 }

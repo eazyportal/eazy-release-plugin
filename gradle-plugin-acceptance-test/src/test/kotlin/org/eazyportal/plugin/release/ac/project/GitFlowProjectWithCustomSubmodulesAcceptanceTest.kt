@@ -1,6 +1,6 @@
 package org.eazyportal.plugin.release.ac.project
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.Order
@@ -63,7 +63,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
                 SCM_ACTIONS.commit(projectDir, "initial commit")
 
                 // THEN
-                Assertions.assertThat(SCM_ACTIONS.getCommits(projectDir)).containsExactly("initial commit")
+                assertThat(SCM_ACTIONS.getCommits(projectDir)).containsExactly("initial commit")
 
                 SCM_ACTIONS.execute(projectDir, "checkout", "-b", "feature")
             }
@@ -93,7 +93,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
             .buildAndFail()
 
         // THEN
-        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
+        assertThat(buildResult.output.lines()).containsSubsequence(
             "Setting release version...",
             "Ignoring missing Git tag from release version calculation.",
             "Ignoring invalid commit: initial commit",
@@ -118,24 +118,24 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
             .build()
 
         // THEN
-        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
+        assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :setReleaseVersion",
             "Setting release version...",
             "1 actionable task: 1 executed"
         )
 
-        Assertions.assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
+        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
         ALL_PROJECT_DIRS.forEach { projectDir ->
             SCM_ACTIONS.execute(projectDir, "status")
                 .run {
-                    Assertions.assertThat(lines()).containsSubsequence(
+                    assertThat(lines()).containsSubsequence(
                         "On branch master",
                         "nothing to commit, working tree clean"
                     )
                 }
-            Assertions.assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("Release version: 0.1.0")
+            assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("Release version: 0.1.0")
 
-            Assertions.assertThat(PROJECT_ACTIONS_FACTORY.create(projectDir).getVersion()).hasToString("0.1.0")
+            assertThat(PROJECT_ACTIONS_FACTORY.create(projectDir).getVersion()).hasToString("0.1.0")
         }
     }
 
@@ -148,7 +148,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
             .build()
 
         // THEN
-        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
+        assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :jar",
             "> Task :build",
             "> Task :publish",
@@ -162,14 +162,14 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
 
         PROJECT_DIR.resolve("build/libs/")
             .run {
-                Assertions.assertThat(resolve("$PROJECT_NAME-0.1.0.jar").exists()).isTrue
-                Assertions.assertThat(resolve("$PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
+                assertThat(resolve("$PROJECT_NAME-0.1.0.jar").exists()).isTrue
+                assertThat(resolve("$PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
             }
 
         SUBMODULE_PROJECT_DIR.resolve("build/libs/")
             .run {
-                Assertions.assertThat(resolve("$SUBMODULE_PROJECT_NAME-0.1.0.jar").exists()).isFalse
-                Assertions.assertThat(resolve("$SUBMODULE_PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
+                assertThat(resolve("$SUBMODULE_PROJECT_NAME-0.1.0.jar").exists()).isFalse
+                assertThat(resolve("$SUBMODULE_PROJECT_NAME-0.0.1-SNAPSHOT.jar").exists()).isFalse
             }
     }
 
@@ -182,26 +182,26 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
             .build()
 
         // THEN
-        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
+        assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :setSnapshotVersion",
             "Setting SNAPSHOT version...",
             "1 actionable task: 1 executed"
         )
 
-        Assertions.assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
+        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
         ALL_PROJECT_DIRS.forEach { projectDir ->
             SCM_ACTIONS.execute(projectDir, "status")
                 .run {
-                    Assertions.assertThat(lines()).containsSubsequence(
+                    assertThat(lines()).containsSubsequence(
                         "On branch feature",
                         "nothing to commit, working tree clean"
                     )
                 }
-            Assertions.assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("New snapshot version: 0.1.1-SNAPSHOT")
+            assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("New snapshot version: 0.1.1-SNAPSHOT")
 
             PROJECT_ACTIONS_FACTORY.create(projectDir)
                 .getVersion()
-                .run { Assertions.assertThat(this).hasToString("0.1.1-SNAPSHOT") }
+                .run { assertThat(this).hasToString("0.1.1-SNAPSHOT") }
         }
     }
 
@@ -214,7 +214,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
             .build()
 
         // THEN
-        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
+        assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :updateScm",
             "1 actionable task: 1 executed"
         )
@@ -237,7 +237,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
             .build()
 
         // THEN
-        Assertions.assertThat(buildResult.output.lines()).containsSubsequence(
+        assertThat(buildResult.output.lines()).containsSubsequence(
             "> Task :setReleaseVersion",
             "Setting release version...",
             "> Task :jar",

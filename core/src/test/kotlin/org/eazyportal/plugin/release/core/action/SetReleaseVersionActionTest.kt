@@ -19,7 +19,6 @@ import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
@@ -46,31 +45,24 @@ internal class SetReleaseVersionActionTest {
         )
     }
 
-    private val conventionalCommitTypes = ConventionalCommitType.DEFAULT_TYPES
-    private val scmActions = mock<ScmActions>()
-
     @TempDir
     private lateinit var workingDir: File
 
+    private val conventionalCommitTypes = ConventionalCommitType.DEFAULT_TYPES
     @Mock
     private lateinit var projectActionsFactory: ProjectActionsFactory
     @Mock
     private lateinit var releaseVersionProvider: ReleaseVersionProvider
     @Mock
+    private lateinit var scmActions: ScmActions
+    @Mock
     private lateinit var versionIncrementProvider: VersionIncrementProvider
 
-    @InjectMocks
     private lateinit var underTest: SetReleaseVersionAction
 
     @BeforeEach
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-
-        underTest.also {
-            it.conventionalCommitTypes = conventionalCommitTypes
-            it.scmActions = scmActions
-            it.scmConfig = ScmConfig.GIT_FLOW
-        }
     }
 
     @Test
@@ -79,9 +71,9 @@ internal class SetReleaseVersionActionTest {
         val projectActions = mock<ProjectActions>()
         val versionIncrement = PATCH
 
-        // WHEN
-        underTest.scmConfig = ScmConfig.GIT_FLOW
+        underTest = createSetReleaseVersionAction(ScmConfig.GIT_FLOW)
 
+        // WHEN
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.SNAPSHOT_001)
         whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
@@ -118,9 +110,9 @@ internal class SetReleaseVersionActionTest {
         val projectActions = mock<ProjectActions>()
         val versionIncrement = PATCH
 
-        // WHEN
-        underTest.scmConfig = ScmConfig.TRUNK_BASED_FLOW
+        underTest = createSetReleaseVersionAction(ScmConfig.TRUNK_BASED_FLOW)
 
+        // WHEN
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.SNAPSHOT_001)
         whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
@@ -153,6 +145,8 @@ internal class SetReleaseVersionActionTest {
         // GIVEN
         val projectActions = mock<ProjectActions>()
         val versionIncrement = PATCH
+
+        underTest = createSetReleaseVersionAction()
 
         // WHEN
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
@@ -191,6 +185,8 @@ internal class SetReleaseVersionActionTest {
         // GIVEN
         val projectActions = mock<ProjectActions>()
 
+        underTest = createSetReleaseVersionAction()
+
         // WHEN
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.SNAPSHOT_001)
@@ -214,5 +210,15 @@ internal class SetReleaseVersionActionTest {
         verify(versionIncrementProvider).provide(COMMITS, conventionalCommitTypes)
         verifyNoMoreInteractions(projectActions, projectActionsFactory, scmActions, versionIncrementProvider)
     }
+
+    private fun createSetReleaseVersionAction(scmConfig: ScmConfig = ScmConfig.GIT_FLOW) =
+        SetReleaseVersionAction(
+            conventionalCommitTypes,
+            projectActionsFactory,
+            releaseVersionProvider,
+            scmActions,
+            scmConfig,
+            versionIncrementProvider
+        )
 
 }
