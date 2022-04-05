@@ -27,7 +27,7 @@ internal class SetSnapshotVersionTaskTest : EazyReleaseBaseTaskTest<SetSnapshotV
     @Test
     fun test_run() {
         // GIVEN
-        val setSnapshotVersionAction = mock<SetSnapshotVersionAction>()
+        val setSnapshotVersionAction: SetSnapshotVersionAction = mock()
 
         // WHEN
         whenever(setSnapshotVersionActionFactory.create(extension)).thenReturn(setSnapshotVersionAction)

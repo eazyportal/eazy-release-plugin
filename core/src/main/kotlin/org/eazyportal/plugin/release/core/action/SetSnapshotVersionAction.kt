@@ -18,10 +18,6 @@ class SetSnapshotVersionAction(
             .map { workingDir.resolve(it) }
 
         listOf(*submodulesDir.toTypedArray(), workingDir).onEach {
-            if (scmConfig.releaseBranch != scmConfig.featureBranch) {
-                scmActions.checkout(it, scmConfig.releaseBranch)
-            }
-
             val projectActions = projectActionsFactory.create(it)
             val currentVersion = projectActions.getVersion()
             val snapshotVersion  = snapshotVersionProvider.provide(currentVersion)
@@ -33,9 +29,6 @@ class SetSnapshotVersionAction(
             }
 
             projectActions.setVersion(snapshotVersion)
-
-            scmActions.add(it, *projectActions.scmFilesToCommit())
-            scmActions.commit(it, "New snapshot version: $snapshotVersion")
         }
     }
 

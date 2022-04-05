@@ -23,10 +23,10 @@ internal class UpdateScmActionFactoryTest {
     @Test
     fun test_create() {
         // GIVEN
-        val extension = mock<EazyReleasePluginExtension>()
+        val extension: EazyReleasePluginExtension = mock()
 
-        val scmActions = mock<ScmActions>()
-        val scmConfig = mock<ScmConfig>()
+        val scmActions: ScmActions = mock()
+        val scmConfig: ScmConfig = mock()
 
         // WHEN
         whenever(extension.scmActions).thenReturn(scmActions)
