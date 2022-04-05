@@ -36,11 +36,11 @@ internal class SetReleaseVersionActionFactoryTest {
     @ParameterizedTest
     fun test_create(conventionalCommitTypes: List<ConventionalCommitType>) {
         // GIVEN
-        val extension = mock<EazyReleasePluginExtension>()
+        val extension: EazyReleasePluginExtension = mock()
 
-        val projectActionsFactory = mock<ProjectActionsFactory>()
-        val scmActions = mock<ScmActions>()
-        val scmConfig = mock<ScmConfig>()
+        val projectActionsFactory: ProjectActionsFactory = mock()
+        val scmActions: ScmActions = mock()
+        val scmConfig: ScmConfig = mock()
 
         // WHEN
         whenever(extension.conventionalCommitTypes).thenReturn(conventionalCommitTypes)

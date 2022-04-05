@@ -12,14 +12,18 @@ import org.junit.jupiter.api.io.TempDir
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.io.File
 
 internal class SetSnapshotVersionActionTest {
+
+    companion object {
+        const val SUBMODULE_NAME = "ui"
+    }
 
     @TempDir
     private lateinit var workingDir: File
@@ -41,17 +45,16 @@ internal class SetSnapshotVersionActionTest {
     @Test
     fun test_execute_withGitFlow() {
         // GIVEN
-        val projectActions = mock<ProjectActions>()
+        val submoduleDir = workingDir.resolve(SUBMODULE_NAME)
 
-        underTest = SetSnapshotVersionAction(
-            projectActionsFactory,
-            scmActions,
-            ScmConfig.GIT_FLOW,
-            snapshotVersionProvider
-        )
+        val projectActions: ProjectActions = mock()
+
+        underTest = createSetSnapshotVersionAction(ScmConfig.GIT_FLOW)
 
         // WHEN
-        whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
+        whenever(scmActions.getSubmodules(workingDir)).thenReturn(listOf(SUBMODULE_NAME))
+
+        whenever(projectActionsFactory.create(any())).thenReturn(projectActions)
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.RELEASE_001)
         whenever(snapshotVersionProvider.provide(VersionFixtures.RELEASE_001)).thenReturn(VersionFixtures.SNAPSHOT_002)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("."))
@@ -60,33 +63,36 @@ internal class SetSnapshotVersionActionTest {
         underTest.execute(workingDir)
 
         verify(scmActions).getSubmodules(workingDir)
-        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
+
+        verify(projectActionsFactory).create(submoduleDir)
         verify(projectActionsFactory).create(workingDir)
-        verify(projectActions).getVersion()
-        verify(snapshotVersionProvider).provide(VersionFixtures.RELEASE_001)
+
+        verify(projectActions, times(2)).getVersion()
+        verify(snapshotVersionProvider, times(2)).provide(VersionFixtures.RELEASE_001)
+
+        verify(scmActions).checkout(submoduleDir, ScmConfig.GIT_FLOW.featureBranch)
+        verify(scmActions).mergeNoCommit(submoduleDir, ScmConfig.GIT_FLOW.releaseBranch)
         verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
         verify(scmActions).mergeNoCommit(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
-        verify(projectActions).setVersion(VersionFixtures.SNAPSHOT_002)
-        verify(projectActions).scmFilesToCommit()
-        verify(scmActions).add(eq(workingDir), any())
-        verify(scmActions).commit(eq(workingDir), any())
+
+        verify(projectActions, times(2)).setVersion(VersionFixtures.SNAPSHOT_002)
+
         verifyNoMoreInteractions(projectActions, projectActionsFactory, scmActions, snapshotVersionProvider)
     }
 
     @Test
     fun test_execute_withTrunkBasedFlow() {
         // GIVEN
-        val projectActions = mock<ProjectActions>()
+        val submoduleDir = workingDir.resolve(SUBMODULE_NAME)
 
-        underTest = SetSnapshotVersionAction(
-            projectActionsFactory,
-            scmActions,
-            ScmConfig.TRUNK_BASED_FLOW,
-            snapshotVersionProvider
-        )
+        val projectActions: ProjectActions = mock()
+
+        underTest = createSetSnapshotVersionAction(ScmConfig.TRUNK_BASED_FLOW)
 
         // WHEN
-        whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
+        whenever(scmActions.getSubmodules(workingDir)).thenReturn(listOf(SUBMODULE_NAME))
+
+        whenever(projectActionsFactory.create(any())).thenReturn(projectActions)
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.RELEASE_001)
         whenever(snapshotVersionProvider.provide(VersionFixtures.RELEASE_001)).thenReturn(VersionFixtures.SNAPSHOT_002)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("."))
@@ -95,14 +101,24 @@ internal class SetSnapshotVersionActionTest {
         underTest.execute(workingDir)
 
         verify(scmActions).getSubmodules(workingDir)
+
+        verify(projectActionsFactory).create(submoduleDir)
         verify(projectActionsFactory).create(workingDir)
-        verify(projectActions).getVersion()
-        verify(snapshotVersionProvider).provide(VersionFixtures.RELEASE_001)
-        verify(projectActions).setVersion(VersionFixtures.SNAPSHOT_002)
-        verify(projectActions).scmFilesToCommit()
-        verify(scmActions).add(eq(workingDir), any())
-        verify(scmActions).commit(eq(workingDir), any())
+
+        verify(projectActions, times(2)).getVersion()
+        verify(snapshotVersionProvider, times(2)).provide(VersionFixtures.RELEASE_001)
+
+        verify(projectActions, times(2)).setVersion(VersionFixtures.SNAPSHOT_002)
+
         verifyNoMoreInteractions(projectActions, projectActionsFactory, scmActions, snapshotVersionProvider)
     }
+
+    private fun createSetSnapshotVersionAction(scmConfig: ScmConfig = ScmConfig.GIT_FLOW): SetSnapshotVersionAction =
+        SetSnapshotVersionAction(
+            projectActionsFactory,
+            scmActions,
+            scmConfig,
+            snapshotVersionProvider
+        )
 
 }

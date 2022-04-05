@@ -27,7 +27,7 @@ internal class UpdateScmTaskTest : EazyReleaseBaseTaskTest<UpdateScmTask>() {
     @Test
     fun test_run() {
         // GIVEN
-        val updateScmAction = mock<UpdateScmAction>()
+        val updateScmAction: UpdateScmAction = mock()
 
         // WHEN
         whenever(updateScmActionFactory.create(extension)).thenReturn(updateScmAction)

@@ -27,7 +27,7 @@ internal class SetReleaseVersionTaskTest : EazyReleaseBaseTaskTest<SetReleaseVer
     @Test
     fun test_run() {
         // GIVEN
-        val setReleaseVersionAction = mock<SetReleaseVersionAction>()
+        val setReleaseVersionAction: SetReleaseVersionAction = mock()
 
         // WHEN
         whenever(setReleaseVersionActionFactory.create(extension)).thenReturn(setReleaseVersionAction)

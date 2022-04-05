@@ -29,13 +29,8 @@ open class SetReleaseVersionAction(
     }
 
     override fun execute(workingDir: File) {
-        scmActions.fetch(workingDir, scmConfig.remote)
-
-        checkoutFeatureBranch(workingDir)
-
         val submodulesDir = scmActions.getSubmodules(workingDir)
             .map { workingDir.resolve(it) }
-            .onEach { checkoutFeatureBranch(workingDir) }
 
         val allProjectsDir = listOf(*submodulesDir.toTypedArray(), workingDir)
 
@@ -51,17 +46,6 @@ open class SetReleaseVersionAction(
             }
 
             projectActions.setVersion(releaseVersion)
-
-            scmActions.add(it, *projectActions.scmFilesToCommit())
-            scmActions.commit(it, "Release version: $releaseVersion")
-        }
-
-        scmActions.tag(workingDir, "-a", releaseVersion.toString(), "-m", "v$releaseVersion")
-    }
-
-    private fun checkoutFeatureBranch(projectDir: File) {
-        if (scmConfig.releaseBranch != scmConfig.featureBranch) {
-            scmActions.checkout(projectDir, scmConfig.featureBranch)
         }
     }
 
