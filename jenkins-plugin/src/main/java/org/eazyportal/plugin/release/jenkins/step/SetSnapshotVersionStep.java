@@ -10,6 +10,8 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
+import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
+import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
 import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
@@ -32,9 +34,12 @@ public class SetSnapshotVersionStep extends Builder implements SimpleBuildStep, 
 
         File workingDir = new File(workspace.toURI());
 
+        ProjectDescriptor projectDescriptor = run.getAction(ProjectDescriptorFactory.class)
+            .create(workingDir);
+
         run.getAction(SetSnapshotVersionActionFactory.class)
             .create()
-            .execute(workingDir);
+            .execute(projectDescriptor);
     }
 
     @Extension

@@ -6,6 +6,6 @@ import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 class FinalizeReleaseVersionActionFactory : ReleaseActionFactory<FinalizeReleaseVersionAction> {
 
     override fun create(extension: EazyReleasePluginExtension): FinalizeReleaseVersionAction =
-        FinalizeReleaseVersionAction(extension.projectActionsFactory, extension.scmActions)
+        FinalizeReleaseVersionAction(extension.scmActions)
 
 }

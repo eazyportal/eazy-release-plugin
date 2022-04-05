@@ -1,6 +1,7 @@
 package org.eazyportal.plugin.release.core.action
 
-import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
+import org.eazyportal.plugin.release.core.model.Project
+import org.eazyportal.plugin.release.core.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
@@ -16,7 +17,6 @@ import java.io.File
 
 open class SetReleaseVersionAction(
     private val conventionalCommitTypes: List<ConventionalCommitType>,
-    private val projectActionsFactory: ProjectActionsFactory,
     private val releaseVersionProvider: ReleaseVersionProvider,
     private val scmActions: ScmActions,
     private val scmConfig: ScmConfig,
@@ -28,33 +28,28 @@ open class SetReleaseVersionAction(
         private val LOGGER = LoggerFactory.getLogger(SetReleaseVersionAction::class.java)
     }
 
-    override fun execute(workingDir: File) {
-        val submodulesDir = scmActions.getSubmodules(workingDir)
-            .map { workingDir.resolve(it) }
+    override fun execute(projectDescriptor: ProjectDescriptor) {
+        LOGGER.info("Setting release version...")
 
-        val allProjectsDir = listOf(*submodulesDir.toTypedArray(), workingDir)
+        projectDescriptor.allProjects.run {
+            val releaseVersion = getReleaseVersion()
 
-        val releaseVersion = getReleaseVersion(allProjectsDir)
+            forEach {
+                if (scmConfig.releaseBranch != scmConfig.featureBranch) {
+                    scmActions.checkout(it.dir, scmConfig.releaseBranch)
 
-        allProjectsDir.onEach {
-            val projectActions = projectActionsFactory.create(it)
+                    scmActions.mergeNoCommit(it.dir, scmConfig.featureBranch)
+                }
 
-            if (scmConfig.releaseBranch != scmConfig.featureBranch) {
-                scmActions.checkout(it, scmConfig.releaseBranch)
-
-                scmActions.mergeNoCommit(it, scmConfig.featureBranch)
+                it.projectActions.setVersion(releaseVersion)
             }
-
-            projectActions.setVersion(releaseVersion)
         }
     }
 
-    private fun getReleaseVersion(projectDirs: List<File>): Version = projectDirs
-        .mapNotNull {
-            val projectActions = projectActionsFactory.create(it)
-
-            val currentVersion = projectActions.getVersion()
-            val versionIncrement = getVersionIncrement(it)
+    private fun List<Project>.getReleaseVersion(): Version =
+        mapNotNull {
+            val currentVersion = it.projectActions.getVersion()
+            val versionIncrement = it.dir.getVersionIncrement()
 
             if ((versionIncrement == null) || (versionIncrement == NONE)) {
                 null
@@ -66,9 +61,9 @@ open class SetReleaseVersionAction(
         .maxWithOrNull(VersionComparator())
         ?: throw IllegalArgumentException("There are no acceptable commits.")
 
-    private fun getVersionIncrement(workingDir: File): VersionIncrement? {
+    private fun File.getVersionIncrement(): VersionIncrement? {
         val lastTag = try {
-            scmActions.getLastTag(workingDir)
+            scmActions.getLastTag(this)
         }
         catch (exception: ScmActionException) {
             LOGGER.warn("Ignoring missing Git tag from release version calculation.")
@@ -76,7 +71,7 @@ open class SetReleaseVersionAction(
             null
         }
 
-        return scmActions.getCommits(workingDir, lastTag)
+        return scmActions.getCommits(this, lastTag)
             .let { versionIncrementProvider.provide(it, conventionalCommitTypes) }
     }
 

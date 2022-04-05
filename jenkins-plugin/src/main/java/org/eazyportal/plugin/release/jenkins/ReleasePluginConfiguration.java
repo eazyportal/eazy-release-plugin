@@ -1,6 +1,7 @@
 package org.eazyportal.plugin.release.jenkins;
 
 import hudson.Extension;
+import org.eazyportal.plugin.release.core.ProjectDescriptorFactory;
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider;
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider;
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider;
@@ -8,6 +9,11 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean
 public class ReleasePluginConfiguration {
+
+    @Extension
+    public static ProjectDescriptorFactory projectDescriptorFactory() {
+        return new ProjectDescriptorFactory();
+    }
 
     @Extension
     public static ReleaseVersionProvider releaseVersionProvider() {

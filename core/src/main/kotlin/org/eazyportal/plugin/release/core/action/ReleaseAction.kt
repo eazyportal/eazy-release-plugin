@@ -1,9 +1,9 @@
 package org.eazyportal.plugin.release.core.action
 
-import java.io.File
+import org.eazyportal.plugin.release.core.model.ProjectDescriptor
 
 interface ReleaseAction {
 
-    fun execute(workingDir: File)
+    fun execute(projectDescriptor: ProjectDescriptor)
 
 }

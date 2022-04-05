@@ -8,7 +8,6 @@ class SetSnapshotVersionActionFactory : ReleaseActionFactory<SetSnapshotVersionA
 
     override fun create(extension: EazyReleasePluginExtension): SetSnapshotVersionAction =
         SetSnapshotVersionAction(
-            extension.projectActionsFactory,
             extension.scmActions,
             extension.scmConfig,
             SnapshotVersionProvider()

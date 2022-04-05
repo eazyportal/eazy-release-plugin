@@ -9,14 +9,14 @@ import java.io.File
 class PrepareRepositoryForReleaseAction(
     private val scmActions: ScmActions,
     private val scmConfig: ScmConfig
-) : ReleaseAction {
+) {
 
     private companion object {
         @JvmStatic
         val LOGGER: Logger = LoggerFactory.getLogger(PrepareRepositoryForReleaseAction::class.java)
     }
 
-    override fun execute(workingDir: File) {
+    fun execute(workingDir: File) {
         LOGGER.info("Preparing repository for release...")
 
         scmActions.fetch(workingDir, scmConfig.remote)
