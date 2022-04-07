@@ -22,8 +22,12 @@ class VersionIncrementProvider {
         val commitTypeDelimiterIndex = commit.indexOf(ConventionalCommitType.TYPE_DELIMITER)
 
         return if (commitTypeDelimiterIndex > 1) {
-            commit.substring(0, commitTypeDelimiterIndex)
-        } else {
+            commit
+                .substring(0, commitTypeDelimiterIndex)
+                .trim()
+                .replace(ConventionalCommitType.COMMIT_TYPE_REGEX, "\${type}")
+        }
+        else {
             LOGGER.warn("Ignoring invalid commit: $commit")
 
             null

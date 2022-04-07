@@ -12,6 +12,8 @@ data class ConventionalCommitType(
         const val TYPE_DELIMITER = ':'
 
         @JvmStatic
+        val COMMIT_TYPE_REGEX = Regex("^(?<type>\\w*+)(?:\\((?<scope>.*?)\\))?(?:\\[(?<ticket>.*?)\\])?$")
+        @JvmStatic
         val DEFAULT_TYPES = listOf(
             ConventionalCommitType(listOf("BREAKING CHANGE"), VersionIncrement.MAJOR),
 
