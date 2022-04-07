@@ -17,7 +17,7 @@ public class ProjectDescriptorFactory extends InvisibleAction implements Seriali
     @Inject
     private transient ReleaseStepConfig releaseStepConfig;
 
-    private final org.eazyportal.plugin.release.core.ProjectDescriptorFactory delegate =
+    private final transient org.eazyportal.plugin.release.core.ProjectDescriptorFactory delegate =
         new org.eazyportal.plugin.release.core.ProjectDescriptorFactory();
 
     public ProjectDescriptor create(File workingDir) {
