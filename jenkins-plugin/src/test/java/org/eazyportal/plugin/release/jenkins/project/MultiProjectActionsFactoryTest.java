@@ -1,12 +1,11 @@
 package org.eazyportal.plugin.release.jenkins.project;
 
-import com.google.common.io.Files;
 import org.eazyportal.plugin.release.core.project.ProjectActions;
 import org.eazyportal.plugin.release.core.project.exception.InvalidProjectTypeException;
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -20,18 +19,12 @@ class MultiProjectActionsFactoryTest {
 
     private MultiProjectActionsFactory underTest;
 
+    @TempDir
     private File workingDir;
 
     @BeforeEach
     void setUp() {
         underTest = new MultiProjectActionsFactory();
-
-        workingDir = Files.createTempDir();
-    }
-
-    @AfterEach
-    void tearDown() {
-        workingDir.deleteOnExit();
     }
 
     @CsvSource({ GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME, "build.gradle", "build.gradle.kts" })

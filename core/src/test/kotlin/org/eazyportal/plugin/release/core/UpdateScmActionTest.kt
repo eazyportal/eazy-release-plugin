@@ -3,6 +3,7 @@ package org.eazyportal.plugin.release.core
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -24,7 +25,8 @@ internal class UpdateScmActionTest {
         )
     }
 
-    private val workingDir = File("")
+    @TempDir
+    private lateinit var workingDir: File
 
     @Mock
     private lateinit var scmActions: ScmActions

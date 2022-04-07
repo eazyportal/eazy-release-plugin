@@ -7,6 +7,7 @@ import org.eazyportal.plugin.release.core.scm.GitActions.Companion.GIT_EXECUTABL
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -32,7 +33,8 @@ internal class GitActionsTest {
         val TAGS = listOf(TAG_1, TAG_2, TAG_3)
     }
 
-    private val workingDir = File("")
+    @TempDir
+    private lateinit var workingDir: File
 
     @Mock
     private lateinit var commandExecutor: CommandExecutor

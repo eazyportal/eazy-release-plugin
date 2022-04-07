@@ -8,6 +8,7 @@ import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
 import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -21,7 +22,8 @@ import java.io.File
 
 internal class SetSnapshotVersionActionTest {
 
-    private val workingDir = File("")
+    @TempDir
+    private lateinit var workingDir: File
 
     @Mock
     private lateinit var projectActionsFactory: ProjectActionsFactory

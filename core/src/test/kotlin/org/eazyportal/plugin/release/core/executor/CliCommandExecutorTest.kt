@@ -3,27 +3,22 @@ package org.eazyportal.plugin.release.core.executor
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.executor.exception.CliExecutionException
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.condition.DisabledOnOs
 import org.junit.jupiter.api.condition.EnabledOnOs
 import org.junit.jupiter.api.condition.OS.WINDOWS
-import java.nio.file.Files
+import org.junit.jupiter.api.io.TempDir
+import java.io.File
 
 @TestInstance(PER_CLASS)
 internal class CliCommandExecutorTest {
 
-    private val workingDir = Files.createTempDirectory("")
-        .toFile()
+    @TempDir
+    private lateinit var workingDir: File
 
     private val underTest = CliCommandExecutor()
-
-    @AfterAll
-    fun cleanUp() {
-        workingDir.delete()
-    }
 
     @EnabledOnOs(WINDOWS)
     @Test
