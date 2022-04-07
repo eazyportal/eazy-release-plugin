@@ -1,6 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.action;
 
-import org.eazyportal.plugin.release.core.SetSnapshotVersionAction;
+import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction;
 import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider;
@@ -48,8 +48,7 @@ class SetSnapshotVersionActionFactoryTest {
         // THEN
         SetSnapshotVersionAction actual = underTest.create();
 
-        assertThat(actual.getScmActions()).isEqualTo(scmActions);
-        assertThat(actual.getScmConfig()).isEqualTo(ScmConfig.getGIT_FLOW());
+        assertThat(actual).hasNoNullFieldsOrProperties();
 
         verifyNoInteractions(multiProjectActionsFactory, scmActions, snapshotVersionProvider);
         verify(releaseStepConfig).getScmActions();

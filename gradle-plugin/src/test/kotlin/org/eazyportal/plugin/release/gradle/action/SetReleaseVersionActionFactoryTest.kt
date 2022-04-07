@@ -1,11 +1,11 @@
-package org.eazyportal.plugin.release.gradle
+package org.eazyportal.plugin.release.gradle.action
 
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
-import org.eazyportal.plugin.release.core.version.model.VersionIncrement
+import org.eazyportal.plugin.release.core.version.model.VersionIncrement.MAJOR
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
@@ -20,7 +20,7 @@ internal class SetReleaseVersionActionFactoryTest {
         @JvmStatic
         fun create() = listOf(
             Arguments.of(listOf<ConventionalCommitType>()),
-            Arguments.of(listOf(ConventionalCommitType(listOf("dummy"), VersionIncrement.MAJOR))),
+            Arguments.of(listOf(ConventionalCommitType(listOf("dummy"), MAJOR))),
             Arguments.of(ConventionalCommitType.DEFAULT_TYPES)
         )
     }
@@ -36,11 +36,11 @@ internal class SetReleaseVersionActionFactoryTest {
     @ParameterizedTest
     fun test_create(conventionalCommitTypes: List<ConventionalCommitType>) {
         // GIVEN
-        val extension = mock<EazyReleasePluginExtension>()
+        val extension: EazyReleasePluginExtension = mock()
 
-        val projectActionsFactory = mock<ProjectActionsFactory>()
-        val scmActions = mock<ScmActions>()
-        val scmConfig = mock<ScmConfig>()
+        val projectActionsFactory: ProjectActionsFactory = mock()
+        val scmActions: ScmActions = mock()
+        val scmConfig: ScmConfig = mock()
 
         // WHEN
         whenever(extension.conventionalCommitTypes).thenReturn(conventionalCommitTypes)
@@ -51,10 +51,7 @@ internal class SetReleaseVersionActionFactoryTest {
         // THEN
         val actual = underTest.create(extension)
 
-        assertThat(actual.conventionalCommitTypes).isEqualTo(conventionalCommitTypes)
-        assertThat(actual.scmActions).isEqualTo(scmActions)
-        assertThat(actual.scmConfig).isEqualTo(scmConfig)
-        assertThat(actual).hasNoNullFieldsOrProperties()
+        Assertions.assertThat(actual).hasNoNullFieldsOrProperties()
     }
 
 }

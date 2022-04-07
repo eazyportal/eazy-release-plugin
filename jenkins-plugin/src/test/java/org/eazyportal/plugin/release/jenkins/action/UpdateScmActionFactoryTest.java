@@ -1,6 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.action;
 
-import org.eazyportal.plugin.release.core.UpdateScmAction;
+import org.eazyportal.plugin.release.core.action.UpdateScmAction;
 import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
@@ -42,8 +42,7 @@ class UpdateScmActionFactoryTest {
         // THEN
         UpdateScmAction actual = underTest.create();
 
-        assertThat(actual.getScmActions()).isEqualTo(scmActions);
-        assertThat(actual.getScmConfig()).isEqualTo(ScmConfig.getGIT_FLOW());
+        assertThat(actual).hasNoNullFieldsOrProperties();
 
         verifyNoInteractions(scmActions);
         verify(releaseStepConfig).getScmActions();

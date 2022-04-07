@@ -1,6 +1,6 @@
-package org.eazyportal.plugin.release.gradle
+package org.eazyportal.plugin.release.gradle.action
 
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
@@ -21,11 +21,11 @@ internal class SetSnapshotVersionActionFactoryTest {
 
     @Test
     fun test_create() {
-        val extension = mock<EazyReleasePluginExtension>()
+        val extension: EazyReleasePluginExtension = mock()
 
-        val projectActionsFactory = mock<ProjectActionsFactory>()
-        val scmActions = mock<ScmActions>()
-        val scmConfig = mock<ScmConfig>()
+        val projectActionsFactory: ProjectActionsFactory = mock()
+        val scmActions: ScmActions = mock()
+        val scmConfig: ScmConfig = mock()
 
         // WHEN
         whenever(extension.projectActionsFactory).thenReturn(projectActionsFactory)
@@ -35,9 +35,7 @@ internal class SetSnapshotVersionActionFactoryTest {
         // THEN
         val actual = underTest.create(extension)
 
-        assertThat(actual.scmActions).isEqualTo(scmActions)
-        assertThat(actual.scmConfig).isEqualTo(scmConfig)
-        assertThat(actual).hasNoNullFieldsOrProperties()
+        Assertions.assertThat(actual).hasNoNullFieldsOrProperties()
     }
 
 }

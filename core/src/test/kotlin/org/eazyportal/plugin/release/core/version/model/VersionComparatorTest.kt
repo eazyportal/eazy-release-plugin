@@ -10,29 +10,29 @@ internal class VersionComparatorTest {
     companion object {
         @JvmStatic
         fun compare() = listOf(
-            Arguments.of(Version(0, 0, 1), null, -1),
+            Arguments.of(VersionFixtures.RELEASE_001, null, -1),
             Arguments.of(null, null, 0),
-            Arguments.of(null, Version(0, 0, 1), 1),
+            Arguments.of(null, VersionFixtures.RELEASE_001, 1),
 
-            Arguments.of(Version(0, 0, 1), Version(0, 0, 1, Version.DEVELOPMENT_VERSION_SUFFIX), -1),
+            Arguments.of(VersionFixtures.RELEASE_001, VersionFixtures.SNAPSHOT_001, -1),
 
-            Arguments.of(Version(0, 0, 1), Version(0, 0, 2), -1),
-            Arguments.of(Version(0, 0, 1), Version(0, 0, 1), 0),
-            Arguments.of(Version(0, 0, 2), Version(0, 0, 1), 1),
+            Arguments.of(VersionFixtures.RELEASE_001, VersionFixtures.RELEASE_002, -1),
+            Arguments.of(VersionFixtures.RELEASE_001, VersionFixtures.RELEASE_001, 0),
+            Arguments.of(VersionFixtures.RELEASE_002, VersionFixtures.RELEASE_001, 1),
 
-            Arguments.of(Version(0, 1, 0), Version(0, 2, 0), -1),
-            Arguments.of(Version(0, 1, 0), Version(0, 1, 0), 0),
-            Arguments.of(Version(0, 2, 0), Version(0, 1, 0), 1),
+            Arguments.of(VersionFixtures.RELEASE_010, VersionFixtures.RELEASE_020, -1),
+            Arguments.of(VersionFixtures.RELEASE_010, VersionFixtures.RELEASE_010, 0),
+            Arguments.of(VersionFixtures.RELEASE_020, VersionFixtures.RELEASE_010, 1),
 
-            Arguments.of(Version(1, 0, 0), Version(2, 0, 0), -1),
-            Arguments.of(Version(1, 0, 0), Version(1, 0, 0), 0),
-            Arguments.of(Version(2, 0, 0), Version(1, 0, 0), 1),
+            Arguments.of(VersionFixtures.RELEASE_100, VersionFixtures.RELEASE_200, -1),
+            Arguments.of(VersionFixtures.RELEASE_100, VersionFixtures.RELEASE_100, 0),
+            Arguments.of(VersionFixtures.RELEASE_200, VersionFixtures.RELEASE_100, 1),
 
-            Arguments.of(Version(1, 0, 0), Version(0, 0, 1), 1),
-            Arguments.of(Version(0, 0, 1), Version(1, 0, 0), -1),
+            Arguments.of(VersionFixtures.RELEASE_100, VersionFixtures.RELEASE_001, 1),
+            Arguments.of(VersionFixtures.RELEASE_001, VersionFixtures.RELEASE_100, -1),
 
-            Arguments.of(Version(1, 0, 0), Version(1, 0, 0, "1"), -1),
-            Arguments.of(Version(1, 0, 0, "1"), Version(1, 0, 0), 1),
+            Arguments.of(VersionFixtures.RELEASE_100, Version(1, 0, 0, "1"), -1),
+            Arguments.of(Version(1, 0, 0, "1"), VersionFixtures.RELEASE_100, 1),
 
             Arguments.of(Version(1, 0, 0, "1.1"), Version(1, 0, 0, "1.1.1"), -1),
             Arguments.of(Version(1, 0, 0, "1.1"), Version(1, 0, 0, "1.1"), 0),

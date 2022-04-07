@@ -5,7 +5,8 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.project.exception.InvalidProjectLocationException
 import org.eazyportal.plugin.release.core.project.exception.MissingProjectVersionPropertyException
 import org.eazyportal.plugin.release.core.project.exception.MultipleProjectVersionPropertyException
-import org.eazyportal.plugin.release.core.version.model.Version
+import org.eazyportal.plugin.release.core.project.exception.ProjectVersionPropertyException
+import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -18,26 +19,25 @@ internal class GradleProjectActionsTest {
     companion object {
         @JvmStatic
         fun getVersion() = listOf(
-            Arguments.of("version=0.1.0-SNAPSHOT", "0.1.0-SNAPSHOT"),
-            Arguments.of("version= 0.1.0-SNAPSHOT", "0.1.0-SNAPSHOT"),
-            Arguments.of("version =0.1.0-SNAPSHOT", "0.1.0-SNAPSHOT"),
-            Arguments.of("version = 0.1.0-SNAPSHOT", "0.1.0-SNAPSHOT"),
-            Arguments.of("  version = 0.1.0-SNAPSHOT  ", "0.1.0-SNAPSHOT"),
+            Arguments.of("version=0.1.0-SNAPSHOT", VersionFixtures.SNAPSHOT_010.toString()),
+            Arguments.of("version= 0.1.0-SNAPSHOT", VersionFixtures.SNAPSHOT_010.toString()),
+            Arguments.of("version =0.1.0-SNAPSHOT", VersionFixtures.SNAPSHOT_010.toString()),
+            Arguments.of("version = 0.1.0-SNAPSHOT", VersionFixtures.SNAPSHOT_010.toString()),
+            Arguments.of("  version = 0.1.0-SNAPSHOT  ", VersionFixtures.SNAPSHOT_010.toString()),
             Arguments.of("version = 0.1.0-alpha", "0.1.0-alpha"),
             Arguments.of("version = 0.1.0-alpha+b123", "0.1.0-alpha+b123")
         )
 
         @JvmStatic
-        fun setVersion() = listOf(
-            Arguments.of("", Version(0, 1, 0, "SNAPSHOT")),
-            Arguments.of("version = 0.0.1", Version(0, 1, 0, "SNAPSHOT")),
+        fun setVersion_shouldFail_whenVersionPropertyIsMissing() = listOf(
+            Arguments.of(""),
             Arguments.of(
                 """
                 property1 = value1
 
                 property2 = value2
-                """.trimIndent(),
-                Version(0, 1, 0, "SNAPSHOT"))
+                """.trimIndent()
+            )
         )
     }
 
@@ -97,7 +97,7 @@ internal class GradleProjectActionsTest {
         // THEN
         assertThatThrownBy { underTest.getVersion() }
             .isInstanceOf(InvalidProjectLocationException::class.java)
-            .hasMessage("'gradle.properties' file is missing: $gradlePropertiesFile")
+            .hasMessage("'${GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME}' file is missing in: $workingDir")
     }
 
     @Test
@@ -139,18 +139,17 @@ internal class GradleProjectActionsTest {
         assertThat(actual).isNotEmpty
     }
 
-    @MethodSource("setVersion")
-    @ParameterizedTest
-    fun test_setVersion(initialProperties: String, version: Version) {
+    @Test
+    fun test_setVersion() {
         // GIVEN
-        gradlePropertiesFile.writeText(initialProperties)
+        gradlePropertiesFile.writeText("version = 0.0.1")
 
         // WHEN
         // THEN
-        underTest.setVersion(version)
+        underTest.setVersion(VersionFixtures.RELEASE_002)
 
         assertThat(gradlePropertiesFile.readText())
-            .contains("version = $version")
+            .contains("version = ${VersionFixtures.RELEASE_002}")
     }
 
     @Test
@@ -163,9 +162,22 @@ internal class GradleProjectActionsTest {
 
         // WHEN
         // THEN
-        assertThatThrownBy { underTest.setVersion(Version(0, 0, 1)) }
+        assertThatThrownBy { underTest.setVersion(VersionFixtures.RELEASE_001) }
             .isInstanceOf(MultipleProjectVersionPropertyException::class.java)
             .hasMessage("The project has multiple versions: [version = 0.0.0, version = 0.0.1]")
+    }
+
+    @MethodSource("setVersion_shouldFail_whenVersionPropertyIsMissing")
+    @ParameterizedTest
+    fun test_setVersion_shouldFail_whenVersionPropertyIsMissing(initialProperties: String) {
+        // GIVEN
+        gradlePropertiesFile.writeText(initialProperties)
+
+        // WHEN
+        // THEN
+        assertThatThrownBy { underTest.setVersion(VersionFixtures.RELEASE_001) }
+            .isInstanceOf(ProjectVersionPropertyException::class.java)
+            .hasMessage("The project does not have version property.")
     }
 
 }

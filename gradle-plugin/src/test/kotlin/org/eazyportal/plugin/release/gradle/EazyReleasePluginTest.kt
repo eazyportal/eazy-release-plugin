@@ -10,7 +10,8 @@ import java.nio.file.Files
 
 internal class EazyReleasePluginTest {
 
-    private val workingDir = Files.createTempDirectory("").toFile()
+    private val workingDir = Files.createTempDirectory("")
+        .toFile()
 
     private lateinit var gradleRunner: GradleRunner
 

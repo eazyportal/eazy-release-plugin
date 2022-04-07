@@ -28,15 +28,15 @@ internal class VersionTest {
 
         @JvmStatic
         fun isRelease() = listOf(
-            Arguments.of(Version(0, 0, 1), true),
-            Arguments.of(Version(0, 0, 1, "SNAPSHOT"), false),
+            Arguments.of(VersionFixtures.RELEASE_001, true),
+            Arguments.of(VersionFixtures.SNAPSHOT_010, false),
             Arguments.of(Version(0, 0, 1, "SNAPSHOT", "build"), false)
         )
 
         @JvmStatic
         fun of_validVersions() = listOf(
-            Arguments.of("1.0.0", Version(1, 0, 0)),
-            Arguments.of("1.0.0-SNAPSHOT", Version(1, 0, 0, "SNAPSHOT")),
+            Arguments.of("1.0.0", VersionFixtures.RELEASE_100),
+            Arguments.of("1.0.0-SNAPSHOT", VersionFixtures.SNAPSHOT_100),
             Arguments.of("1.0.0-SNAPSHOT+b123", Version(1, 0, 0, "SNAPSHOT", "b123")),
             Arguments.of("1.0.0+b123", Version(1, 0, 0, null, "b123"))
         )
@@ -54,16 +54,12 @@ internal class VersionTest {
     @Test
     fun test_compare() {
         // GIVEN
-        val version1 = Version(1, 0, 0)
-        val version2 = Version(2, 0, 0)
-        val version3 = Version(3, 0, 0)
-
         // WHEN
         // THEN
-        assertThat(version1 < version2).isTrue
-        assertThat(version2 < version3).isTrue
-        assertThat(version3 > version1).isTrue
-        assertThat(version2 == version2).isTrue
+        assertThat(VersionFixtures.RELEASE_001 < VersionFixtures.RELEASE_002).isTrue
+        assertThat(VersionFixtures.RELEASE_002 < VersionFixtures.RELEASE_003).isTrue
+        assertThat(VersionFixtures.RELEASE_003 > VersionFixtures.RELEASE_001).isTrue
+        assertThat(VersionFixtures.RELEASE_002 == VersionFixtures.RELEASE_002).isTrue
     }
 
     @MethodSource("init_validVersions")

@@ -33,6 +33,10 @@ internal class VersionIncrementProviderTest {
 
             Arguments.of(listOf("feature: message"), listOf<ConventionalCommitType>(), null),
             Arguments.of(listOf("feature: message"), listOf(ConventionalCommitType(listOf("test"), VersionIncrement.NONE)), null),
+
+            Arguments.of(listOf("feature(scope): message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.MINOR),
+            Arguments.of(listOf("feature[ticket-id]: message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.MINOR),
+            Arguments.of(listOf("feature(scope)[ticket-id]: message"), ConventionalCommitType.DEFAULT_TYPES, VersionIncrement.MINOR),
         )
     }
 

@@ -1,6 +1,9 @@
 package org.eazyportal.plugin.release.jenkins;
 
 import hudson.model.Run;
+import org.eazyportal.plugin.release.jenkins.action.FinalizeReleaseVersionActionFactory;
+import org.eazyportal.plugin.release.jenkins.action.FinalizeSnapshotVersionActionFactory;
+import org.eazyportal.plugin.release.jenkins.action.PrepareRepositoryForReleaseActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.SetReleaseVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.UpdateScmActionFactory;
@@ -18,6 +21,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 class ReleasePluginRunListenerTest {
 
+    @Mock
+    private FinalizeReleaseVersionActionFactory finalizeReleaseVersionActionFactory;
+    @Mock
+    private FinalizeSnapshotVersionActionFactory finalizeSnapshotVersionActionFactory;
+    @Mock
+    private PrepareRepositoryForReleaseActionFactory prepareRepositoryForReleaseActionFactory;
+    @Mock
+    private ProjectDescriptorFactory projectDescriptorFactory;
     @Mock
     private SetReleaseVersionActionFactory setReleaseVersionActionFactory;
     @Mock
@@ -44,6 +55,10 @@ class ReleasePluginRunListenerTest {
         // THEN
         underTest.onInitialize(run);
 
+        verify(run).addAction(finalizeReleaseVersionActionFactory);
+        verify(run).addAction(finalizeSnapshotVersionActionFactory);
+        verify(run).addAction(prepareRepositoryForReleaseActionFactory);
+        verify(run).addAction(projectDescriptorFactory);
         verify(run).addAction(setReleaseVersionActionFactory);
         verify(run).addAction(setSnapshotVersionActionFactory);
         verify(run).addAction(updateScmActionFactory);

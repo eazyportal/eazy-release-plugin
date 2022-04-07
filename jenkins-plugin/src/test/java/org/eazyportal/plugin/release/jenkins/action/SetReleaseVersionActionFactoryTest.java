@@ -1,6 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.action;
 
-import org.eazyportal.plugin.release.core.SetReleaseVersionAction;
+import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction;
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType;
 import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
@@ -53,9 +53,7 @@ class SetReleaseVersionActionFactoryTest {
         // THEN
         SetReleaseVersionAction actual = underTest.create();
 
-        assertThat(actual.getConventionalCommitTypes()).isEqualTo(ConventionalCommitType.getDEFAULT_TYPES());
-        assertThat(actual.getScmActions()).isEqualTo(scmActions);
-        assertThat(actual.getScmConfig()).isEqualTo(ScmConfig.getGIT_FLOW());
+        assertThat(actual).hasNoNullFieldsOrProperties();
 
         verifyNoInteractions(multiProjectActionsFactory, scmActions, releaseVersionProvider, versionIncrementProvider);
         verify(releaseStepConfig).getConventionalCommitTypes();
