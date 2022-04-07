@@ -1,11 +1,11 @@
 package org.eazyportal.plugin.release.core.project
 
-import org.eazyportal.plugin.release.core.project.exception.InvalidProjectTypeException
+import org.eazyportal.plugin.release.core.project.exception.ProjectException
 import java.io.File
 
 interface ProjectActionsFactory {
 
-    @Throws(InvalidProjectTypeException::class)
+    @Throws(ProjectException::class)
     fun create(workingDir: File): ProjectActions
 
 }

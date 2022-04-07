@@ -2,6 +2,7 @@ package org.eazyportal.plugin.release.jenkins.project;
 
 import org.eazyportal.plugin.release.core.project.ProjectActions;
 import org.eazyportal.plugin.release.core.project.exception.InvalidProjectTypeException;
+import org.eazyportal.plugin.release.core.project.exception.ProjectException;
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ class MultiProjectActionsFactoryTest {
 
     @CsvSource({ GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME, "build.gradle", "build.gradle.kts" })
     @ParameterizedTest
-    void test_provide_GradleProject(String fileName) throws IOException, InvalidProjectTypeException {
+    void test_provide_GradleProject(String fileName) throws IOException, ProjectException {
         // GIVEN
         new File(workingDir, fileName).createNewFile();
 
