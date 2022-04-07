@@ -3,17 +3,10 @@ package org.eazyportal.plugin.release.core.version
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.version.exception.InvalidVersionException
-import org.eazyportal.plugin.release.core.version.model.Version
+import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.junit.jupiter.api.Test
 
 internal class SnapshotVersionProviderTest {
-
-    companion object {
-        @JvmStatic
-        private val RELEASE_001 = Version(0, 0, 1)
-        @JvmStatic
-        private val SNAPSHOT_002 = Version(0, 0, 2, Version.DEVELOPMENT_VERSION_SUFFIX)
-    }
 
     private val underTest = SnapshotVersionProvider()
 
@@ -22,9 +15,9 @@ internal class SnapshotVersionProviderTest {
         // GIVEN
         // WHEN
         // THEN
-        val actual = underTest.provide(RELEASE_001)
+        val actual = underTest.provide(VersionFixtures.RELEASE_001)
 
-        assertThat(actual).isEqualTo(SNAPSHOT_002)
+        assertThat(actual).isEqualTo(VersionFixtures.SNAPSHOT_002)
     }
 
     @Test
@@ -32,7 +25,7 @@ internal class SnapshotVersionProviderTest {
         // GIVEN
         // WHEN
         // THEN
-        assertThatThrownBy { underTest.provide(SNAPSHOT_002) }
+        assertThatThrownBy { underTest.provide(VersionFixtures.SNAPSHOT_002) }
             .isInstanceOf(InvalidVersionException::class.java)
             .hasMessage("Failed to set SNAPSHOT version, because project already on SNAPSHOT version.")
     }

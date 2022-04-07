@@ -6,6 +6,7 @@ import org.eazyportal.plugin.release.core.project.exception.InvalidProjectLocati
 import org.eazyportal.plugin.release.core.project.exception.MissingProjectVersionPropertyException
 import org.eazyportal.plugin.release.core.project.exception.MultipleProjectVersionPropertyException
 import org.eazyportal.plugin.release.core.version.model.Version
+import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -29,15 +30,15 @@ internal class GradleProjectActionsTest {
 
         @JvmStatic
         fun setVersion() = listOf(
-            Arguments.of("", Version(0, 1, 0, "SNAPSHOT")),
-            Arguments.of("version = 0.0.1", Version(0, 1, 0, "SNAPSHOT")),
+            Arguments.of("", VersionFixtures.SNAPSHOT_010),
+            Arguments.of("version = 0.0.1", VersionFixtures.SNAPSHOT_010),
             Arguments.of(
                 """
                 property1 = value1
 
                 property2 = value2
                 """.trimIndent(),
-                Version(0, 1, 0, "SNAPSHOT"))
+                VersionFixtures.SNAPSHOT_010)
         )
     }
 
@@ -163,7 +164,7 @@ internal class GradleProjectActionsTest {
 
         // WHEN
         // THEN
-        assertThatThrownBy { underTest.setVersion(Version(0, 0, 1)) }
+        assertThatThrownBy { underTest.setVersion(VersionFixtures.RELEASE_001) }
             .isInstanceOf(MultipleProjectVersionPropertyException::class.java)
             .hasMessage("The project has multiple versions: [version = 0.0.0, version = 0.0.1]")
     }

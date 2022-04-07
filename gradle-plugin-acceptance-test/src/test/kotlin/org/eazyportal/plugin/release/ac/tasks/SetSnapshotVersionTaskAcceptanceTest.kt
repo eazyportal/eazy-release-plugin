@@ -2,6 +2,7 @@ package org.eazyportal.plugin.release.ac.tasks
 
 import org.assertj.core.api.Assertions.assertThat
 import org.eazyportal.plugin.release.core.version.model.Version
+import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin.Companion.SET_SNAPSHOT_VERSION_TASK_NAME
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -14,7 +15,7 @@ internal class SetSnapshotVersionTaskAcceptanceTest : EazyBaseTaskAcceptanceTest
 
     @BeforeEach
     fun setUp() {
-        GRADLE_PROPERTIES_FILE.writeText("version = ${Version(1, 0, 0)}")
+        GRADLE_PROPERTIES_FILE.writeText("version = ${VersionFixtures.RELEASE_100}")
 
         gradleRunner = GradleRunner.create()
             .withProjectDir(PROJECT_DIR)

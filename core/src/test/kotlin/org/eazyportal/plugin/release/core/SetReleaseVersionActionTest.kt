@@ -9,7 +9,7 @@ import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider
-import org.eazyportal.plugin.release.core.version.model.Version
+import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,10 +32,9 @@ import java.io.File
 internal class SetReleaseVersionActionTest {
 
     private companion object {
+        @JvmStatic
         val COMMITS = listOf("fix: message", "test: message")
         const val GIT_TAG = "0.0.0"
-        val RELEASE_001 = Version(0, 0, 1)
-        val SNAPSHOT_001 = Version(0, 0, 1, Version.DEVELOPMENT_VERSION_SUFFIX)
 
         @JvmStatic
         fun invalidVersionIncrement() = listOf(
@@ -79,11 +78,11 @@ internal class SetReleaseVersionActionTest {
         underTest.scmConfig = ScmConfig.GIT_FLOW
 
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
-        whenever(projectActions.getVersion()).thenReturn(SNAPSHOT_001)
+        whenever(projectActions.getVersion()).thenReturn(VersionFixtures.SNAPSHOT_001)
         whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
         whenever(scmActions.getCommits(workingDir, GIT_TAG)).thenReturn(COMMITS)
         whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)
-        whenever(releaseVersionProvider.provide(SNAPSHOT_001, versionIncrement)).thenReturn(RELEASE_001)
+        whenever(releaseVersionProvider.provide(VersionFixtures.SNAPSHOT_001, versionIncrement)).thenReturn(VersionFixtures.RELEASE_001)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("dummy"))
 
         // THEN
@@ -97,10 +96,10 @@ internal class SetReleaseVersionActionTest {
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, GIT_TAG)
         verify(versionIncrementProvider).provide(COMMITS, conventionalCommitTypes)
-        verify(releaseVersionProvider).provide(SNAPSHOT_001, versionIncrement)
+        verify(releaseVersionProvider).provide(VersionFixtures.SNAPSHOT_001, versionIncrement)
         verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
         verify(scmActions).mergeNoCommit(workingDir, ScmConfig.GIT_FLOW.featureBranch)
-        verify(projectActions).setVersion(RELEASE_001)
+        verify(projectActions).setVersion(VersionFixtures.RELEASE_001)
         verify(projectActions).scmFilesToCommit()
         verify(scmActions).add(eq(workingDir), any())
         verify(scmActions).commit(eq(workingDir), any())
@@ -118,11 +117,11 @@ internal class SetReleaseVersionActionTest {
         underTest.scmConfig = ScmConfig.TRUNK_BASED_FLOW
 
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
-        whenever(projectActions.getVersion()).thenReturn(SNAPSHOT_001)
+        whenever(projectActions.getVersion()).thenReturn(VersionFixtures.SNAPSHOT_001)
         whenever(scmActions.getLastTag(workingDir)).thenReturn(GIT_TAG)
         whenever(scmActions.getCommits(workingDir, GIT_TAG)).thenReturn(COMMITS)
         whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)
-        whenever(releaseVersionProvider.provide(SNAPSHOT_001, versionIncrement)).thenReturn(RELEASE_001)
+        whenever(releaseVersionProvider.provide(VersionFixtures.SNAPSHOT_001, versionIncrement)).thenReturn(VersionFixtures.RELEASE_001)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("dummy"))
 
         // THEN
@@ -135,8 +134,8 @@ internal class SetReleaseVersionActionTest {
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, GIT_TAG)
         verify(versionIncrementProvider).provide(COMMITS, conventionalCommitTypes)
-        verify(releaseVersionProvider).provide(SNAPSHOT_001, versionIncrement)
-        verify(projectActions).setVersion(RELEASE_001)
+        verify(releaseVersionProvider).provide(VersionFixtures.SNAPSHOT_001, versionIncrement)
+        verify(projectActions).setVersion(VersionFixtures.RELEASE_001)
         verify(projectActions).scmFilesToCommit()
         verify(scmActions).add(eq(workingDir), any())
         verify(scmActions).commit(eq(workingDir), any())
@@ -152,11 +151,11 @@ internal class SetReleaseVersionActionTest {
 
         // WHEN
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
-        whenever(projectActions.getVersion()).thenReturn(SNAPSHOT_001)
+        whenever(projectActions.getVersion()).thenReturn(VersionFixtures.SNAPSHOT_001)
         whenever(scmActions.getLastTag(workingDir)).thenAnswer { throw ScmActionException(RuntimeException()) }
         whenever(scmActions.getCommits(workingDir, null)).thenReturn(COMMITS)
         whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)
-        whenever(releaseVersionProvider.provide(SNAPSHOT_001, versionIncrement)).thenReturn(RELEASE_001)
+        whenever(releaseVersionProvider.provide(VersionFixtures.SNAPSHOT_001, versionIncrement)).thenReturn(VersionFixtures.RELEASE_001)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("dummy"))
 
         // THEN
@@ -170,10 +169,10 @@ internal class SetReleaseVersionActionTest {
         verify(scmActions).getLastTag(workingDir)
         verify(scmActions).getCommits(workingDir, null)
         verify(versionIncrementProvider).provide(COMMITS, conventionalCommitTypes)
-        verify(releaseVersionProvider).provide(SNAPSHOT_001, versionIncrement)
+        verify(releaseVersionProvider).provide(VersionFixtures.SNAPSHOT_001, versionIncrement)
         verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
         verify(scmActions).mergeNoCommit(workingDir, ScmConfig.GIT_FLOW.featureBranch)
-        verify(projectActions).setVersion(RELEASE_001)
+        verify(projectActions).setVersion(VersionFixtures.RELEASE_001)
         verify(projectActions).scmFilesToCommit()
         verify(scmActions).add(eq(workingDir), any())
         verify(scmActions).commit(eq(workingDir), any())
@@ -189,7 +188,7 @@ internal class SetReleaseVersionActionTest {
 
         // WHEN
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
-        whenever(projectActions.getVersion()).thenReturn(SNAPSHOT_001)
+        whenever(projectActions.getVersion()).thenReturn(VersionFixtures.SNAPSHOT_001)
         whenever(scmActions.getLastTag(workingDir)).thenAnswer { throw ScmActionException(RuntimeException()) }
         whenever(scmActions.getCommits(workingDir, null)).thenReturn(COMMITS)
         whenever(versionIncrementProvider.provide(COMMITS, conventionalCommitTypes)).thenReturn(versionIncrement)

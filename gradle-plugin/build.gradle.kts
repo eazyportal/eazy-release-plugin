@@ -29,4 +29,6 @@ tasks {
 
 dependencies {
     implementation(project(":core"))
+
+    testImplementation(testFixtures(project(":core")))
 }

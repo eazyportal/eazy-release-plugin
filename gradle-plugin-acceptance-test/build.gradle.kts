@@ -13,4 +13,6 @@ tasks {
 dependencies {
     implementation(project(":core"))
     implementation(project(":gradle-plugin"))
+
+    testImplementation(testFixtures(project(":core")))
 }

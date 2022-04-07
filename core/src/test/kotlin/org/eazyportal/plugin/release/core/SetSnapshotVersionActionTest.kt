@@ -5,7 +5,7 @@ import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
-import org.eazyportal.plugin.release.core.version.model.Version
+import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
@@ -20,13 +20,6 @@ import org.mockito.kotlin.whenever
 import java.io.File
 
 internal class SetSnapshotVersionActionTest {
-
-    companion object {
-        @JvmStatic
-        private val RELEASE_001 = Version(0, 0, 1)
-        @JvmStatic
-        private val SNAPSHOT_002 = Version(0, 0, 2, Version.DEVELOPMENT_VERSION_SUFFIX)
-    }
 
     private val workingDir = File("")
 
@@ -56,8 +49,8 @@ internal class SetSnapshotVersionActionTest {
         underTest.scmConfig = ScmConfig.GIT_FLOW
 
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
-        whenever(projectActions.getVersion()).thenReturn(RELEASE_001)
-        whenever(snapshotVersionProvider.provide(RELEASE_001)).thenReturn(SNAPSHOT_002)
+        whenever(projectActions.getVersion()).thenReturn(VersionFixtures.RELEASE_001)
+        whenever(snapshotVersionProvider.provide(VersionFixtures.RELEASE_001)).thenReturn(VersionFixtures.SNAPSHOT_002)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("."))
 
         // THEN
@@ -67,10 +60,10 @@ internal class SetSnapshotVersionActionTest {
         verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
         verify(projectActionsFactory).create(workingDir)
         verify(projectActions).getVersion()
-        verify(snapshotVersionProvider).provide(RELEASE_001)
+        verify(snapshotVersionProvider).provide(VersionFixtures.RELEASE_001)
         verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
         verify(scmActions).mergeNoCommit(workingDir, ScmConfig.GIT_FLOW.releaseBranch)
-        verify(projectActions).setVersion(SNAPSHOT_002)
+        verify(projectActions).setVersion(VersionFixtures.SNAPSHOT_002)
         verify(projectActions).scmFilesToCommit()
         verify(scmActions).add(eq(workingDir), any())
         verify(scmActions).commit(eq(workingDir), any())
@@ -86,8 +79,8 @@ internal class SetSnapshotVersionActionTest {
         underTest.scmConfig = ScmConfig.TRUNK_BASED_FLOW
 
         whenever(projectActionsFactory.create(workingDir)).thenReturn(projectActions)
-        whenever(projectActions.getVersion()).thenReturn(RELEASE_001)
-        whenever(snapshotVersionProvider.provide(RELEASE_001)).thenReturn(SNAPSHOT_002)
+        whenever(projectActions.getVersion()).thenReturn(VersionFixtures.RELEASE_001)
+        whenever(snapshotVersionProvider.provide(VersionFixtures.RELEASE_001)).thenReturn(VersionFixtures.SNAPSHOT_002)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf("."))
 
         // THEN
@@ -96,8 +89,8 @@ internal class SetSnapshotVersionActionTest {
         verify(scmActions).getSubmodules(workingDir)
         verify(projectActionsFactory).create(workingDir)
         verify(projectActions).getVersion()
-        verify(snapshotVersionProvider).provide(RELEASE_001)
-        verify(projectActions).setVersion(SNAPSHOT_002)
+        verify(snapshotVersionProvider).provide(VersionFixtures.RELEASE_001)
+        verify(projectActions).setVersion(VersionFixtures.SNAPSHOT_002)
         verify(projectActions).scmFilesToCommit()
         verify(scmActions).add(eq(workingDir), any())
         verify(scmActions).commit(eq(workingDir), any())
