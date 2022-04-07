@@ -4,12 +4,11 @@ import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.core.project.exception.InvalidProjectTypeException
 import java.io.File
-import java.nio.file.Path
 
 class GradleProjectActionsFactory: ProjectActionsFactory {
 
     override fun create(workingDir: File): ProjectActions {
-        if (isGradleProject(workingDir.toPath())) {
+        if (workingDir.isGradleProjectDir()) {
             return GradleProjectActions(workingDir)
         }
 
@@ -18,7 +17,7 @@ class GradleProjectActionsFactory: ProjectActionsFactory {
 
 }
 
-fun isGradleProject(workingDirPath: Path) =
-    workingDirPath.resolve(GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME).toFile().exists() ||
-    workingDirPath.resolve("build.gradle").toFile().exists() ||
-    workingDirPath.resolve("build.gradle.kts").toFile().exists()
+fun File.isGradleProjectDir() =
+    resolve(GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME).exists() ||
+    resolve("build.gradle").exists() ||
+    resolve("build.gradle.kts").exists()
