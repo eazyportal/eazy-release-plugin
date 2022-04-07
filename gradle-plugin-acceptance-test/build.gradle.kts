@@ -8,6 +8,14 @@ tasks {
     jar {
         enabled = false
     }
+
+    test {
+        rootProject.allprojects.forEach {
+            if (it != project) {
+                mustRunAfter(it.tasks.test)
+            }
+        }
+    }
 }
 
 dependencies {
