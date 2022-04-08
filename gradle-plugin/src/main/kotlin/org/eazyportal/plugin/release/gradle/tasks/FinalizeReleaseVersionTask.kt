@@ -2,18 +2,18 @@ package org.eazyportal.plugin.release.gradle.tasks
 
 import org.eazyportal.plugin.release.core.ProjectDescriptorFactory
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor
-import org.eazyportal.plugin.release.gradle.action.SetSnapshotVersionActionFactory
+import org.eazyportal.plugin.release.gradle.action.FinalizeReleaseVersionActionFactory
 import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
-open class SetSnapshotVersionTask @Inject constructor(
+open class FinalizeReleaseVersionTask @Inject constructor(
     private val projectDescriptorFactory: ProjectDescriptorFactory,
-    private val setSnapshotVersionActionFactory: SetSnapshotVersionActionFactory
+    private val finalizeReleaseVersionActionFactory: FinalizeReleaseVersionActionFactory
 ) : EazyReleaseBaseTask() {
 
     @TaskAction
     fun run() {
-        logger.quiet("Setting SNAPSHOT version...")
+        logger.quiet("Finalizing release version...")
 
         val projectDescriptor: ProjectDescriptor = projectDescriptorFactory.create(
             extension.projectActionsFactory,
@@ -21,7 +21,7 @@ open class SetSnapshotVersionTask @Inject constructor(
             project.projectDir
         )
 
-        setSnapshotVersionActionFactory.create(extension)
+        finalizeReleaseVersionActionFactory.create(extension)
             .execute(projectDescriptor)
     }
 

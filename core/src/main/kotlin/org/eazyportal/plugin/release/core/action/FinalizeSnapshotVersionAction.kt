@@ -21,7 +21,7 @@ class FinalizeSnapshotVersionAction(
 
         projectDescriptor.allProjects.forEach {
             scmActions.add(it.dir, *it.projectActions.scmFilesToCommit())
-            scmActions.commit(it.dir, "New snapshot version: $snapshotVersion")
+            scmActions.commit(it.dir, "New SNAPSHOT version: $snapshotVersion")
         }
     }
 

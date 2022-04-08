@@ -1,6 +1,6 @@
 package org.eazyportal.plugin.release.ac.project
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.eazyportal.plugin.release.core.executor.CliCommandExecutor
 import org.eazyportal.plugin.release.core.scm.GitActions
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
@@ -32,7 +32,7 @@ internal abstract class BaseProjectAcceptanceTest {
 
         @BeforeAll
         @JvmStatic
-        fun initialize() {
+        fun initializeBaseProject() {
             ORIGIN_PROJECT_DIR = WORKING_DIR.resolve("origin/$PROJECT_NAME")
                 .also { Files.createDirectories(it.toPath()) }
 
@@ -80,7 +80,7 @@ internal abstract class BaseProjectAcceptanceTest {
             arrayOf("log", "--pretty=format:%s", "feature"),
             arrayOf("tag")
         ).forEach {
-            Assertions.assertThat(SCM_ACTIONS.execute(first, *it)).isEqualTo(SCM_ACTIONS.execute(second, *it))
+            assertThat(SCM_ACTIONS.execute(first, *it)).isEqualTo(SCM_ACTIONS.execute(second, *it))
         }
 
 }

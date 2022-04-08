@@ -47,7 +47,7 @@ internal class FinalizeSnapshotVersionActionTest : ReleaseActionBaseTest() {
         verify(projectActions, times(2)).scmFilesToCommit()
         projectDescriptor.allProjects.forEach {
             verify(scmActions).add(it.dir, FILE_TO_COMMIT)
-            verify(scmActions).commit(it.dir, "New snapshot version: ${VersionFixtures.SNAPSHOT_002}")
+            verify(scmActions).commit(it.dir, "New SNAPSHOT version: ${VersionFixtures.SNAPSHOT_002}")
         }
         verifyNoMoreInteractions(projectActions, scmActions)
     }

@@ -1,10 +1,10 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
 import org.eazyportal.plugin.release.core.ProjectDescriptorFactory
-import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction
+import org.eazyportal.plugin.release.core.action.FinalizeReleaseVersionAction
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
-import org.eazyportal.plugin.release.gradle.action.SetSnapshotVersionActionFactory
+import org.eazyportal.plugin.release.gradle.action.FinalizeReleaseVersionActionFactory
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -15,35 +15,35 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
-internal class SetSnapshotVersionTaskTest : EazyReleaseBaseTaskTest<SetSnapshotVersionTask>() {
+internal class FinalizeReleaseVersionTaskTest : EazyReleaseBaseTaskTest<FinalizeReleaseVersionTask>() {
 
     @Mock
     private lateinit var projectDescriptorFactory: ProjectDescriptorFactory
     @Mock
-    private lateinit var setSnapshotVersionActionFactory: SetSnapshotVersionActionFactory
+    private lateinit var finalizeReleaseVersionActionFactory: FinalizeReleaseVersionActionFactory
 
     @BeforeEach
-    fun setUp() {
+    fun init() {
         MockitoAnnotations.openMocks(this)
 
         underTest = project.tasks.create(
-            EazyReleasePlugin.SET_SNAPSHOT_VERSION_TASK_NAME,
-            SetSnapshotVersionTask::class.java,
-            projectDescriptorFactory ,
-            setSnapshotVersionActionFactory
+            EazyReleasePlugin.FINALIZE_RELEASE_VERSION_TASK_NAME,
+            FinalizeReleaseVersionTask::class.java,
+            projectDescriptorFactory,
+            finalizeReleaseVersionActionFactory
         )
     }
 
     @Test
     fun test_run() {
         // GIVEN
+        val finalizeReleaseVersionAction: FinalizeReleaseVersionAction = mock()
         val projectDescriptor: ProjectDescriptor = mock()
-        val setSnapshotVersionAction: SetSnapshotVersionAction = mock()
 
         // WHEN
         whenever(projectDescriptorFactory.create(extension.projectActionsFactory, extension.scmActions, project.projectDir))
             .thenReturn(projectDescriptor)
-        whenever(setSnapshotVersionActionFactory.create(extension)).thenReturn(setSnapshotVersionAction)
+        whenever(finalizeReleaseVersionActionFactory.create(extension)).thenReturn(finalizeReleaseVersionAction)
 
         // THEN
         underTest.run()
@@ -52,10 +52,10 @@ internal class SetSnapshotVersionTaskTest : EazyReleaseBaseTaskTest<SetSnapshotV
 
         verify(projectDescriptorFactory).create(extension.projectActionsFactory, extension.scmActions, project.projectDir)
 
-        verify(setSnapshotVersionActionFactory).create(extension)
-        verify(setSnapshotVersionAction).execute(projectDescriptor)
+        verify(finalizeReleaseVersionActionFactory).create(extension)
+        verify(finalizeReleaseVersionAction).execute(projectDescriptor)
 
-        verifyNoMoreInteractions(setSnapshotVersionAction, setSnapshotVersionActionFactory)
+        verifyNoMoreInteractions(finalizeReleaseVersionAction, finalizeReleaseVersionActionFactory, projectDescriptorFactory)
     }
 
 }

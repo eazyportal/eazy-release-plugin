@@ -3,10 +3,7 @@ package org.eazyportal.plugin.release.ac.tasks
 import org.assertj.core.api.Assertions.assertThat
 import org.eazyportal.plugin.release.core.version.model.Version
 import org.eazyportal.plugin.release.core.version.model.VersionFixtures
-import org.eazyportal.plugin.release.gradle.EazyReleasePlugin.Companion.RELEASE_TASK_NAME
-import org.eazyportal.plugin.release.gradle.EazyReleasePlugin.Companion.SET_RELEASE_VERSION_TASK_NAME
-import org.eazyportal.plugin.release.gradle.EazyReleasePlugin.Companion.SET_SNAPSHOT_VERSION_TASK_NAME
-import org.eazyportal.plugin.release.gradle.EazyReleasePlugin.Companion.UPDATE_SCM_TASK_NAME
+import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.BeforeEach
@@ -18,11 +15,12 @@ internal class ReleaseTaskAcceptanceTest : EazyBaseTaskAcceptanceTest() {
 
     @BeforeEach
     fun setUp() {
-        GRADLE_PROPERTIES_FILE.writeText("version = ${VersionFixtures.RELEASE_100}")
+        GRADLE_PROPERTIES_FILE.writeText("version = ${VersionFixtures.SNAPSHOT_100}")
 
         gradleRunner = GradleRunner.create()
+            .forwardOutput()
             .withProjectDir(PROJECT_DIR)
-            .withArguments(RELEASE_TASK_NAME)
+            .withArguments(EazyReleasePlugin.RELEASE_TASK_NAME)
             .withPluginClasspath()
     }
 
@@ -33,20 +31,29 @@ internal class ReleaseTaskAcceptanceTest : EazyBaseTaskAcceptanceTest() {
         val actual = gradleRunner.build()
 
         // THEN
-        assertThat(actual.task(":$SET_SNAPSHOT_VERSION_TASK_NAME")?.outcome)
+        assertThat(actual.task(":${EazyReleasePlugin.PREPARE_REPOSITORY_FOR_RELEASE_TASK_NAME}")?.outcome)
             .isEqualTo(TaskOutcome.SUCCESS)
 
-        assertThat(actual.task(":$SET_RELEASE_VERSION_TASK_NAME")?.outcome)
+        assertThat(actual.task(":${EazyReleasePlugin.SET_RELEASE_VERSION_TASK_NAME}")?.outcome)
             .isEqualTo(TaskOutcome.SUCCESS)
 
-        assertThat(actual.task(":$UPDATE_SCM_TASK_NAME")?.outcome)
+        assertThat(actual.task(":${EazyReleasePlugin.FINALIZE_RELEASE_VERSION_TASK_NAME}")?.outcome)
             .isEqualTo(TaskOutcome.SUCCESS)
 
-        assertThat(actual.task(":$RELEASE_TASK_NAME")?.outcome)
+        assertThat(actual.task(":${EazyReleasePlugin.SET_SNAPSHOT_VERSION_TASK_NAME}")?.outcome)
+            .isEqualTo(TaskOutcome.SUCCESS)
+
+        assertThat(actual.task(":${EazyReleasePlugin.FINALIZE_SNAPSHOT_VERSION_TASK_NAME}")?.outcome)
+            .isEqualTo(TaskOutcome.SUCCESS)
+
+        assertThat(actual.task(":${EazyReleasePlugin.UPDATE_SCM_TASK_NAME}")?.outcome)
+            .isEqualTo(TaskOutcome.SUCCESS)
+
+        assertThat(actual.task(":${EazyReleasePlugin.RELEASE_TASK_NAME}")?.outcome)
             .isEqualTo(TaskOutcome.SUCCESS)
 
         assertThat(GRADLE_PROPERTIES_FILE.readText())
-            .isEqualTo("version = ${Version(1, 1, 1, Version.DEVELOPMENT_VERSION_SUFFIX)}")
+            .isEqualTo("version = ${Version(1, 0, 1, Version.DEVELOPMENT_VERSION_SUFFIX)}")
     }
 
 }
