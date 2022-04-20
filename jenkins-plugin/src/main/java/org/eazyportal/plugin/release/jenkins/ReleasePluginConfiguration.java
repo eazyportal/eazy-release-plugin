@@ -2,7 +2,6 @@ package org.eazyportal.plugin.release.jenkins;
 
 import hudson.Extension;
 import org.eazyportal.plugin.release.core.ProjectDescriptorFactory;
-import org.eazyportal.plugin.release.core.project.ProjectActionsFactory;
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider;
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider;
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider;
@@ -13,7 +12,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 public class ReleasePluginConfiguration {
 
     @Extension
-    public static ProjectActionsFactory projectActionsFactory() {
+    public static GradleProjectActionsFactory projectActionsFactory() {
         return new GradleProjectActionsFactory();
     }
 
