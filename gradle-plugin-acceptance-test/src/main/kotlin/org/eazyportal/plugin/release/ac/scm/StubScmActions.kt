@@ -4,10 +4,10 @@ import org.eazyportal.plugin.release.core.scm.ScmActions
 import java.io.File
 
 class StubScmActions(
-    private val commits: List<String> = listOf("fix: message", "feature: message", "chore: message"),
-    private val lastTag: String = "0.1.1",
+    private val commits: List<String> = listOf("fix: message"),
+    private val lastTag: String = "0.0.1",
     private val submodules: List<String> = listOf(),
-    private val tags: List<String> = listOf("0.1.1", "stable")
+    private val tags: List<String> = listOf("0.0.1", "stable")
 ) : ScmActions {
 
     override fun add(workingDir: File, vararg filePaths: String) = Unit

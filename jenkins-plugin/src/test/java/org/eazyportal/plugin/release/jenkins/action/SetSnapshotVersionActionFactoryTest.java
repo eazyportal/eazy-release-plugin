@@ -1,11 +1,11 @@
 package org.eazyportal.plugin.release.jenkins.action;
 
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction;
+import org.eazyportal.plugin.release.core.project.ProjectActionsFactory;
 import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
-import org.eazyportal.plugin.release.jenkins.project.MultiProjectActionsFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 class SetSnapshotVersionActionFactoryTest {
 
     @Mock
-    private transient MultiProjectActionsFactory multiProjectActionsFactory;
+    private transient ProjectActionsFactory projectActionsFactory;
     @Mock
     private transient ReleaseStepConfig releaseStepConfig;
     @Mock
@@ -50,7 +50,7 @@ class SetSnapshotVersionActionFactoryTest {
 
         assertThat(actual).hasNoNullFieldsOrProperties();
 
-        verifyNoInteractions(multiProjectActionsFactory, scmActions, snapshotVersionProvider);
+        verifyNoInteractions(projectActionsFactory, scmActions, snapshotVersionProvider);
         verify(releaseStepConfig).getScmActions();
         verify(releaseStepConfig).getScmConfig();
         verifyNoMoreInteractions(releaseStepConfig);

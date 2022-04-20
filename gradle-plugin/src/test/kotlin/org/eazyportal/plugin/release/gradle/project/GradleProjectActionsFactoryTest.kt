@@ -1,6 +1,8 @@
 package org.eazyportal.plugin.release.gradle.project
 
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.project.exception.InvalidProjectTypeException
 import org.junit.jupiter.api.BeforeEach
@@ -30,12 +32,9 @@ internal class GradleProjectActionsFactoryTest {
 
         // WHEN
         // THEN
-
-        // WHEN
-        // THEN
         val actual: ProjectActions = underTest.create(workingDir)
 
-        Assertions.assertThat(actual).isInstanceOf(GradleProjectActions::class.java)
+        assertThat(actual).isInstanceOf(GradleProjectActions::class.java)
     }
 
     @Test
@@ -43,10 +42,9 @@ internal class GradleProjectActionsFactoryTest {
         // GIVEN
         // WHEN
         // THEN
-        Assertions.assertThatThrownBy { underTest.create(workingDir) }
+        assertThatThrownBy { underTest.create(workingDir) }
             .isInstanceOf(InvalidProjectTypeException::class.java)
             .hasMessage("Unable to identify the project type.")
     }
-
 
 }

@@ -6,7 +6,7 @@ import java.io.File
 
 class StubProjectActions(
     private val workingDir: File
-) : ProjectActions() {
+) : ProjectActions {
 
     companion object {
         const val VERSION_JSON_FILE_NAME = "version.json"
@@ -18,20 +18,20 @@ class StubProjectActions(
     private val versionJsonFile = workingDir.resolve(VERSION_JSON_FILE_NAME)
 
     override fun getVersion(): Version =
-        readVersion(versionJsonFile)
+        versionJsonFile.readLines()
+            .first { it.contains("version") }
+            .replace(VERSION_REGEX, "$1")
+            .let { Version.of(it) }
 
     override fun scmFilesToCommit(): Array<String> = arrayOf(".")
 
-    override fun setVersion(version: Version) =
-        writeVersion(versionJsonFile, version)
+    override fun setVersion(version: Version) {
+        val versionLine = versionJsonFile.readLines()
+            .first { it.contains("version") }
 
-    override fun String.getNewVersionLine(version: Version): String =
-        replace(this, """  "version": "$version"""")
-
-    override fun String.getVersionFromLine(): String =
-        replace(VERSION_REGEX, "$1")
-
-    override fun String.isVersionLine(): Boolean =
-        contains("version")
+        versionJsonFile.readText()
+            .replace(versionLine, """  "version": "$version"""")
+            .run { versionJsonFile.writeText(this) }
+    }
 
 }

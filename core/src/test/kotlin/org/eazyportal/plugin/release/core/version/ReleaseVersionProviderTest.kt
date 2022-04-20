@@ -18,6 +18,14 @@ internal class ReleaseVersionProviderTest {
                 Arguments.of(VersionFixtures.SNAPSHOT_001, VersionIncrement.MINOR, VersionFixtures.RELEASE_010),
                 Arguments.of(VersionFixtures.SNAPSHOT_001, VersionIncrement.MAJOR, VersionFixtures.RELEASE_100),
 
+                Arguments.of(VersionFixtures.SNAPSHOT_010, VersionIncrement.PATCH, VersionFixtures.RELEASE_010),
+                Arguments.of(VersionFixtures.SNAPSHOT_010, VersionIncrement.MINOR, VersionFixtures.RELEASE_020),
+                Arguments.of(VersionFixtures.SNAPSHOT_010, VersionIncrement.MAJOR, VersionFixtures.RELEASE_100),
+
+                Arguments.of(VersionFixtures.SNAPSHOT_100, VersionIncrement.PATCH, VersionFixtures.RELEASE_100),
+                Arguments.of(VersionFixtures.SNAPSHOT_100, VersionIncrement.MINOR, Version(1, 1, 0)),
+                Arguments.of(VersionFixtures.SNAPSHOT_100, VersionIncrement.MAJOR, VersionFixtures.RELEASE_200),
+
                 Arguments.of(VersionFixtures.RELEASE_001, VersionIncrement.PATCH, VersionFixtures.RELEASE_002),
                 Arguments.of(VersionFixtures.RELEASE_001, VersionIncrement.MINOR, VersionFixtures.RELEASE_010),
                 Arguments.of(VersionFixtures.RELEASE_001, VersionIncrement.MAJOR, VersionFixtures.RELEASE_100),

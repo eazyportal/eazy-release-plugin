@@ -13,7 +13,6 @@ import jenkins.tasks.SimpleBuildStep;
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
 import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
 import org.eazyportal.plugin.release.jenkins.action.FinalizeReleaseVersionActionFactory;
-import org.eazyportal.plugin.release.jenkins.action.FinalizeSnapshotVersionActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -22,10 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
-public class CommitVersionStep extends Builder implements SimpleBuildStep, Serializable {
+public class FinalizeReleaseVersionStep extends Builder implements SimpleBuildStep, Serializable {
 
     @DataBoundConstructor
-    public CommitVersionStep() {
+    public FinalizeReleaseVersionStep() {
         // required by Jenkins
     }
 
@@ -38,26 +37,19 @@ public class CommitVersionStep extends Builder implements SimpleBuildStep, Seria
         ProjectDescriptor projectDescriptor = run.getAction(ProjectDescriptorFactory.class)
             .create(workingDir);
 
-        if (projectDescriptor.getRootProject().getProjectActions().getVersion().isRelease()) {
-            run.getAction(FinalizeReleaseVersionActionFactory.class)
-                .create()
-                .execute(projectDescriptor);
-        }
-        else {
-            run.getAction(FinalizeSnapshotVersionActionFactory.class)
-                .create()
-                .execute(projectDescriptor);
-        }
+        run.getAction(FinalizeReleaseVersionActionFactory.class)
+            .create()
+            .execute(projectDescriptor);
     }
 
     @Extension
-    @Symbol("commitVersion")
-    public static final class CommitVersionStepDescriptor extends BuildStepDescriptor<Builder> {
+    @Symbol("finalizeReleaseVersion")
+    public static final class FinalizeReleaseVersionStepDescriptor extends BuildStepDescriptor<Builder> {
 
         @NotNull
         @Override
         public String getDisplayName() {
-            return "Commit current version";
+            return "Finalize release version";
         }
 
         @Override

@@ -1,13 +1,13 @@
 package org.eazyportal.plugin.release.jenkins.action;
 
 import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction;
+import org.eazyportal.plugin.release.core.project.ProjectActionsFactory;
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType;
 import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider;
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
-import org.eazyportal.plugin.release.jenkins.project.MultiProjectActionsFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 class SetReleaseVersionActionFactoryTest {
 
     @Mock
-    private transient MultiProjectActionsFactory multiProjectActionsFactory;
+    private transient ProjectActionsFactory projectActionsFactory;
     @Mock
     private transient ReleaseStepConfig releaseStepConfig;
     @Mock
@@ -55,7 +55,7 @@ class SetReleaseVersionActionFactoryTest {
 
         assertThat(actual).hasNoNullFieldsOrProperties();
 
-        verifyNoInteractions(multiProjectActionsFactory, scmActions, releaseVersionProvider, versionIncrementProvider);
+        verifyNoInteractions(projectActionsFactory, scmActions, releaseVersionProvider, versionIncrementProvider);
         verify(releaseStepConfig).getConventionalCommitTypes();
         verify(releaseStepConfig).getScmActions();
         verify(releaseStepConfig).getScmConfig();
