@@ -6,7 +6,10 @@ plugins {
 
 jenkinsPlugin {
     jenkinsVersion.set("2.332")
+
+    shortName = "eazy-release"
     displayName = "Eazy Release Plugin"
+    gitHubUrl = "https://github.com/eazyportal/eazyrelease-plugin"
 
     configurePublishing = false
     pluginFirstClassLoader = true
