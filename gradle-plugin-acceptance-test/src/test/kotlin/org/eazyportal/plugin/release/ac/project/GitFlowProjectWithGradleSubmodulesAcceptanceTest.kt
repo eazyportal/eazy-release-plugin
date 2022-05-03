@@ -156,9 +156,9 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
             assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("initial commit")
 
             assertThat(GradleProjectActions(projectDir).getVersion()).hasToString("0.1.0")
-        }
 
-        assertThrows<ScmActionException> { SCM_ACTIONS.getLastTag(PROJECT_DIR) }
+            assertThrows<ScmActionException> { SCM_ACTIONS.getLastTag(projectDir) }
+        }
     }
 
     @Order(12)
@@ -188,9 +188,9 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
 
             GradleProjectActions(projectDir).getVersion()
                 .run { assertThat(this).hasToString("0.1.0") }
-        }
 
-        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
+            assertThat(SCM_ACTIONS.getLastTag(projectDir)).isEqualTo("0.1.0")
+        }
     }
 
     @Order(13)
@@ -265,9 +265,9 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
 
         ALL_PROJECT_DIRS.forEach { projectDir ->
             assertThat(GradleProjectActions(projectDir).getVersion()).hasToString("0.1.1-SNAPSHOT")
-        }
 
-        assertThrows<ScmActionException> { SCM_ACTIONS.getLastTag(PROJECT_DIR) }
+            assertThrows<ScmActionException> { SCM_ACTIONS.getLastTag(projectDir) }
+        }
     }
 
     @Order(15)
@@ -295,11 +295,10 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
 
             assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("New SNAPSHOT version: 0.1.1-SNAPSHOT")
 
-            GradleProjectActions(projectDir).getVersion()
-                .run { assertThat(this).hasToString("0.1.1-SNAPSHOT") }
-        }
+            assertThat(GradleProjectActions(projectDir).getVersion()).hasToString("0.1.1-SNAPSHOT")
 
-        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
+            assertThat(SCM_ACTIONS.getLastTag(projectDir)).isEqualTo("0.1.0")
+        }
     }
 
     @Order(16)
@@ -358,6 +357,15 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
             "> Task :release",
             "16 actionable tasks: 15 executed, 1 up-to-date"
         )
+
+        ALL_PROJECT_DIRS.forEach { projectDir ->
+            assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("New SNAPSHOT version: 0.2.1-SNAPSHOT")
+
+            GradleProjectActions(projectDir).getVersion()
+                .run { assertThat(this).hasToString("0.2.1-SNAPSHOT") }
+
+            assertThat(SCM_ACTIONS.getLastTag(projectDir)).isEqualTo("0.2.0")
+        }
 
         listOf(PROJECT_DIR to ORIGIN_PROJECT_DIR, SUBMODULE_PROJECT_DIR to ORIGIN_SUBMODULE_PROJECT_DIR)
             .forEach { it.verifyGitCommitsAndTags() }
