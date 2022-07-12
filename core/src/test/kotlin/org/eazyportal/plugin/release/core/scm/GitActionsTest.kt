@@ -123,7 +123,7 @@ internal class GitActionsTest {
         // THEN
         assertThatThrownBy { underTest.execute(workingDir, "log") }
             .isInstanceOf(ScmActionException::class.java)
-            .cause
+            .cause()
             .hasMessage(errorMessage)
 
         verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "log")

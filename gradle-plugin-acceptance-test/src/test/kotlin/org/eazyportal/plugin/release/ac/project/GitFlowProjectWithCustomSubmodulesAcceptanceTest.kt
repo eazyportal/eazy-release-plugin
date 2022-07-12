@@ -3,7 +3,6 @@ package org.eazyportal.plugin.release.ac.project
 import org.assertj.core.api.Assertions.assertThat
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
-import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.Order
@@ -166,9 +165,9 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
             assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("initial commit")
 
             assertThat(PROJECT_ACTIONS_FACTORY.create(projectDir).getVersion()).hasToString("0.1.0")
-        }
 
-        assertThrows<ScmActionException> { SCM_ACTIONS.getLastTag(PROJECT_DIR) }
+            assertThrows<ScmActionException> { SCM_ACTIONS.getLastTag(projectDir) }
+        }
     }
 
     @Order(12)
@@ -199,9 +198,9 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
             PROJECT_ACTIONS_FACTORY.create(projectDir)
                 .getVersion()
                 .run { assertThat(this).hasToString("0.1.0") }
-        }
 
-        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
+            assertThat(SCM_ACTIONS.getLastTag(projectDir)).isEqualTo("0.1.0")
+        }
     }
 
     @Order(13)
@@ -279,9 +278,9 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
             PROJECT_ACTIONS_FACTORY.create(projectDir)
                 .getVersion()
                 .run { assertThat(this).hasToString("0.1.1-SNAPSHOT") }
-        }
 
-        assertThrows<ScmActionException> { SCM_ACTIONS.getLastTag(PROJECT_DIR) }
+            assertThrows<ScmActionException> { SCM_ACTIONS.getLastTag(projectDir) }
+        }
     }
 
     @Order(15)
@@ -312,9 +311,9 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
             PROJECT_ACTIONS_FACTORY.create(projectDir)
                 .getVersion()
                 .run { assertThat(this).hasToString("0.1.1-SNAPSHOT") }
-        }
 
-        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.1.0")
+            assertThat(SCM_ACTIONS.getLastTag(projectDir)).isEqualTo("0.1.0")
+        }
     }
 
     @Order(16)
@@ -373,6 +372,16 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
             "> Task :release",
             "13 actionable tasks: 12 executed, 1 up-to-date"
         )
+
+        ALL_PROJECT_DIRS.forEach { projectDir ->
+            assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("New SNAPSHOT version: 0.2.1-SNAPSHOT")
+
+            PROJECT_ACTIONS_FACTORY.create(projectDir)
+                .getVersion()
+                .run { assertThat(this).hasToString("0.2.1-SNAPSHOT") }
+
+            assertThat(SCM_ACTIONS.getLastTag(projectDir)).isEqualTo("0.2.0")
+        }
 
         listOf(PROJECT_DIR to ORIGIN_PROJECT_DIR, SUBMODULE_PROJECT_DIR to ORIGIN_SUBMODULE_PROJECT_DIR)
             .forEach { it.verifyGitCommitsAndTags() }
