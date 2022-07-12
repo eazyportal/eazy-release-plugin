@@ -23,11 +23,6 @@ jenkinsPlugin {
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
 // fix "Implicit dependencies between tasks" warning
 tasks.generateLicenseInfo {
     dependsOn(tasks.jar)
