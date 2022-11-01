@@ -15,6 +15,14 @@ tasks {
                 mustRunAfter(it.tasks.test)
             }
         }
+
+        testLogging {
+            outputs.upToDateWhen {
+                false
+            }
+
+            showStandardStreams = true
+        }
     }
 }
 
