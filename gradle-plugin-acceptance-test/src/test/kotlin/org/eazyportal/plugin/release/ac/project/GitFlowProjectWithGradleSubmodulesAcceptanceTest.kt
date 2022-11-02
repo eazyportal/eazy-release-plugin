@@ -31,7 +31,7 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
         fun initialize() {
             ORIGIN_SUBMODULE_PROJECT_DIR = WORKING_DIR.resolve("origin/$SUBMODULE_PROJECT_NAME")
                 .also { Files.createDirectories(it.toPath()) }
-                .also { SCM_ACTIONS.execute(it, "init") }
+                .also { SCM_ACTIONS.execute(it, "init", "--initial-branch=main") }
 
             SUBMODULE_PROJECT_DIR = PROJECT_DIR.resolve(SUBMODULE_PROJECT_NAME)
 
@@ -45,9 +45,7 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
         // GIVEN
         listOf(ORIGIN_PROJECT_DIR, ORIGIN_SUBMODULE_PROJECT_DIR)
             .forEach { projectDir ->
-                SCM_ACTIONS.execute(projectDir, "init")
-
-                SCM_ACTIONS.execute(projectDir, "init")
+                SCM_ACTIONS.execute(projectDir, "init", "--initial-branch=main")
 
                 projectDir.initializeGradleProject(projectDir.name)
 
@@ -58,7 +56,7 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
                 // THEN
                 assertThat(SCM_ACTIONS.getCommits(projectDir)).containsExactly("initial commit")
 
-                SCM_ACTIONS.execute(projectDir, "checkout", "-b", "feature")
+                SCM_ACTIONS.execute(projectDir, "checkout", "-b", "dev")
             }
 
         val originProjectGitDirPath = ORIGIN_PROJECT_DIR.resolve(".git").path
@@ -135,7 +133,7 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch master",
+                "On branch main",
                 "Changes to be committed:",
                 "\tnew file:   .gitmodules",
                 "\tnew file:   src/main/java/org/eazyportal/plugin/release/test/dummy/DummyApplication.java",
@@ -147,7 +145,7 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
         }
         SCM_ACTIONS.execute(SUBMODULE_PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch master",
+                "On branch main",
                 "\tmodified:   gradle.properties"
             )
         }
@@ -179,7 +177,7 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
         ALL_PROJECT_DIRS.forEach { projectDir ->
             SCM_ACTIONS.execute(projectDir, "status").run {
                 assertThat(lines()).containsSubsequence(
-                    "On branch master",
+                    "On branch main",
                     "nothing to commit, working tree clean"
                 )
             }
@@ -241,7 +239,7 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch feature",
+                "On branch dev",
                 "Changes to be committed:",
                 "\tmodified:   gradle.properties",
                 "\tmodified:   submodule-project",
@@ -254,7 +252,7 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
 
         SCM_ACTIONS.execute(SUBMODULE_PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch feature",
+                "On branch dev",
                 "Changes to be committed:",
                 "\tmodified:   gradle.properties",
                 "Changes not staged for commit:",
@@ -288,7 +286,7 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
         ALL_PROJECT_DIRS.forEach { projectDir ->
             SCM_ACTIONS.execute(projectDir, "status").run {
                 assertThat(lines()).containsSubsequence(
-                    "On branch feature",
+                    "On branch dev",
                     "nothing to commit, working tree clean"
                 )
             }

@@ -33,7 +33,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
         fun initialize() {
             ORIGIN_SUBMODULE_PROJECT_DIR = WORKING_DIR.resolve("origin/$SUBMODULE_PROJECT_NAME")
                 .also { Files.createDirectories(it.toPath()) }
-                .also { SCM_ACTIONS.execute(it, "init") }
+                .also { SCM_ACTIONS.execute(it, "init", "--initial-branch=main") }
 
             SUBMODULE_PROJECT_DIR = PROJECT_DIR.resolve(SUBMODULE_PROJECT_NAME)
 
@@ -46,13 +46,13 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
     fun test_initializeRepository() {
         // GIVEN
         ORIGIN_PROJECT_DIR.run {
-            SCM_ACTIONS.execute(this, "init")
+            SCM_ACTIONS.execute(this, "init", "--initial-branch=main")
 
             initializeGradleProject(PROJECT_NAME)
         }
 
         ORIGIN_SUBMODULE_PROJECT_DIR.run {
-            SCM_ACTIONS.execute(this, "init")
+            SCM_ACTIONS.execute(this, "init", "--initial-branch=main")
 
             copyIntoFromResources("version.json", SUBMODULE_PROJECT_NAME)
         }
@@ -66,7 +66,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
                 // THEN
                 assertThat(SCM_ACTIONS.getCommits(projectDir)).containsExactly("initial commit")
 
-                SCM_ACTIONS.execute(projectDir, "checkout", "-b", "feature")
+                SCM_ACTIONS.execute(projectDir, "checkout", "-b", "dev")
             }
 
         val originProjectGitDirPath = ORIGIN_PROJECT_DIR.resolve(".git").path
@@ -79,7 +79,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
 
         SCM_ACTIONS.execute(WORKING_DIR, "clone", "--recurse-submodules", originProjectGitDirPath, PROJECT_NAME)
 
-        // Checking out to a different branch will fix: "remote: error: refusing to update checked out branch: refs/heads/feature"
+        // Checking out to a different branch will fix: "remote: error: refusing to update checked out branch: refs/heads/dev"
         listOf(ORIGIN_PROJECT_DIR, ORIGIN_SUBMODULE_PROJECT_DIR).forEach { projectDir ->
             SCM_ACTIONS.execute(projectDir, "checkout", "-b", "tmp")
         }
@@ -144,7 +144,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch master",
+                "On branch main",
                 "Changes to be committed:",
                 "\tnew file:   .gitmodules",
                 "\tnew file:   src/main/java/org/eazyportal/plugin/release/test/dummy/DummyApplication.java",
@@ -156,7 +156,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
         }
         SCM_ACTIONS.execute(SUBMODULE_PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch master",
+                "On branch main",
                 "\tmodified:   version.json"
             )
         }
@@ -188,7 +188,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
         ALL_PROJECT_DIRS.forEach { projectDir ->
             SCM_ACTIONS.execute(projectDir, "status").run {
                 assertThat(lines()).containsSubsequence(
-                    "On branch master",
+                    "On branch main",
                     "nothing to commit, working tree clean"
                 )
             }
@@ -252,7 +252,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch feature",
+                "On branch dev",
                 "Changes to be committed:",
                 "\tmodified:   gradle.properties",
                 "\tmodified:   submodule-project",
@@ -265,7 +265,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
 
         SCM_ACTIONS.execute(SUBMODULE_PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch feature",
+                "On branch dev",
                 "Changes to be committed:",
                 "\tmodified:   version.json",
                 "Changes not staged for commit:",
@@ -301,7 +301,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
         ALL_PROJECT_DIRS.forEach { projectDir ->
             SCM_ACTIONS.execute(projectDir, "status").run {
                 assertThat(lines()).containsSubsequence(
-                    "On branch feature",
+                    "On branch dev",
                     "nothing to commit, working tree clean"
                 )
             }

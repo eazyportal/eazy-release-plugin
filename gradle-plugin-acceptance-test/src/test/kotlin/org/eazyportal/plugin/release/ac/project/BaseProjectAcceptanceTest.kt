@@ -76,8 +76,8 @@ internal abstract class BaseProjectAcceptanceTest {
 
     internal fun Pair<File, File>.verifyGitCommitsAndTags() =
         listOf(
-            arrayOf("log", "--pretty=format:%s", "master"),
-            arrayOf("log", "--pretty=format:%s", "feature"),
+            arrayOf("log", "--pretty=format:%s", "main"),
+            arrayOf("log", "--pretty=format:%s", "dev"),
             arrayOf("tag")
         ).forEach {
             assertThat(SCM_ACTIONS.execute(first, *it)).isEqualTo(SCM_ACTIONS.execute(second, *it))

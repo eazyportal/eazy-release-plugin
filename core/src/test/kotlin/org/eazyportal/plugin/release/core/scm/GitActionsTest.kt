@@ -66,7 +66,7 @@ internal class GitActionsTest {
     @Test
     fun test_checkout() {
         // GIVEN
-        val toRef = "master"
+        val toRef = "main"
 
         // WHEN
         whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "checkout", toRef))
@@ -215,8 +215,8 @@ internal class GitActionsTest {
         // GIVEN
         val submodules = listOf("ui-project", "examples-project")
         val response = listOf(
-            " 2ef7bde608ce5404e97d5f042f95f89f1c232871 ui-project (heads/master)",
-            " 2ef7bde608ce5404e97d5f042f95f89f1c232871 examples-project (heads/master)"
+            " 2ef7bde608ce5404e97d5f042f95f89f1c232871 ui-project (heads/main)",
+            " 2ef7bde608ce5404e97d5f042f95f89f1c232871 examples-project (heads/main)"
         )
 
         // WHEN
@@ -266,7 +266,7 @@ internal class GitActionsTest {
     @Test
     fun test_mergeNoCommit() {
         // GIVEN
-        val fromBranch = "master"
+        val fromBranch = "main"
 
         // WHEN
         whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch))
