@@ -8,10 +8,10 @@ data class ScmConfig(
 
     companion object {
         @JvmStatic
-        val GIT_FLOW = ScmConfig("feature", "master", "origin")
+        val GIT_FLOW = ScmConfig("dev", "main", "origin")
 
         @JvmStatic
-        val TRUNK_BASED_FLOW = ScmConfig("master", "master", "origin")
+        val TRUNK_BASED_FLOW = ScmConfig("main", "main", "origin")
     }
 
 }

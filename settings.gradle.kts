@@ -1,16 +1,21 @@
 rootProject.name = "eazyrelease-plugin"
 
 pluginManagement {
+    plugins {
+        id("org.eazyportal.plugin.kotlin-project-convention") version(extra["eazyPluginConventionVersion"] as String)
+    }
+
     repositories {
         gradlePluginPortal()
 
         maven {
-            val githubUrl: String by settings
-
             name = "github"
+            url = uri("${extra["githubUrl"] as String}/*")
 
-            url = uri("$githubUrl/*")
-            credentials(PasswordCredentials::class)
+            credentials {
+                password = extra["githubPassword"] as String
+                username = extra["githubUsername"] as String
+            }
         }
     }
 }

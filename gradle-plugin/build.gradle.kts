@@ -25,6 +25,16 @@ artifacts {
 tasks {
     findByName("publishMavenPublicationToGithubRepository")?.enabled = false
     findByName("publishMavenPublicationToMavenLocalRepository")?.enabled = false
+
+    test {
+        testLogging {
+            outputs.upToDateWhen {
+                false
+            }
+
+            showStandardStreams = true
+        }
+    }
 }
 
 dependencies {

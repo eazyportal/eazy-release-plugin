@@ -30,7 +30,7 @@ internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
     fun test_initializeRepository() {
         // GIVEN
         ORIGIN_PROJECT_DIR.run {
-            SCM_ACTIONS.execute(this, "init")
+            SCM_ACTIONS.execute(this, "init", "--initial-branch=main")
 
             initializeGradleProject()
         }
@@ -42,7 +42,7 @@ internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
         // THEN
         assertThat(SCM_ACTIONS.getCommits(ORIGIN_PROJECT_DIR)).containsExactly("initial commit")
 
-        SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "checkout", "-b", "feature")
+        SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "checkout", "-b", "dev")
 
         SCM_ACTIONS.execute(WORKING_DIR, "clone", ORIGIN_PROJECT_DIR.resolve(".git").path, PROJECT_NAME)
 
@@ -109,7 +109,7 @@ internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch master",
+                "On branch main",
                 "Changes to be committed:",
                 "\tnew file:   src/main/java/org/eazyportal/plugin/release/test/dummy/DummyApplication.java",
                 "Changes not staged for commit:",
@@ -139,7 +139,7 @@ internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch master",
+                "On branch main",
                 "nothing to commit, working tree clean"
             )
         }
@@ -189,7 +189,7 @@ internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch feature",
+                "On branch dev",
                 "Changes to be committed:",
                 "\tmodified:   gradle.properties",
                 "Changes not staged for commit:",
@@ -219,7 +219,7 @@ internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
 
         SCM_ACTIONS.execute(PROJECT_DIR, "status").run {
             assertThat(lines()).containsSubsequence(
-                "On branch feature",
+                "On branch dev",
                 "nothing to commit, working tree clean"
             )
         }

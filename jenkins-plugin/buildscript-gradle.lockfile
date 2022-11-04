@@ -1,29 +1,7 @@
 # This is a Gradle generated file for dependency locking.
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
-classworlds:classworlds:1.1-alpha-2=classpath
-com.sun.codemodel:codemodel:2.6=classpath
-junit:junit:3.8.1=classpath
 net.java.sezpoz:sezpoz:1.13=classpath
-org.apache.ant:ant-launcher:1.7.0=classpath
-org.apache.ant:ant:1.7.0=classpath
-org.apache.commons:commons-lang3:3.1=classpath
-org.apache.maven.wagon:wagon-provider-api:1.0-alpha-5=classpath
-org.apache.maven:maven-archiver:2.0.1=classpath
-org.apache.maven:maven-artifact-manager:2.0.1=classpath
-org.apache.maven:maven-artifact:2.0.1=classpath
-org.apache.maven:maven-model:2.0.1=classpath
-org.apache.maven:maven-plugin-api:2.0.1=classpath
-org.apache.maven:maven-profile:2.0.1=classpath
-org.apache.maven:maven-project:2.0.1=classpath
-org.apache.maven:maven-repository-metadata:2.0.1=classpath
-org.codehaus.plexus:plexus-archiver:1.0-alpha-4=classpath
-org.codehaus.plexus:plexus-container-default:1.0-alpha-9=classpath
-org.codehaus.plexus:plexus-utils:1.0.5=classpath
-org.jenkins-ci.jpi:org.jenkins-ci.jpi.gradle.plugin:0.44.0-rc.5=classpath
-org.jenkins-ci.tools:gradle-jpi-plugin:0.44.0-rc.5=classpath
-org.jenkins-ci:annotation-indexer:1.4=classpath
-org.jvnet.localizer:localizer:1.24=classpath
-org.jvnet.localizer:maven-localizer-plugin:1.24=classpath
-org.kohsuke:access-modifier-annotation:1.4=classpath
+org.jenkins-ci.jpi:org.jenkins-ci.jpi.gradle.plugin:0.47.0=classpath
+org.jenkins-ci.tools:gradle-jpi-plugin:0.47.0=classpath
 empty=
