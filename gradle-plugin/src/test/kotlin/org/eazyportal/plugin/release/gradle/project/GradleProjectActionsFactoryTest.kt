@@ -43,7 +43,7 @@ internal class GradleProjectActionsFactoryTest {
         // THEN
         assertThatThrownBy { underTest.create(workingDir) }
             .isInstanceOf(InvalidProjectTypeException::class.java)
-            .hasMessage("Unable to identify the project type.")
+            .hasMessageStartingWith("Unable to identify the project type in: ")
     }
 
 }

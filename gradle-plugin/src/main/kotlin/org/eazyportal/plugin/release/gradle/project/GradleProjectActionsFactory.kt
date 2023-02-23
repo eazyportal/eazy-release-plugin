@@ -12,8 +12,7 @@ class GradleProjectActionsFactory : ProjectActionsFactory {
             GradleProjectActions(workingDir)
         }
         else {
-
-            throw InvalidProjectTypeException("Unable to identify the project type.")
+            throw InvalidProjectTypeException("Unable to identify the project type in: $workingDir")
         }
 
 }
