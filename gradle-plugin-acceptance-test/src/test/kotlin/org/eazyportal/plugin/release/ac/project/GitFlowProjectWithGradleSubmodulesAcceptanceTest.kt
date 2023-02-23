@@ -63,11 +63,11 @@ internal class GitFlowProjectWithGradleSubmodulesAcceptanceTest : BaseProjectAcc
         val originSubmoduleGitDirPath = ORIGIN_SUBMODULE_PROJECT_DIR.resolve(".git").path
 
         // Fixing Windows folder separator issue
-        SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "submodule", "add", originSubmoduleGitDirPath.replace("\\", "/"))
+        SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "-c", "protocol.file.allow=always", "submodule", "add", originSubmoduleGitDirPath.replace("\\", "/"))
 
         SCM_ACTIONS.commit(ORIGIN_PROJECT_DIR, "add submodule")
 
-        SCM_ACTIONS.execute(WORKING_DIR, "clone", "--recurse-submodules", originProjectGitDirPath, PROJECT_NAME)
+        SCM_ACTIONS.execute(WORKING_DIR, "-c", "protocol.file.allow=always", "clone", "--recurse-submodules", originProjectGitDirPath, PROJECT_NAME)
 
         // Checking out to a different branch will fix: "remote: error: refusing to update checked out branch: refs/heads/feature"
         listOf(ORIGIN_PROJECT_DIR, ORIGIN_SUBMODULE_PROJECT_DIR)
