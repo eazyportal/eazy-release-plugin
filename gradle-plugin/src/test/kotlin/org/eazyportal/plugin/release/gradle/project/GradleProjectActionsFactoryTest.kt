@@ -1,6 +1,5 @@
 package org.eazyportal.plugin.release.gradle.project
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.project.ProjectActions
@@ -24,7 +23,7 @@ internal class GradleProjectActionsFactoryTest {
         underTest = GradleProjectActionsFactory()
     }
 
-    @CsvSource(value = [GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME, "build.gradle", "build.gradle.kts"])
+    @CsvSource(value = ["build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle."])
     @ParameterizedTest
     fun test_provide_GradleProject(fileName: String) {
         // GIVEN

@@ -19,6 +19,7 @@ class GradleProjectActionsFactory : ProjectActionsFactory {
 }
 
 fun File.isGradleProjectDir(): Boolean =
-    resolve(GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME).exists() ||
     resolve("build.gradle").exists() ||
-    resolve("build.gradle.kts").exists()
+    resolve("build.gradle.kts").exists() ||
+    resolve("settings.gradle").exists() ||
+    resolve("settings.gradle.kts").exists()
