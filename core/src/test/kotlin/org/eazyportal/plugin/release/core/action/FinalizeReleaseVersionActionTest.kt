@@ -50,7 +50,8 @@ internal class FinalizeReleaseVersionActionTest : ReleaseActionBaseTest() {
         projectDescriptor.allProjects.forEach {
             verify(scmActions).add(it.dir, FILE_TO_COMMIT)
             verify(scmActions).commit(it.dir, "Release version: ${VersionFixtures.RELEASE_001}")
-            verify(scmActions).tag(eq(it.dir), any())
+            // TODO: anyVararg() not working
+            verify(scmActions).tag(eq(it.dir), any(), any(), any(), any())
         }
         verifyNoMoreInteractions(projectActions, scmActions)
     }
