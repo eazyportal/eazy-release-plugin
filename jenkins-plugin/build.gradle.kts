@@ -1,7 +1,7 @@
 plugins {
-    id("org.eazyportal.plugin.java-project-convention")
-
     id("org.jenkins-ci.jpi") version("+")
+
+    id("org.eazyportal.plugin.java-project-convention")
 }
 
 jenkinsPlugin {

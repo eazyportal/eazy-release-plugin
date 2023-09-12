@@ -1,7 +1,7 @@
 plugins {
-    id("org.eazyportal.plugin.kotlin-project-convention")
-
     `java-gradle-plugin`
+
+    id("org.eazyportal.plugin.kotlin-project-convention")
 }
 
 tasks {

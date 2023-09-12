@@ -3,6 +3,7 @@ import org.eazyportal.plugin.release.ac.project.StubProjectActionsFactory
 plugins {
     `java`
     `maven-publish`
+
     id("org.eazyportal.plugin.release")
 }
 

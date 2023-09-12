@@ -1,6 +1,7 @@
 plugins {
     `java`
     `maven-publish`
+
     id("org.eazyportal.plugin.release")
 }
 
