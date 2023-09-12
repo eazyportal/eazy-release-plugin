@@ -23,7 +23,7 @@ internal class GradleProjectActionsFactoryTest {
         underTest = GradleProjectActionsFactory()
     }
 
-    @CsvSource(value = ["build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle."])
+    @CsvSource(value = ["build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts"])
     @ParameterizedTest
     fun test_provide_GradleProject(fileName: String) {
         // GIVEN

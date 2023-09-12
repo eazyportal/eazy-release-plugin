@@ -42,14 +42,26 @@ internal class CliCommandExecutorTest {
         assertThat(actual).contains("1 packets transmitted, 1 received, 0% packet loss")
     }
 
+    @EnabledOnOs(WINDOWS)
     @Test
-    fun test_cliExecute_shouldFail_whenCommandFails() {
+    fun test_cliExecute_shouldFail_whenCommandFails_windows() {
         // GIVEN
         // WHEN
         // THEN
         assertThatThrownBy { underTest.execute(workingDir, "ping") }
             .isInstanceOf(CliExecutionException::class.java)
             .hasMessageContaining("Usage: ping")
+    }
+
+    @DisabledOnOs(WINDOWS)
+    @Test
+    fun test_cliExecute_shouldFail_whenCommandFails_linux() {
+        // GIVEN
+        // WHEN
+        // THEN
+        assertThatThrownBy { underTest.execute(workingDir, "ping") }
+            .isInstanceOf(CliExecutionException::class.java)
+            .hasMessageContaining("ping: usage error: Destination address required")
     }
 
 }
