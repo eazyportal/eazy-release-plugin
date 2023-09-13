@@ -1,5 +1,6 @@
 package org.eazyportal.plugin.release.core.scm
 
+import org.eazyportal.plugin.release.core.version.model.Version
 import java.io.File
 
 interface ScmActions {
@@ -24,6 +25,6 @@ interface ScmActions {
 
     fun push(workingDir: File, remote: String, vararg branches: String)
 
-    fun tag(workingDir: File, vararg commands: String)
+    fun tag(workingDir: File, version: Version)
 
 }

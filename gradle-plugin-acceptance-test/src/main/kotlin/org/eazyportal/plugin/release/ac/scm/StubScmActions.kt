@@ -1,6 +1,7 @@
 package org.eazyportal.plugin.release.ac.scm
 
 import org.eazyportal.plugin.release.core.scm.ScmActions
+import org.eazyportal.plugin.release.core.version.model.Version
 import java.io.File
 
 class StubScmActions(
@@ -30,6 +31,6 @@ class StubScmActions(
 
     override fun push(workingDir: File, remote: String, vararg branches: String) = Unit
 
-    override fun tag(workingDir: File, vararg commands: String) = Unit
+    override fun tag(workingDir: File, version: Version) = Unit
 
 }

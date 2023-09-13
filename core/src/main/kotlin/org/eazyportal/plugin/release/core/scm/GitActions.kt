@@ -3,6 +3,7 @@ package org.eazyportal.plugin.release.core.scm
 import org.eazyportal.plugin.release.core.executor.CommandExecutor
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
 import org.eazyportal.plugin.release.core.utils.isWindows
+import org.eazyportal.plugin.release.core.version.model.Version
 import java.io.File
 
 class GitActions(
@@ -80,8 +81,8 @@ class GitActions(
         execute(workingDir, "push", "--atomic", "--tags", "--recurse-submodules=on-demand", remote, *branchesRefs)
     }
 
-    override fun tag(workingDir: File, vararg commands: String) {
-        execute(workingDir, "tag", *commands)
+    override fun tag(workingDir: File, version: Version) {
+        execute(workingDir, "tag", "-a", version.toString(), "-m", "v$version")
     }
 
 }

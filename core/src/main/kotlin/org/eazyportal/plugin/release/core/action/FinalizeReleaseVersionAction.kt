@@ -23,7 +23,7 @@ class FinalizeReleaseVersionAction(
             scmActions.add(it.dir, *it.projectActions.scmFilesToCommit())
             scmActions.commit(it.dir, "Release version: $releaseVersion")
 
-            scmActions.tag(it.dir, "-a", releaseVersion.toString(), "-m", "v$releaseVersion")
+            scmActions.tag(it.dir, releaseVersion)
         }
     }
 

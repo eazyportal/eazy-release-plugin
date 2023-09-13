@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.executor.CommandExecutor
 import org.eazyportal.plugin.release.core.scm.GitActions.Companion.GIT_EXECUTABLE
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
+import org.eazyportal.plugin.release.core.version.model.Version
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -17,21 +18,6 @@ import org.mockito.kotlin.whenever
 import java.io.File
 
 internal class GitActionsTest {
-
-    companion object {
-        const val COMMIT_HASH_1 = "hash-1"
-        const val COMMIT_HASH_2 = "hash-2"
-
-        const val COMMIT_MESSAGE_1 = "feature: commit"
-        const val COMMIT_MESSAGE_2 = "fix: commit"
-        const val COMMIT_MESSAGE_3 = "chore: commit"
-        val COMMIT_MESSAGES = listOf(COMMIT_MESSAGE_1, COMMIT_MESSAGE_2, COMMIT_MESSAGE_3)
-
-        const val TAG_1 = "0.1.1"
-        const val TAG_2 = "0.1.2"
-        const val TAG_3 = "0.1.3"
-        val TAGS = listOf(TAG_1, TAG_2, TAG_3)
-    }
 
     @TempDir
     private lateinit var workingDir: File
@@ -299,17 +285,32 @@ internal class GitActionsTest {
     @Test
     fun test_tag() {
         // GIVEN
-        val commands = arrayOf("0.0.1")
+        val version = Version.of("0.0.1")
 
         // WHEN
-        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "tag", *commands))
+        whenever(commandExecutor.execute(workingDir, GIT_EXECUTABLE, "tag", "-a", version.toString(), "-m", "v$version"))
             .thenReturn("")
 
         // THEN
-        underTest.tag(workingDir, *commands)
+        underTest.tag(workingDir, version)
 
-        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "tag", *commands)
+        verify(commandExecutor).execute(workingDir, GIT_EXECUTABLE, "tag", "-a", version.toString(), "-m", "v$version")
         verifyNoMoreInteractions(commandExecutor)
+    }
+
+    companion object {
+        const val COMMIT_HASH_1 = "hash-1"
+        const val COMMIT_HASH_2 = "hash-2"
+
+        const val COMMIT_MESSAGE_1 = "feature: commit"
+        const val COMMIT_MESSAGE_2 = "fix: commit"
+        const val COMMIT_MESSAGE_3 = "chore: commit"
+        val COMMIT_MESSAGES = listOf(COMMIT_MESSAGE_1, COMMIT_MESSAGE_2, COMMIT_MESSAGE_3)
+
+        const val TAG_1 = "0.1.1"
+        const val TAG_2 = "0.1.2"
+        const val TAG_3 = "0.1.3"
+        val TAGS = listOf(TAG_1, TAG_2, TAG_3)
     }
 
 }
