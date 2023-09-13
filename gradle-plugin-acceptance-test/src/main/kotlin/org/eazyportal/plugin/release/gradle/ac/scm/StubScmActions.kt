@@ -19,13 +19,13 @@ class StubScmActions(
 
     override fun fetch(workingDir: File, remote: String) = Unit
 
-    override fun getCommits(workingDir: File, fromRef: String?, toRef: String?): List<String> = commits
+    override fun getCommits(workingDir: File, fromRef: String?, toRef: String): List<String> = commits
 
-    override fun getLastTag(workingDir: File, fromRef: String?): String = lastTag
+    override fun getLastTag(workingDir: File, fromRef: String): String = lastTag
 
     override fun getSubmodules(workingDir: File): List<String> = submodules
 
-    override fun getTags(workingDir: File, fromRef: String?): List<String> = tags
+    override fun getTags(workingDir: File, fromRef: String): List<String> = tags
 
     override fun mergeNoCommit(workingDir: File, fromBranch: String) = Unit
 

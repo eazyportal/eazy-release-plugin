@@ -13,18 +13,20 @@ interface ScmActions {
 
     fun fetch(workingDir: File, remote: String)
 
-    fun getCommits(workingDir: File, fromRef: String? = null, toRef: String? = null): List<String>
+    fun getCommits(workingDir: File, fromRef: String? = null, toRef: String = "HEAD"): List<String>
 
-    fun getLastTag(workingDir: File, fromRef: String? = null): String
+    fun getLastTag(workingDir: File, fromRef: String = "HEAD"): String
 
     fun getSubmodules(workingDir: File): List<String>
 
-    fun getTags(workingDir: File, fromRef: String? = null): List<String>
+    fun getTags(workingDir: File, fromRef: String = "HEAD"): List<String>
 
     fun mergeNoCommit(workingDir: File, fromBranch: String)
 
     fun push(workingDir: File, remote: String, vararg branches: String)
 
+//    fun status(workingDir: File): List<String>
+//
     fun tag(workingDir: File, version: Version)
 
 }

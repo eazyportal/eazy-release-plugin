@@ -42,16 +42,16 @@ class GitActions(
         execute(workingDir, "fetch", remote, "--tags", "--prune", "--prune-tags", "--recurse-submodules")
     }
 
-    override fun getCommits(workingDir: File, fromRef: String?, toRef: String?): List<String> {
-        val refs = listOfNotNull(fromRef, (toRef ?: "HEAD"))
+    override fun getCommits(workingDir: File, fromRef: String?, toRef: String): List<String> {
+        val refs = listOfNotNull(fromRef, toRef)
             .joinToString("..")
 
         return execute(workingDir, "log", "--pretty=format:%s", refs)
             .split(LINE_BREAK_REGEX)
     }
 
-    override fun getLastTag(workingDir: File, fromRef: String?): String {
-        return execute(workingDir, "describe", "--abbrev=0", "--tags", (fromRef ?: "HEAD"))
+    override fun getLastTag(workingDir: File, fromRef: String): String {
+        return execute(workingDir, "describe", "--abbrev=0", "--tags", fromRef)
     }
 
     override fun getSubmodules(workingDir: File): List<String> {
@@ -63,9 +63,10 @@ class GitActions(
             .toList()
     }
 
-    override fun getTags(workingDir: File, fromRef: String?): List<String> {
-        return execute(workingDir, "tag", "--sort=-creatordate", "--contains", (fromRef ?: "HEAD"))
+    override fun getTags(workingDir: File, fromRef: String): List<String> {
+        return execute(workingDir, "tag", "--sort=-creatordate", "--contains", fromRef)
             .split(LINE_BREAK_REGEX)
+            .filter { it.isNotBlank() }
     }
 
     override fun mergeNoCommit(workingDir: File, fromBranch: String) {
