@@ -17,15 +17,15 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation::class)
-internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTest() {
+internal open class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTest() {
 
     // It is used for not implemented command execution
     private val gitActions = GitActions(CliCommandExecutor())
 
-    private lateinit var underTest: ScmActions
+    protected lateinit var underTest: ScmActions
 
     @BeforeAll
-    fun initialize() {
+    open fun initialize() {
         underTest = GitActions(CliCommandExecutor())
     }
 

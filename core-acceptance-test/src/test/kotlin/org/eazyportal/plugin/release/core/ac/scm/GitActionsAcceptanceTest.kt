@@ -15,17 +15,18 @@ import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
+import java.io.File
 
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation::class)
-internal class GitActionsAcceptanceTest : BaseAcceptanceTest() {
+internal open class GitActionsAcceptanceTest : BaseAcceptanceTest() {
 
     // It is used for not implemented command execution
     private val gitActions = GitActions(CliCommandExecutor())
 
-    private lateinit var underTest: ScmActions
+    protected lateinit var underTest: ScmActions
 
     @BeforeAll
-    fun initialize() {
+    open fun initialize() {
         underTest = GitActions(CliCommandExecutor())
     }
 
@@ -373,10 +374,10 @@ internal class GitActionsAcceptanceTest : BaseAcceptanceTest() {
     @Order(60)
     @Test
     fun test_updateScm() {
-        assertThat(underTest.getCommits(originProjectDir, toRef = BRANCH_MAIN))
+        assertThat(getCommitsFromDifferentBranch(originProjectDir, BRANCH_MAIN))
             .containsExactly("initial commit")
 
-        assertThat(underTest.getCommits(originProjectDir, toRef = BRANCH_FEATURE))
+        assertThat(getCommitsFromDifferentBranch(originProjectDir, BRANCH_FEATURE))
             .containsExactly("initial commit")
 
         assertThat(underTest.getTags(originProjectDir))
@@ -384,14 +385,14 @@ internal class GitActionsAcceptanceTest : BaseAcceptanceTest() {
 
         underTest.push(projectDir, REMOTE, BRANCH_MAIN, BRANCH_FEATURE)
 
-        assertThat(underTest.getCommits(originProjectDir, toRef = BRANCH_MAIN))
+        assertThat(getCommitsFromDifferentBranch(originProjectDir, BRANCH_MAIN))
             .containsExactlyInAnyOrder(
                 "release commit",
                 "add README.adoc",
                 "initial commit"
             )
 
-        assertThat(underTest.getCommits(originProjectDir, toRef = BRANCH_FEATURE))
+        assertThat(getCommitsFromDifferentBranch(originProjectDir, BRANCH_FEATURE))
             .containsExactlyInAnyOrder(
                 "snapshot commit",
                 "release commit",
@@ -402,5 +403,10 @@ internal class GitActionsAcceptanceTest : BaseAcceptanceTest() {
         assertThat(underTest.getTags(originProjectDir))
             .containsExactly(RELEASE_001.toString())
     }
+
+    // Workaround for JGit; simple getCommit implementation cannot get commits from other branches
+    private fun getCommitsFromDifferentBranch(workingDir: File, branchName: String): List<String> =
+        gitActions.execute(workingDir, "log", "--pretty=format:%s", branchName)
+            .lines()
 
 }

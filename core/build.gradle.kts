@@ -5,5 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation("org.eclipse.jgit", "org.eclipse.jgit", "+")
+
     implementation("org.slf4j", "slf4j-api", "+")
 }
