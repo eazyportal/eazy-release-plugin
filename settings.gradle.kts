@@ -22,6 +22,7 @@ pluginManagement {
 
 // Core
 include("core")
+include("core-acceptance-test")
 
 // Gradle
 include("gradle-plugin")

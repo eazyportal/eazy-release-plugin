@@ -7,12 +7,14 @@ tasks.jar {
 }
 
 subprojects {
-    afterEvaluate {
-        dependencies {
-            testImplementation("org.assertj", "assertj-core", "+")
-            testImplementation("org.junit.jupiter", "junit-jupiter", "+")
-            testImplementation("org.mockito", "mockito-inline", "+")
-            testImplementation("org.mockito.kotlin", "mockito-kotlin", "+")
+    if (name != "core-acceptance-test") {
+        afterEvaluate {
+            dependencies {
+                testImplementation("org.assertj", "assertj-core", "+")
+                testImplementation("org.junit.jupiter", "junit-jupiter", "+")
+                testImplementation("org.mockito", "mockito-inline", "+")
+                testImplementation("org.mockito.kotlin", "mockito-kotlin", "+")
+            }
         }
     }
 }
