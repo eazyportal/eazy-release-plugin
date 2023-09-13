@@ -1,4 +1,4 @@
-package org.eazyportal.plugin.release.ac.project
+package org.eazyportal.plugin.release.gradle.ac.project
 
 import org.assertj.core.api.Assertions.assertThat
 import org.eazyportal.plugin.release.core.executor.CliCommandExecutor

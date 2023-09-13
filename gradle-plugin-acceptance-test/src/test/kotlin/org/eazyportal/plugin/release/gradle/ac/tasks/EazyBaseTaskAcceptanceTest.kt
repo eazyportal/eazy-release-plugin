@@ -1,7 +1,7 @@
-package org.eazyportal.plugin.release.ac.tasks
+package org.eazyportal.plugin.release.gradle.ac.tasks
 
-import org.eazyportal.plugin.release.ac.BasicAcceptanceTest
-import org.eazyportal.plugin.release.ac.scm.StubScmActions
+import org.eazyportal.plugin.release.gradle.ac.BasicAcceptanceTest
+import org.eazyportal.plugin.release.gradle.ac.scm.StubScmActions
 import org.junit.jupiter.api.BeforeEach
 
 internal abstract class EazyBaseTaskAcceptanceTest : BasicAcceptanceTest() {

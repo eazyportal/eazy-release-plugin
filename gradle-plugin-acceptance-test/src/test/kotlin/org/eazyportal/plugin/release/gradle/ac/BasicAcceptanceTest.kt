@@ -1,4 +1,4 @@
-package org.eazyportal.plugin.release.ac
+package org.eazyportal.plugin.release.gradle.ac
 
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
 import org.junit.jupiter.api.BeforeEach

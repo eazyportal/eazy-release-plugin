@@ -1,4 +1,4 @@
-package org.eazyportal.plugin.release.ac.tasks
+package org.eazyportal.plugin.release.gradle.ac.tasks
 
 import org.assertj.core.api.Assertions.assertThat
 import org.eazyportal.plugin.release.core.version.model.Version

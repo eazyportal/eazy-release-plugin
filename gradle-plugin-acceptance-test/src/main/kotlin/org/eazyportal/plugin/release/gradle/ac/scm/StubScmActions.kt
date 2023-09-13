@@ -1,4 +1,4 @@
-package org.eazyportal.plugin.release.ac.scm
+package org.eazyportal.plugin.release.gradle.ac.scm
 
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.version.model.Version

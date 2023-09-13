@@ -1,4 +1,4 @@
-package org.eazyportal.plugin.release.ac.project
+package org.eazyportal.plugin.release.gradle.ac.project
 
 import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
