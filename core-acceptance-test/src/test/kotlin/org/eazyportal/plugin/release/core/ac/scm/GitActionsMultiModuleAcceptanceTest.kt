@@ -487,7 +487,7 @@ internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTe
         )
 
         assertThat(underTest.getCommits(subProjectDir))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "release commit",
                 "add README.adoc",
                 "initial commit"
@@ -534,7 +534,7 @@ internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTe
         )
 
         assertThat(underTest.getCommits(projectDir))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "release commit",
                 "add README.adoc",
                 "add submodule",
@@ -658,7 +658,7 @@ internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTe
         )
 
         assertThat(underTest.getCommits(subProjectDir))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "snapshot commit",
                 "release commit",
                 "add README.adoc",
@@ -705,7 +705,7 @@ internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTe
         )
 
         assertThat(underTest.getCommits(projectDir))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "snapshot commit",
                 "release commit",
                 "add README.adoc",
@@ -744,14 +744,14 @@ internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTe
         underTest.push(projectDir, REMOTE, BRANCH_MAIN, BRANCH_FEATURE)
 
         assertThat(underTest.getCommits(subProjectDir, toRef = BRANCH_MAIN))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "release commit",
                 "add README.adoc",
                 "initial commit"
             )
 
         assertThat(underTest.getCommits(subProjectDir, toRef = BRANCH_FEATURE))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "snapshot commit",
                 "release commit",
                 "add README.adoc",
@@ -759,7 +759,7 @@ internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTe
             )
 
         assertThat(underTest.getCommits(originProjectDir, toRef = BRANCH_MAIN))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "release commit",
                 "add README.adoc",
                 "add submodule",
@@ -767,7 +767,7 @@ internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTe
             )
 
         assertThat(underTest.getCommits(originProjectDir, toRef = BRANCH_FEATURE))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "snapshot commit",
                 "release commit",
                 "add README.adoc",

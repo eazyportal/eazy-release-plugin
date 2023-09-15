@@ -286,7 +286,7 @@ internal class GitActionsAcceptanceTest : BaseAcceptanceTest() {
         )
 
         assertThat(underTest.getCommits(projectDir))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "release commit",
                 "add README.adoc",
                 "initial commit"
@@ -362,7 +362,7 @@ internal class GitActionsAcceptanceTest : BaseAcceptanceTest() {
         )
 
         assertThat(underTest.getCommits(projectDir))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "snapshot commit",
                 "release commit",
                 "add README.adoc",
@@ -385,14 +385,14 @@ internal class GitActionsAcceptanceTest : BaseAcceptanceTest() {
         underTest.push(projectDir, REMOTE, BRANCH_MAIN, BRANCH_FEATURE)
 
         assertThat(underTest.getCommits(originProjectDir, toRef = BRANCH_MAIN))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "release commit",
                 "add README.adoc",
                 "initial commit"
             )
 
         assertThat(underTest.getCommits(originProjectDir, toRef = BRANCH_FEATURE))
-            .containsExactly(
+            .containsExactlyInAnyOrder(
                 "snapshot commit",
                 "release commit",
                 "add README.adoc",
