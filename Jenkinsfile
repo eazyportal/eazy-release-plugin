@@ -17,15 +17,6 @@ EazyLibraryPipeline(
         Build: { _buildStage() },
         Quality: { _qualityStage() },
         Release: { pipelineConfig ->
-            _releaseStage(pipelineConfig) {
-                setSnapshotVersion()
-
-                gradleExec('unlockDependencyVersion')
-
-                finalizeSnapshotVersion()
-
-                updateScm()
-            }
         },
         post: { _postStage() }
     ]
