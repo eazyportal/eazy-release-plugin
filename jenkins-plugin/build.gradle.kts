@@ -43,6 +43,20 @@ dependencies {
     compileOnly("org.jenkins-ci.plugins.workflow", "workflow-step-api")
     compileOnly("org.jenkins-ci.plugins.workflow", "workflow-job")
 
+    constraints {
+        configurations.all {
+            resolutionStrategy.eachDependency {
+                if ((requested.group == "org.checkerframework") && (requested.name == "checker-qual")) {
+                    useVersion("3.33.0")
+                    because("fix: missing dependency version from jenkins/guava")
+                } else if ((requested.group == "com.google.j2objc") && (requested.name == "j2objc-annotations")) {
+                    useVersion("2.8")
+                    because("fix: missing dependency version from jenkins/guava")
+                }
+            }
+        }
+    }
+
     // Test
     testImplementation("org.jenkinsci.plugins", "pipeline-model-definition")
 
