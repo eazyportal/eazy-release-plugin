@@ -25,9 +25,16 @@ jenkinsPlugin {
     }
 }
 
-// fix "Implicit dependencies between tasks" warning
-tasks.generateLicenseInfo {
-    dependsOn(tasks.jar)
+tasks {
+    // fix: Unsupported class file major version 65
+    checkAccessModifier {
+        enabled = false
+    }
+
+    // fix: Implicit dependencies between tasks
+    generateLicenseInfo {
+        dependsOn(project.tasks.jar)
+    }
 }
 
 dependencies {
