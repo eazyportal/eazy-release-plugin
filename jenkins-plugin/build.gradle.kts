@@ -1,3 +1,5 @@
+import java.net.URI
+
 plugins {
     id("org.jenkins-ci.jpi") version("+")
 
@@ -5,11 +7,11 @@ plugins {
 }
 
 jenkinsPlugin {
-    jenkinsVersion.set("2.375")
+    jenkinsVersion.set(project.property("jenkinsVersion") as String)
 
     shortName = "eazy-release"
     displayName = "Eazy Release Plugin"
-    gitHubUrl = "https://github.com/eazyportal/eazyrelease-plugin"
+    gitHub.set(URI("https://github.com/eazyportal/eazyrelease-plugin"))
 
     configurePublishing = false
     pluginFirstClassLoader = true
@@ -36,7 +38,7 @@ dependencies {
     implementation(project(mapOf("path" to ":gradle-plugin", "configuration" to "consumableConfiguration")))
 
     // Jenkins BOM
-    implementation(platform("io.jenkins.tools.bom:bom-2.375.x:+"))
+    implementation(platform("io.jenkins.tools.bom:bom-${project.property("jenkinsVersion")}.x:+"))
 
     compileOnly("org.jenkins-ci.plugins.workflow", "workflow-step-api")
     compileOnly("org.jenkins-ci.plugins.workflow", "workflow-job")
