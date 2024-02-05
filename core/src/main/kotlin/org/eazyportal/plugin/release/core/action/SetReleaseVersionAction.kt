@@ -1,5 +1,6 @@
 package org.eazyportal.plugin.release.core.action
 
+import org.eazyportal.plugin.release.core.action.model.ActionContext
 import org.eazyportal.plugin.release.core.model.Project
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
@@ -28,7 +29,10 @@ open class SetReleaseVersionAction(
         private val LOGGER = LoggerFactory.getLogger(SetReleaseVersionAction::class.java)
     }
 
-    override fun execute(projectDescriptor: ProjectDescriptor) {
+    override fun execute(
+        projectDescriptor: ProjectDescriptor,
+        actionContext: ActionContext
+    ) {
         LOGGER.info("Setting release version...")
 
         projectDescriptor.allProjects.run {

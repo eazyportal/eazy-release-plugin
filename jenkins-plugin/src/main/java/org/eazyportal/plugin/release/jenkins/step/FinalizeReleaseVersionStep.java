@@ -10,8 +10,10 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
+import org.eazyportal.plugin.release.core.action.model.ActionContext;
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
 import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
+import org.eazyportal.plugin.release.jenkins.action.ActionContextFactory;
 import org.eazyportal.plugin.release.jenkins.action.FinalizeReleaseVersionActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
@@ -37,9 +39,12 @@ public class FinalizeReleaseVersionStep extends Builder implements SimpleBuildSt
         ProjectDescriptor projectDescriptor = run.getAction(ProjectDescriptorFactory.class)
             .create(workingDir);
 
+        ActionContext actionContext = run.getAction(ActionContextFactory.class)
+            .create(env);
+
         run.getAction(FinalizeReleaseVersionActionFactory.class)
             .create()
-            .execute(projectDescriptor);
+            .execute(projectDescriptor, actionContext);
     }
 
     @Extension

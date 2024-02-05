@@ -1,9 +1,11 @@
 package org.eazyportal.plugin.release.gradle.tasks
 
+import org.eazyportal.plugin.release.core.FixtureValues.ACTION_CONTEXT
 import org.eazyportal.plugin.release.core.ProjectDescriptorFactory
 import org.eazyportal.plugin.release.core.action.UpdateScmAction
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
+import org.eazyportal.plugin.release.gradle.action.ActionContextFactory
 import org.eazyportal.plugin.release.gradle.action.UpdateScmActionFactory
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -18,6 +20,8 @@ import org.mockito.kotlin.whenever
 internal class UpdateScmTaskTest : EazyReleaseBaseTaskTest<UpdateScmTask>() {
 
     @Mock
+    private lateinit var actionContextFactory: ActionContextFactory
+    @Mock
     private lateinit var projectDescriptorFactory: ProjectDescriptorFactory
     @Mock
     private lateinit var updateScmActionFactory: UpdateScmActionFactory
@@ -29,6 +33,7 @@ internal class UpdateScmTaskTest : EazyReleaseBaseTaskTest<UpdateScmTask>() {
         underTest = project.tasks.create(
             EazyReleasePlugin.UPDATE_SCM_TASK_NAME,
             UpdateScmTask::class.java,
+            actionContextFactory,
             projectDescriptorFactory,
             updateScmActionFactory
         )
@@ -41,6 +46,7 @@ internal class UpdateScmTaskTest : EazyReleaseBaseTaskTest<UpdateScmTask>() {
         val updateScmAction: UpdateScmAction = mock()
 
         // WHEN
+        whenever(actionContextFactory.create(project.providers)).thenReturn(ACTION_CONTEXT)
         whenever(projectDescriptorFactory.create(extension.projectActionsFactory, extension.scmActions, project.projectDir))
             .thenReturn(projectDescriptor)
         whenever(updateScmActionFactory.create(extension)).thenReturn(updateScmAction)
@@ -53,7 +59,7 @@ internal class UpdateScmTaskTest : EazyReleaseBaseTaskTest<UpdateScmTask>() {
         verify(projectDescriptorFactory).create(extension.projectActionsFactory, extension.scmActions, project.projectDir)
 
         verify(updateScmActionFactory).create(extension)
-        verify(updateScmAction).execute(projectDescriptor)
+        verify(updateScmAction).execute(projectDescriptor, ACTION_CONTEXT)
 
         verifyNoMoreInteractions(updateScmAction, updateScmActionFactory)
     }

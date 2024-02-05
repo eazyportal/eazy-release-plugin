@@ -1,5 +1,6 @@
 package org.eazyportal.plugin.release.core.action
 
+import org.eazyportal.plugin.release.core.action.model.ActionContext
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.slf4j.Logger
@@ -14,7 +15,10 @@ class FinalizeReleaseVersionAction(
         val LOGGER: Logger = LoggerFactory.getLogger(FinalizeReleaseVersionAction::class.java)
     }
 
-    override fun execute(projectDescriptor: ProjectDescriptor) {
+    override fun execute(
+        projectDescriptor: ProjectDescriptor,
+        actionContext: ActionContext
+    ) {
         LOGGER.info("Finalize release version...")
 
         val releaseVersion = projectDescriptor.rootProject.projectActions.getVersion()

@@ -1,6 +1,7 @@
 package org.eazyportal.plugin.release.gradle
 
 import org.eazyportal.plugin.release.core.ProjectDescriptorFactory
+import org.eazyportal.plugin.release.gradle.action.ActionContextFactory
 import org.eazyportal.plugin.release.gradle.action.FinalizeReleaseVersionActionFactory
 import org.eazyportal.plugin.release.gradle.action.FinalizeSnapshotVersionActionFactory
 import org.eazyportal.plugin.release.gradle.action.PrepareRepositoryForReleaseActionFactory
@@ -18,6 +19,7 @@ import org.eazyportal.plugin.release.gradle.tasks.UpdateScmTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.TaskProvider
 
 class EazyReleasePlugin : Plugin<Project> {
 
@@ -37,16 +39,17 @@ class EazyReleasePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.extensions.create(EXTENSION_NAME, EazyReleasePluginExtension::class.java)
 
+        val actionContextFactory = ActionContextFactory()
         val projectDescriptorFactory = ProjectDescriptorFactory()
 
         project.tasks.run {
             registerPrepareRepositoryForReleaseTask()
 
-            registerSetReleaseVersionTask(projectDescriptorFactory).configure {
+            registerSetReleaseVersionTask(actionContextFactory, projectDescriptorFactory).configure {
                 it.mustRunAfter(PREPARE_REPOSITORY_FOR_RELEASE_TASK_NAME)
             }
 
-            registerFinalizeReleaseVersionTask(projectDescriptorFactory).configure {
+            registerFinalizeReleaseVersionTask(actionContextFactory, projectDescriptorFactory).configure {
                 it.mustRunAfter(SET_RELEASE_VERSION_TASK_NAME)
             }
 
@@ -62,15 +65,15 @@ class EazyReleasePlugin : Plugin<Project> {
                     .run { task.dependsOn(this) }
             }
 
-            registerSetSnapshotVersionTask(projectDescriptorFactory).configure {
+            registerSetSnapshotVersionTask(actionContextFactory, projectDescriptorFactory).configure {
                 it.mustRunAfter(RELEASE_BUILD_TASK_NAME)
             }
 
-            registerFinalizeSnapshotVersionTask(projectDescriptorFactory).configure {
+            registerFinalizeSnapshotVersionTask(actionContextFactory, projectDescriptorFactory).configure {
                 it.mustRunAfter(SET_SNAPSHOT_VERSION_TASK_NAME)
             }
 
-            registerUpdateScmTask(projectDescriptorFactory).configure {
+            registerUpdateScmTask(actionContextFactory, projectDescriptorFactory).configure {
                 it.mustRunAfter(FINALIZE_SNAPSHOT_VERSION_TASK_NAME)
             }
 
@@ -91,18 +94,26 @@ class EazyReleasePlugin : Plugin<Project> {
     private fun TaskContainer.registerEazyReleaseBaseTask(taskName: String) =
         register(taskName, EazyReleaseBaseTask::class.java)
 
-    private fun TaskContainer.registerFinalizeReleaseVersionTask(projectDescriptorFactory: ProjectDescriptorFactory) =
+    private fun TaskContainer.registerFinalizeReleaseVersionTask(
+        actionContextFactory: ActionContextFactory,
+        projectDescriptorFactory: ProjectDescriptorFactory
+    ): TaskProvider<FinalizeReleaseVersionTask> =
         register(
             FINALIZE_RELEASE_VERSION_TASK_NAME,
             FinalizeReleaseVersionTask::class.java,
+            actionContextFactory,
             projectDescriptorFactory,
             FinalizeReleaseVersionActionFactory()
         )
 
-    private fun TaskContainer.registerFinalizeSnapshotVersionTask(projectDescriptorFactory: ProjectDescriptorFactory) =
+    private fun TaskContainer.registerFinalizeSnapshotVersionTask(
+        actionContextFactory: ActionContextFactory,
+        projectDescriptorFactory: ProjectDescriptorFactory
+    ): TaskProvider<FinalizeSnapshotVersionTask> =
         register(
             FINALIZE_SNAPSHOT_VERSION_TASK_NAME,
             FinalizeSnapshotVersionTask::class.java,
+            actionContextFactory,
             projectDescriptorFactory,
             FinalizeSnapshotVersionActionFactory()
         )
@@ -114,23 +125,40 @@ class EazyReleasePlugin : Plugin<Project> {
             PrepareRepositoryForReleaseActionFactory()
         )
 
-    private fun TaskContainer.registerSetReleaseVersionTask(projectDescriptorFactory: ProjectDescriptorFactory) =
+    private fun TaskContainer.registerSetReleaseVersionTask(
+        actionContextFactory: ActionContextFactory,
+        projectDescriptorFactory: ProjectDescriptorFactory
+    ): TaskProvider<SetReleaseVersionTask> =
         register(
             SET_RELEASE_VERSION_TASK_NAME,
             SetReleaseVersionTask::class.java,
+            actionContextFactory,
             projectDescriptorFactory,
             SetReleaseVersionActionFactory()
         )
 
-    private fun TaskContainer.registerSetSnapshotVersionTask(projectDescriptorFactory: ProjectDescriptorFactory) =
+    private fun TaskContainer.registerSetSnapshotVersionTask(
+        actionContextFactory: ActionContextFactory,
+        projectDescriptorFactory: ProjectDescriptorFactory
+    ): TaskProvider<SetSnapshotVersionTask> =
         register(
             SET_SNAPSHOT_VERSION_TASK_NAME,
             SetSnapshotVersionTask::class.java,
+            actionContextFactory,
             projectDescriptorFactory,
             SetSnapshotVersionActionFactory(),
         )
 
-    private fun TaskContainer.registerUpdateScmTask(projectDescriptorFactory: ProjectDescriptorFactory) =
-        register(UPDATE_SCM_TASK_NAME, UpdateScmTask::class.java, projectDescriptorFactory, UpdateScmActionFactory())
+    private fun TaskContainer.registerUpdateScmTask(
+        actionContextFactory: ActionContextFactory,
+        projectDescriptorFactory: ProjectDescriptorFactory
+    ): TaskProvider<UpdateScmTask> =
+        register(
+            UPDATE_SCM_TASK_NAME,
+            UpdateScmTask::class.java,
+            actionContextFactory,
+            projectDescriptorFactory,
+            UpdateScmActionFactory()
+        )
 
 }
