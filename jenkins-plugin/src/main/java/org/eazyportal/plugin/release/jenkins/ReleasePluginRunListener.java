@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.listeners.RunListener;
+import org.eazyportal.plugin.release.jenkins.action.ActionContextFactory;
 import org.eazyportal.plugin.release.jenkins.action.FinalizeReleaseVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.FinalizeSnapshotVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.PrepareRepositoryForReleaseActionFactory;
@@ -18,6 +19,8 @@ public class ReleasePluginRunListener extends RunListener<Run<?, ?>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReleasePluginRunListener.class);
 
+    @Inject
+    private ActionContextFactory actionContextFactory;
     @Inject
     private FinalizeReleaseVersionActionFactory finalizeReleaseVersionActionFactory;
     @Inject
@@ -39,6 +42,7 @@ public class ReleasePluginRunListener extends RunListener<Run<?, ?>> {
 
     @Override
     public void onInitialize(Run<?, ?> run) {
+        run.addAction(actionContextFactory);
         run.addAction(finalizeReleaseVersionActionFactory);
         run.addAction(finalizeSnapshotVersionActionFactory);
         run.addAction(prepareRepositoryForReleaseActionFactory);

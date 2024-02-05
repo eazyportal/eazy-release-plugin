@@ -84,7 +84,7 @@ internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
         whenever(releaseVersionProvider.provide(VersionFixtures.SNAPSHOT_001, VERSION_INCREMENT)).thenReturn(VersionFixtures.RELEASE_001)
 
         // THEN
-        underTest.execute(projectDescriptor)
+        underTest.execute(projectDescriptor, ACTION_CONTEXT)
 
         projectDescriptor.subProjects.forEach {
             verify(scmActions).getLastTag(it.dir)
@@ -131,7 +131,7 @@ internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
         whenever(releaseVersionProvider.provide(VersionFixtures.SNAPSHOT_001, VERSION_INCREMENT)).thenReturn(VersionFixtures.RELEASE_001)
 
         // THEN
-        underTest.execute(projectDescriptor)
+        underTest.execute(projectDescriptor, ACTION_CONTEXT)
 
         projectDescriptor.subProjects.forEach {
             verify(scmActions).getLastTag(it.dir)
@@ -166,7 +166,7 @@ internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
         whenever(versionIncrementProvider.provide(COMMITS, CONVENTIONAL_COMMIT_TYPES)).thenReturn(versionIncrement)
 
         // THEN
-        assertThatThrownBy { underTest.execute(projectDescriptor) }
+        assertThatThrownBy { underTest.execute(projectDescriptor, ACTION_CONTEXT) }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("There are no acceptable commits.")
 

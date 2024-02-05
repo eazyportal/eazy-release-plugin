@@ -65,6 +65,7 @@ dependencies {
     }
 
     // Test
+    testImplementation(testFixtures(project(":core")))
     testImplementation("org.jenkinsci.plugins", "pipeline-model-definition")
 
     // Jenkins server dependencies
