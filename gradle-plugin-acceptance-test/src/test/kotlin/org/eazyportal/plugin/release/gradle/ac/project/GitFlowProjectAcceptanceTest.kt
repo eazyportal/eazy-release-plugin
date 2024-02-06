@@ -14,9 +14,8 @@ import org.junit.jupiter.api.assertThrows
 @TestMethodOrder(value = OrderAnnotation::class)
 internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
 
-    private companion object {
-        @JvmStatic
-        lateinit var GRADLE_PROJECT_ACTIONS: GradleProjectActions
+    companion object {
+        private lateinit var GRADLE_PROJECT_ACTIONS: GradleProjectActions
 
         @BeforeAll
         @JvmStatic
@@ -116,10 +115,16 @@ internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
                 "\tmodified:   gradle.properties"
             )
         }
-        assertThat(SCM_ACTIONS.getCommits(PROJECT_DIR).first()).isEqualTo("initial commit")
-        assertThrows<ScmActionException> { SCM_ACTIONS.getLastTag(PROJECT_DIR) }
 
-        assertThat(GRADLE_PROJECT_ACTIONS.getVersion()).hasToString("0.1.0")
+        assertThat(SCM_ACTIONS.getCommits(PROJECT_DIR).first())
+            .isEqualTo("initial commit")
+
+        assertThrows<ScmActionException> {
+            SCM_ACTIONS.getLastTag(PROJECT_DIR)
+        }
+
+        assertThat(GRADLE_PROJECT_ACTIONS.getVersion())
+            .hasToString("0.1.0")
     }
 
     @Order(12)
@@ -127,7 +132,7 @@ internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
     fun test_finalizeReleaseVersion() {
         // GIVEN
         val buildResult = createGradleRunner(PROJECT_DIR, EazyReleasePlugin.FINALIZE_RELEASE_VERSION_TASK_NAME)
-        .build()
+            .build()
 
         // WHEN
         // THEN
@@ -257,7 +262,7 @@ internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
         SCM_ACTIONS.add(PROJECT_DIR, ".")
         SCM_ACTIONS.commit(PROJECT_DIR, "feature: implement service")
 
-        val buildResult = createGradleRunner(PROJECT_DIR, "release")
+        val buildResult = createGradleRunner(PROJECT_DIR, EazyReleasePlugin.RELEASE_TASK_NAME)
             .build()
 
         // THEN
@@ -281,6 +286,74 @@ internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
             "> Task :release",
             "11 actionable tasks: 11 executed"
         )
+
+        assertThat(SCM_ACTIONS.getCommits(PROJECT_DIR).first())
+            .isEqualTo("New SNAPSHOT version: 0.2.1-SNAPSHOT")
+
+        assertThat(GRADLE_PROJECT_ACTIONS.getVersion()).hasToString("0.2.1-SNAPSHOT")
+
+        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.2.0")
+
+        listOf(PROJECT_DIR to ORIGIN_PROJECT_DIR)
+            .forEach { it.verifyGitCommitsAndTags() }
+    }
+
+    @Order(21)
+    @Test
+    fun test_release_shouldFail_whenThereAreNoAcceptableCommitsAfterRelease() {
+        // GIVEN
+        // WHEN
+        val buildResult = createGradleRunner(PROJECT_DIR, EazyReleasePlugin.RELEASE_TASK_NAME)
+            .buildAndFail()
+
+        // THEN
+        assertThat(buildResult.output.lines()).containsSubsequence(
+            "Preparing repository for release...",
+            "Setting release version...",
+            "FAILURE: Build failed with an exception.",
+            "* What went wrong:",
+            "Execution failed for task ':setReleaseVersion'.",
+            "> There are no acceptable commits."
+        )
+    }
+
+    @Order(22)
+    @Test
+    fun test_release_shouldSucceed_withIsForceRelease() {
+        // GIVEN
+        // WHEN
+        val buildResult = createGradleRunner(PROJECT_DIR, EazyReleasePlugin.RELEASE_TASK_NAME, "-DforceRelease")
+            .build()
+
+        // THEN
+        assertThat(buildResult.output.lines()).containsSubsequence(
+            "> Task :prepareRepositoryForRelease",
+            "Preparing repository for release...",
+            "> Task :setReleaseVersion",
+            "Setting release version...",
+            "> Task :finalizeReleaseVersion",
+            "Finalizing release version...",
+            "> Task :jar",
+            "> Task :build",
+            "> Task :publish",
+            "> Task :releaseBuild",
+            "> Task :setSnapshotVersion",
+            "Setting SNAPSHOT version...",
+            "> Task :finalizeSnapshotVersion",
+            "Finalizing SNAPSHOT version...",
+            "> Task :updateScm",
+            "Updating scm...",
+            "> Task :release",
+            "11 actionable tasks: 10 executed, 1 up-to-date"
+        )
+
+        assertThat(SCM_ACTIONS.getCommits(PROJECT_DIR).first())
+            .isEqualTo("New SNAPSHOT version: 0.2.2-SNAPSHOT")
+
+        assertThat(GRADLE_PROJECT_ACTIONS.getVersion())
+            .hasToString("0.2.2-SNAPSHOT")
+
+        assertThat(SCM_ACTIONS.getLastTag(PROJECT_DIR)).isEqualTo("0.2.1")
 
         listOf(PROJECT_DIR to ORIGIN_PROJECT_DIR)
             .forEach { it.verifyGitCommitsAndTags() }
