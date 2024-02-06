@@ -15,18 +15,14 @@ import java.nio.file.Files
 @TestMethodOrder(value = OrderAnnotation::class)
 internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcceptanceTest() {
 
-    private companion object {
-        const val SUBMODULE_PROJECT_NAME = "submodule-project"
+    companion object {
+        private const val SUBMODULE_PROJECT_NAME = "submodule-project"
 
-        @JvmStatic
-        val PROJECT_ACTIONS_FACTORY = StubProjectActionsFactory()
+        private val PROJECT_ACTIONS_FACTORY = StubProjectActionsFactory()
 
-        @JvmStatic
-        lateinit var ALL_PROJECT_DIRS: List<File>
-        @JvmStatic
-        lateinit var ORIGIN_SUBMODULE_PROJECT_DIR: File
-        @JvmStatic
-        lateinit var SUBMODULE_PROJECT_DIR: File
+        private lateinit var ALL_PROJECT_DIRS: List<File>
+        private lateinit var ORIGIN_SUBMODULE_PROJECT_DIR: File
+        private lateinit var SUBMODULE_PROJECT_DIR: File
 
         @BeforeAll
         @JvmStatic
@@ -344,7 +340,7 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
         SCM_ACTIONS.add(SUBMODULE_PROJECT_DIR, ".")
         SCM_ACTIONS.commit(SUBMODULE_PROJECT_DIR, "feature: implement service")
 
-        val buildResult = createGradleRunner(PROJECT_DIR, "release")
+        val buildResult = createGradleRunner(PROJECT_DIR, EazyReleasePlugin.RELEASE_TASK_NAME)
             .build()
 
         // THEN
@@ -381,6 +377,73 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
                 .run { assertThat(this).hasToString("0.2.1-SNAPSHOT") }
 
             assertThat(SCM_ACTIONS.getLastTag(projectDir)).isEqualTo("0.2.0")
+        }
+
+        listOf(PROJECT_DIR to ORIGIN_PROJECT_DIR, SUBMODULE_PROJECT_DIR to ORIGIN_SUBMODULE_PROJECT_DIR)
+            .forEach { it.verifyGitCommitsAndTags() }
+    }
+
+    @Order(21)
+    @Test
+    fun test_release_shouldFail_whenThereAreNoAcceptableCommitsAfterRelease() {
+        // GIVEN
+        val buildResult = createGradleRunner(PROJECT_DIR, EazyReleasePlugin.RELEASE_TASK_NAME)
+            .buildAndFail()
+
+        // WHEN
+        // THEN
+        assertThat(buildResult.output.lines()).containsSubsequence(
+            "Preparing repository for release...",
+            "Setting release version...",
+            "FAILURE: Build failed with an exception.",
+            "* What went wrong:",
+            "Execution failed for task ':setReleaseVersion'.",
+            "> There are no acceptable commits."
+        )
+    }
+
+    @Order(22)
+    @Test
+    fun test_release_shouldSucceed_withIsForceRelease() {
+        // GIVEN
+        // WHEN
+        val buildResult = createGradleRunner(PROJECT_DIR, EazyReleasePlugin.RELEASE_TASK_NAME, "-DforceRelease")
+            .build()
+
+        // THEN
+        assertThat(buildResult.output.lines()).containsSubsequence(
+            "> Task :prepareRepositoryForRelease",
+            "Preparing repository for release...",
+            "> Task :setReleaseVersion",
+            "Setting release version...",
+            "> Task :finalizeReleaseVersion",
+            "Finalizing release version...",
+            "> Task :jar",
+            "> Task :build",
+            "> Task :publish",
+            "> Task :submodule-project:build",
+            "Hello from custom build task!",
+            "> Task :submodule-project:publish",
+            "Hello from custom publish task!",
+            "> Task :releaseBuild",
+            "> Task :setSnapshotVersion",
+            "Setting SNAPSHOT version...",
+            "> Task :finalizeSnapshotVersion",
+            "Finalizing SNAPSHOT version...",
+            "> Task :updateScm",
+            "Updating scm...",
+            "> Task :release",
+            "13 actionable tasks: 12 executed, 1 up-to-date"
+        )
+
+        ALL_PROJECT_DIRS.forEach { projectDir ->
+            assertThat(SCM_ACTIONS.getCommits(projectDir).first()).isEqualTo("New SNAPSHOT version: 0.2.2-SNAPSHOT")
+
+            PROJECT_ACTIONS_FACTORY.create(projectDir)
+                .getVersion()
+                .run { assertThat(this).hasToString("0.2.2-SNAPSHOT") }
+
+            assertThat(SCM_ACTIONS.getLastTag(projectDir)).isEqualTo("0.2.1")
         }
 
         listOf(PROJECT_DIR to ORIGIN_PROJECT_DIR, SUBMODULE_PROJECT_DIR to ORIGIN_SUBMODULE_PROJECT_DIR)
