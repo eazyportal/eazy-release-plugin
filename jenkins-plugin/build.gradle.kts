@@ -59,6 +59,9 @@ dependencies {
                 } else if ((requested.group == "com.google.j2objc") && (requested.name == "j2objc-annotations")) {
                     useVersion("2.8")
                     because("fix: missing dependency version from jenkins/guava")
+                } else if ((requested.group == "org.junit.platform") && (requested.name == "junit-platform-launcher")) {
+                    useVersion("+")
+                    because("fix: missing dependency version for jpiAllPlugins task")
                 }
             }
         }
