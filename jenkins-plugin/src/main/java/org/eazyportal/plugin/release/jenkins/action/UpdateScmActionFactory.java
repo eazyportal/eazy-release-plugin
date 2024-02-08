@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import hudson.Extension;
 import hudson.model.InvisibleAction;
 import org.eazyportal.plugin.release.core.action.UpdateScmAction;
+import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
 
 import java.io.Serializable;
@@ -14,9 +15,9 @@ public class UpdateScmActionFactory extends InvisibleAction implements Serializa
     @Inject
     private transient ReleaseStepConfig releaseStepConfig;
 
-    public UpdateScmAction create() {
+    public UpdateScmAction create(ScmActions scmActions) {
         return new UpdateScmAction(
-            releaseStepConfig.getScmActions(),
+            scmActions,
             releaseStepConfig.getScmConfig()
         );
     }

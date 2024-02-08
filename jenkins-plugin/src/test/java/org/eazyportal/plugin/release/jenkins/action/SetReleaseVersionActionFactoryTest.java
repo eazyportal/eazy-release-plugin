@@ -1,7 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.action;
 
 import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction;
-import org.eazyportal.plugin.release.core.project.ProjectActionsFactory;
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType;
 import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
@@ -24,8 +23,6 @@ import static org.mockito.Mockito.when;
 class SetReleaseVersionActionFactoryTest {
 
     @Mock
-    private transient ProjectActionsFactory projectActionsFactory;
-    @Mock
     private transient ReleaseStepConfig releaseStepConfig;
     @Mock
     private transient ReleaseVersionProvider releaseVersionProvider;
@@ -47,17 +44,15 @@ class SetReleaseVersionActionFactoryTest {
 
         // WHEN
         when(releaseStepConfig.getConventionalCommitTypes()).thenReturn(ConventionalCommitType.getDEFAULT_TYPES());
-        when(releaseStepConfig.getScmActions()).thenReturn(scmActions);
         when(releaseStepConfig.getScmConfig()).thenReturn(ScmConfig.getGIT_FLOW());
 
         // THEN
-        SetReleaseVersionAction actual = underTest.create();
+        SetReleaseVersionAction actual = underTest.create(scmActions);
 
         assertThat(actual).hasNoNullFieldsOrProperties();
 
-        verifyNoInteractions(projectActionsFactory, scmActions, releaseVersionProvider, versionIncrementProvider);
+        verifyNoInteractions(scmActions, releaseVersionProvider, versionIncrementProvider);
         verify(releaseStepConfig).getConventionalCommitTypes();
-        verify(releaseStepConfig).getScmActions();
         verify(releaseStepConfig).getScmConfig();
         verifyNoMoreInteractions(releaseStepConfig);
     }

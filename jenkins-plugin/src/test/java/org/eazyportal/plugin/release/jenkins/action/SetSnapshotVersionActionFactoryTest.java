@@ -1,7 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.action;
 
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction;
-import org.eazyportal.plugin.release.core.project.ProjectActionsFactory;
 import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider;
@@ -22,8 +21,6 @@ import static org.mockito.Mockito.when;
 class SetSnapshotVersionActionFactoryTest {
 
     @Mock
-    private transient ProjectActionsFactory projectActionsFactory;
-    @Mock
     private transient ReleaseStepConfig releaseStepConfig;
     @Mock
     private transient SnapshotVersionProvider snapshotVersionProvider;
@@ -42,16 +39,14 @@ class SetSnapshotVersionActionFactoryTest {
         ScmActions scmActions = mock(ScmActions.class);
 
         // WHEN
-        when(releaseStepConfig.getScmActions()).thenReturn(scmActions);
         when(releaseStepConfig.getScmConfig()).thenReturn(ScmConfig.getGIT_FLOW());
 
         // THEN
-        SetSnapshotVersionAction actual = underTest.create();
+        SetSnapshotVersionAction actual = underTest.create(scmActions);
 
         assertThat(actual).hasNoNullFieldsOrProperties();
 
-        verifyNoInteractions(projectActionsFactory, scmActions, snapshotVersionProvider);
-        verify(releaseStepConfig).getScmActions();
+        verifyNoInteractions(scmActions, snapshotVersionProvider);
         verify(releaseStepConfig).getScmConfig();
         verifyNoMoreInteractions(releaseStepConfig);
     }

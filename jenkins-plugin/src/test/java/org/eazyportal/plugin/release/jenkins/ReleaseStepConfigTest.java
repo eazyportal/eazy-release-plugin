@@ -1,7 +1,6 @@
 package org.eazyportal.plugin.release.jenkins;
 
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType;
-import org.eazyportal.plugin.release.core.scm.GitActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +22,6 @@ class ReleaseStepConfigTest {
         // WHEN
         // THEN
         assertThat(underTest.getConventionalCommitTypes()).isEqualTo(ConventionalCommitType.getDEFAULT_TYPES());
-        assertThat(underTest.getScmActions())
-            .isInstanceOf(GitActions.class)
-            .isNotNull();
         assertThat(underTest.getScmConfig()).isEqualTo(ScmConfig.getGIT_FLOW());
     }
 

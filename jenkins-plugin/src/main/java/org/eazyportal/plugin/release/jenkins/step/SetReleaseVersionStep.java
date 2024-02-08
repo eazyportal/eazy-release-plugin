@@ -12,9 +12,11 @@ import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
 import org.eazyportal.plugin.release.core.action.model.ActionContext;
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
+import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
 import org.eazyportal.plugin.release.jenkins.action.ActionContextFactory;
 import org.eazyportal.plugin.release.jenkins.action.SetReleaseVersionActionFactory;
+import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -36,14 +38,17 @@ public class SetReleaseVersionStep extends Builder implements SimpleBuildStep, S
 
         File workingDir = new File(workspace.toURI());
 
+        ScmActions scmActions = run.getAction(ScmActionFactory.class)
+            .create(launcher, listener);
+
         ProjectDescriptor projectDescriptor = run.getAction(ProjectDescriptorFactory.class)
-            .create(workingDir);
+            .create(workingDir, scmActions);
 
         ActionContext actionContext = run.getAction(ActionContextFactory.class)
             .create(env);
 
         run.getAction(SetReleaseVersionActionFactory.class)
-            .create()
+            .create(scmActions)
             .execute(projectDescriptor, actionContext);
     }
 

@@ -8,9 +8,11 @@ import hudson.model.TaskListener;
 import org.eazyportal.plugin.release.core.FixtureValues;
 import org.eazyportal.plugin.release.core.action.FinalizeSnapshotVersionAction;
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
+import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
 import org.eazyportal.plugin.release.jenkins.action.ActionContextFactory;
 import org.eazyportal.plugin.release.jenkins.action.FinalizeSnapshotVersionActionFactory;
+import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -19,6 +21,7 @@ import java.io.File;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +44,11 @@ class FinalizeSnapshotVersionStepTest {
 
         Run<?, ?> run = mock(Run.class);
         EnvVars envVars = mock(EnvVars.class);
+        Launcher launcher = mock(Launcher.class);
+        TaskListener taskListener = mock(TaskListener.class);
+
+        ScmActions scmActions = mock(ScmActions.class);
+        ScmActionFactory scmActionFactory = mock(ScmActionFactory.class);
 
         ProjectDescriptor projectDescriptor = mock(ProjectDescriptor.class);
         ProjectDescriptorFactory projectDescriptorFactory = mock(ProjectDescriptorFactory.class);
@@ -51,31 +59,40 @@ class FinalizeSnapshotVersionStepTest {
         FinalizeSnapshotVersionAction finalizeSnapshotVersionAction = mock(FinalizeSnapshotVersionAction.class);
 
         // WHEN
+        when(run.getAction(ScmActionFactory.class)).thenReturn(scmActionFactory);
+        when(scmActionFactory.create(launcher, taskListener)).thenReturn(scmActions);
+
         when(run.getAction(ProjectDescriptorFactory.class)).thenReturn(projectDescriptorFactory);
-        when(projectDescriptorFactory.create(workingDir)).thenReturn(projectDescriptor);
+        when(projectDescriptorFactory.create(workingDir, scmActions)).thenReturn(projectDescriptor);
 
         when(run.getAction(ActionContextFactory.class)).thenReturn(actionContextFactory);
         when(actionContextFactory.create(envVars)).thenReturn(FixtureValues.getACTION_CONTEXT());
 
         when(run.getAction(FinalizeSnapshotVersionActionFactory.class)).thenReturn(finalizeSnapshotVersionActionFactory);
-        when(finalizeSnapshotVersionActionFactory.create()).thenReturn(finalizeSnapshotVersionAction);
+        when(finalizeSnapshotVersionActionFactory.create(scmActions)).thenReturn(finalizeSnapshotVersionAction);
 
         // THEN
-        underTest.perform(run, workspace, envVars, mock(Launcher.class), mock(TaskListener.class));
+        underTest.perform(run, workspace, envVars, launcher, taskListener);
 
-        verifyNoMoreInteractions(projectDescriptor);
+        verifyNoInteractions(envVars, launcher, projectDescriptor, scmActions, taskListener);
+
+        verify(run).getAction(ScmActionFactory.class);
+        verify(scmActionFactory).create(launcher, taskListener);
 
         verify(run).getAction(ProjectDescriptorFactory.class);
-        verify(projectDescriptorFactory).create(workingDir);
+        verify(projectDescriptorFactory).create(workingDir, scmActions);
 
         verify(run).getAction(ActionContextFactory.class);
         verify(actionContextFactory).create(envVars);
 
         verify(run).getAction(FinalizeSnapshotVersionActionFactory.class);
-        verify(finalizeSnapshotVersionActionFactory).create();
+        verify(finalizeSnapshotVersionActionFactory).create(scmActions);
         verify(finalizeSnapshotVersionAction).execute(projectDescriptor, FixtureValues.getACTION_CONTEXT());
 
-        verifyNoMoreInteractions(run, projectDescriptorFactory, finalizeSnapshotVersionAction, finalizeSnapshotVersionActionFactory);
+        verifyNoMoreInteractions(
+            actionContextFactory, finalizeSnapshotVersionAction, finalizeSnapshotVersionActionFactory,
+                projectDescriptorFactory, run, scmActionFactory
+        );
     }
 
 }

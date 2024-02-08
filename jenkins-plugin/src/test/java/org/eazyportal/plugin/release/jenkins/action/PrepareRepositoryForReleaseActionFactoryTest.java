@@ -1,7 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.action;
 
 import org.eazyportal.plugin.release.core.action.PrepareRepositoryForReleaseAction;
-import org.eazyportal.plugin.release.core.project.ProjectActionsFactory;
 import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
@@ -21,8 +20,6 @@ import static org.mockito.Mockito.when;
 class PrepareRepositoryForReleaseActionFactoryTest {
 
     @Mock
-    private transient ProjectActionsFactory projectActionsFactory;
-    @Mock
     private transient ReleaseStepConfig releaseStepConfig;
 
     @InjectMocks
@@ -39,16 +36,14 @@ class PrepareRepositoryForReleaseActionFactoryTest {
         ScmActions scmActions = mock(ScmActions.class);
 
         // WHEN
-        when(releaseStepConfig.getScmActions()).thenReturn(scmActions);
         when(releaseStepConfig.getScmConfig()).thenReturn(ScmConfig.getGIT_FLOW());
 
         // THEN
-        PrepareRepositoryForReleaseAction actual = underTest.create();
+        PrepareRepositoryForReleaseAction actual = underTest.create(scmActions);
 
         assertThat(actual).hasNoNullFieldsOrProperties();
 
-        verifyNoInteractions(projectActionsFactory, scmActions);
-        verify(releaseStepConfig).getScmActions();
+        verifyNoInteractions(scmActions);
         verify(releaseStepConfig).getScmConfig();
         verifyNoMoreInteractions(releaseStepConfig);
     }

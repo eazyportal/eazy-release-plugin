@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import hudson.Extension;
 import hudson.model.InvisibleAction;
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction;
+import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
 
@@ -17,9 +18,9 @@ public class SetSnapshotVersionActionFactory extends InvisibleAction implements 
     @Inject
     private transient SnapshotVersionProvider snapshotVersionProvider;
 
-    public SetSnapshotVersionAction create() {
+    public SetSnapshotVersionAction create(ScmActions scmActions) {
         return new SetSnapshotVersionAction(
-            releaseStepConfig.getScmActions(),
+            scmActions,
             releaseStepConfig.getScmConfig(),
             snapshotVersionProvider
         );

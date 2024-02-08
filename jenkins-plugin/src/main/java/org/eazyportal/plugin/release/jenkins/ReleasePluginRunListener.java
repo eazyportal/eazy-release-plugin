@@ -11,6 +11,7 @@ import org.eazyportal.plugin.release.jenkins.action.PrepareRepositoryForReleaseA
 import org.eazyportal.plugin.release.jenkins.action.SetReleaseVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.UpdateScmActionFactory;
+import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,8 @@ public class ReleasePluginRunListener extends RunListener<Run<?, ?>> {
     @Inject
     private ProjectDescriptorFactory projectDescriptorFactory;
     @Inject
+    private ScmActionFactory scmActionFactory;
+    @Inject
     private SetReleaseVersionActionFactory setReleaseVersionActionFactory;
     @Inject
     private SetSnapshotVersionActionFactory setSnapshotVersionActionFactory;
@@ -47,6 +50,7 @@ public class ReleasePluginRunListener extends RunListener<Run<?, ?>> {
         run.addAction(finalizeSnapshotVersionActionFactory);
         run.addAction(prepareRepositoryForReleaseActionFactory);
         run.addAction(projectDescriptorFactory);
+        run.addAction(scmActionFactory);
         run.addAction(setReleaseVersionActionFactory);
         run.addAction(setSnapshotVersionActionFactory);
         run.addAction(updateScmActionFactory);

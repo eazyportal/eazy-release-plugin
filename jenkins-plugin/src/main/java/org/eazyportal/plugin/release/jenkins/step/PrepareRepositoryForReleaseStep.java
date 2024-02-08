@@ -10,7 +10,9 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
+import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.jenkins.action.PrepareRepositoryForReleaseActionFactory;
+import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -32,8 +34,11 @@ public class PrepareRepositoryForReleaseStep extends Builder implements SimpleBu
 
         File workingDir = new File(workspace.toURI());
 
+        ScmActions scmActions = run.getAction(ScmActionFactory.class)
+            .create(launcher, listener);
+
         run.getAction(PrepareRepositoryForReleaseActionFactory.class)
-            .create()
+            .create(scmActions)
             .execute(workingDir);
     }
 

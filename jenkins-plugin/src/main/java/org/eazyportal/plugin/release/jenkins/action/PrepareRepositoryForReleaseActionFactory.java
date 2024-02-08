@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import hudson.Extension;
 import hudson.model.InvisibleAction;
 import org.eazyportal.plugin.release.core.action.PrepareRepositoryForReleaseAction;
+import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
 
 import java.io.Serializable;
@@ -14,9 +15,9 @@ public class PrepareRepositoryForReleaseActionFactory extends InvisibleAction im
     @Inject
     private transient ReleaseStepConfig releaseStepConfig;
 
-    public PrepareRepositoryForReleaseAction create() {
+    public PrepareRepositoryForReleaseAction create(ScmActions scmActions) {
         return new PrepareRepositoryForReleaseAction(
-            releaseStepConfig.getScmActions(),
+            scmActions,
             releaseStepConfig.getScmConfig()
         );
     }

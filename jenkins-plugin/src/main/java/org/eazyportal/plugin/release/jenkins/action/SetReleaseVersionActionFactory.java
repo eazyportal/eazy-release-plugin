@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import hudson.Extension;
 import hudson.model.InvisibleAction;
 import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction;
+import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider;
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
@@ -20,11 +21,11 @@ public class SetReleaseVersionActionFactory extends InvisibleAction implements S
     @Inject
     private transient VersionIncrementProvider versionIncrementProvider;
 
-    public SetReleaseVersionAction create() {
+    public SetReleaseVersionAction create(ScmActions scmActions) {
         return new SetReleaseVersionAction(
             releaseStepConfig.getConventionalCommitTypes(),
             releaseVersionProvider,
-            releaseStepConfig.getScmActions(),
+            scmActions,
             releaseStepConfig.getScmConfig(),
             versionIncrementProvider
         );

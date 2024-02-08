@@ -8,6 +8,7 @@ import org.eazyportal.plugin.release.jenkins.action.PrepareRepositoryForReleaseA
 import org.eazyportal.plugin.release.jenkins.action.SetReleaseVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.UpdateScmActionFactory;
+import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,6 +33,8 @@ class ReleasePluginRunListenerTest {
     private PrepareRepositoryForReleaseActionFactory prepareRepositoryForReleaseActionFactory;
     @Mock
     private ProjectDescriptorFactory projectDescriptorFactory;
+    @Mock
+    private ScmActionFactory scmActionFactory;
     @Mock
     private SetReleaseVersionActionFactory setReleaseVersionActionFactory;
     @Mock
@@ -63,6 +66,7 @@ class ReleasePluginRunListenerTest {
         verify(run).addAction(finalizeSnapshotVersionActionFactory);
         verify(run).addAction(prepareRepositoryForReleaseActionFactory);
         verify(run).addAction(projectDescriptorFactory);
+        verify(run).addAction(scmActionFactory);
         verify(run).addAction(setReleaseVersionActionFactory);
         verify(run).addAction(setSnapshotVersionActionFactory);
         verify(run).addAction(updateScmActionFactory);

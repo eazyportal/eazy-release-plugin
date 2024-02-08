@@ -36,16 +36,14 @@ class UpdateScmActionFactoryTest {
         ScmActions scmActions = mock(ScmActions.class);
 
         // WHEN
-        when(releaseStepConfig.getScmActions()).thenReturn(scmActions);
         when(releaseStepConfig.getScmConfig()).thenReturn(ScmConfig.getGIT_FLOW());
 
         // THEN
-        UpdateScmAction actual = underTest.create();
+        UpdateScmAction actual = underTest.create(scmActions);
 
         assertThat(actual).hasNoNullFieldsOrProperties();
 
         verifyNoInteractions(scmActions);
-        verify(releaseStepConfig).getScmActions();
         verify(releaseStepConfig).getScmConfig();
         verifyNoMoreInteractions(releaseStepConfig);
     }
