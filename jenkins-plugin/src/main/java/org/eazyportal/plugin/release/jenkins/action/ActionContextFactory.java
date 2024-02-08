@@ -12,7 +12,7 @@ public class ActionContextFactory extends InvisibleAction implements Serializabl
 
     public ActionContext create(EnvVars env) {
         return new ActionContext(
-            Boolean.getBoolean(env.get("force", "false"))
+            Boolean.getBoolean(env.get("FORCE_RELEASE", "false"))
         );
     }
 

@@ -21,7 +21,7 @@ This module is a `Jenkins` plugin implementation.
 
 ==== Environment Variables
 
-With `forceRelease` it is possible to force a release.
+With `FORCE_RELEASE` it is possible to force a release.
 
 === maven-plugin
 
