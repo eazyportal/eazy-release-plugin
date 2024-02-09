@@ -10,13 +10,8 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
-import org.eazyportal.plugin.release.core.action.model.ActionContext;
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
-import org.eazyportal.plugin.release.core.scm.ScmActions;
-import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
-import org.eazyportal.plugin.release.jenkins.action.ActionContextFactory;
-import org.eazyportal.plugin.release.jenkins.action.UpdateScmActionFactory;
-import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
+import org.eazyportal.plugin.release.core.action.UpdateScmAction;
+import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -34,22 +29,13 @@ public class UpdateScmStep extends Builder implements SimpleBuildStep, Serializa
 
     @Override
     public void perform(@NotNull Run<?, ?> run, @NotNull FilePath workspace, @NotNull EnvVars env, @NotNull Launcher launcher, @NotNull TaskListener listener)
-            throws InterruptedException, IOException {
+        throws InterruptedException, IOException {
 
         File workingDir = new File(workspace.toURI());
 
-        ScmActions scmActions = run.getAction(ScmActionFactory.class)
-            .create(launcher, listener);
-
-        ProjectDescriptor projectDescriptor = run.getAction(ProjectDescriptorFactory.class)
-            .create(workingDir, scmActions);
-
-        ActionContext actionContext = run.getAction(ActionContextFactory.class)
-            .create(env);
-
-        run.getAction(UpdateScmActionFactory.class)
-            .create(scmActions)
-            .execute(projectDescriptor, actionContext);
+        run.getAction(ReleaseActionFactory.class)
+            .create(UpdateScmAction.class, run, workingDir, env, launcher, listener)
+            .execute();
     }
 
     @Extension

@@ -18,8 +18,10 @@ import org.slf4j.LoggerFactory
 import java.io.File
 
 open class SetReleaseVersionAction(
+    private val actionContext: ActionContext,
     private val conventionalCommitTypes: List<ConventionalCommitType>,
     private val releaseVersionProvider: ReleaseVersionProvider,
+    private val projectDescriptor: ProjectDescriptor,
     private val scmActions: ScmActions,
     private val scmConfig: ScmConfig,
     private val versionIncrementProvider: VersionIncrementProvider
@@ -30,10 +32,7 @@ open class SetReleaseVersionAction(
         private val LOGGER = LoggerFactory.getLogger(SetReleaseVersionAction::class.java)
     }
 
-    override fun execute(
-        projectDescriptor: ProjectDescriptor,
-        actionContext: ActionContext
-    ) {
+    override fun execute() {
         LOGGER.info("Setting release version...")
 
         projectDescriptor.allProjects.run {

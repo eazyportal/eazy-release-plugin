@@ -1,6 +1,5 @@
 package org.eazyportal.plugin.release.core.action
 
-import org.eazyportal.plugin.release.core.action.model.ActionContext
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
@@ -9,6 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class SetSnapshotVersionAction(
+    private val projectDescriptor: ProjectDescriptor,
     private val scmActions: ScmActions,
     private val scmConfig: ScmConfig,
     private val snapshotVersionProvider: SnapshotVersionProvider
@@ -19,10 +19,7 @@ class SetSnapshotVersionAction(
         val LOGGER: Logger = LoggerFactory.getLogger(SetSnapshotVersionAction::class.java)
     }
 
-    override fun execute(
-        projectDescriptor: ProjectDescriptor,
-        actionContext: ActionContext
-    ) {
+    override fun execute() {
         LOGGER.info("Setting snapshot version...")
 
         val snapshotVersion = projectDescriptor.rootProject.projectActions.getVersion()

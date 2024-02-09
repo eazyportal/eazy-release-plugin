@@ -1,6 +1,5 @@
 package org.eazyportal.plugin.release.core.action
 
-import org.eazyportal.plugin.release.core.FixtureValues.ACTION_CONTEXT
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.model.ProjectDescriptorMockBuilder
 import org.eazyportal.plugin.release.core.project.ProjectActions
@@ -44,11 +43,11 @@ internal class UpdateScmActionTest : ReleaseActionBaseTest() {
         val projectActions: ProjectActions = mock()
         val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
-        underTest = UpdateScmAction(scmActions, scmConfig)
+        underTest = createUpdateScmAction(projectDescriptor, scmConfig)
 
         // WHEN
         // THEN
-        underTest.execute(projectDescriptor, ACTION_CONTEXT)
+        underTest.execute()
 
         projectDescriptor.allProjects.forEach {
             verify(scmActions).push(it.dir, scmConfig.remote, scmConfig.releaseBranch, scmConfig.featureBranch)
@@ -56,5 +55,16 @@ internal class UpdateScmActionTest : ReleaseActionBaseTest() {
 
         verifyNoMoreInteractions(scmActions)
     }
+
+    private fun createUpdateScmAction(
+        projectDescriptor: ProjectDescriptor,
+        scmConfig: ScmConfig
+    ): UpdateScmAction =
+        UpdateScmAction(
+            projectDescriptor,
+            scmActions,
+            scmConfig
+        )
+
 
 }

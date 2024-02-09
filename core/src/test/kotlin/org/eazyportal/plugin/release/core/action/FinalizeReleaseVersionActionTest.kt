@@ -1,6 +1,5 @@
 package org.eazyportal.plugin.release.core.action
 
-import org.eazyportal.plugin.release.core.FixtureValues.ACTION_CONTEXT
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.model.ProjectDescriptorMockBuilder
 import org.eazyportal.plugin.release.core.project.ProjectActions
@@ -8,7 +7,6 @@ import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.mock
@@ -22,7 +20,6 @@ internal class FinalizeReleaseVersionActionTest : ReleaseActionBaseTest() {
     @Mock
     private lateinit var scmActions: ScmActions
 
-    @InjectMocks
     private lateinit var underTest: FinalizeReleaseVersionAction
 
     @BeforeEach
@@ -37,12 +34,14 @@ internal class FinalizeReleaseVersionActionTest : ReleaseActionBaseTest() {
 
         val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
+        underTest = createFinalizeReleaseVersionAction(projectDescriptor)
+
         // WHEN
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.RELEASE_001)
         whenever(projectActions.scmFilesToCommit()).thenReturn(arrayOf(FILE_TO_COMMIT))
 
         // THEN
-        underTest.execute(projectDescriptor, ACTION_CONTEXT)
+        underTest.execute()
 
         verify(projectActions).getVersion()
         verify(projectActions, times(2)).scmFilesToCommit()
@@ -53,5 +52,13 @@ internal class FinalizeReleaseVersionActionTest : ReleaseActionBaseTest() {
         }
         verifyNoMoreInteractions(projectActions, scmActions)
     }
+
+    private fun createFinalizeReleaseVersionAction(
+        projectDescriptor: ProjectDescriptor
+    ): FinalizeReleaseVersionAction =
+        FinalizeReleaseVersionAction(
+            projectDescriptor,
+            scmActions
+        )
 
 }

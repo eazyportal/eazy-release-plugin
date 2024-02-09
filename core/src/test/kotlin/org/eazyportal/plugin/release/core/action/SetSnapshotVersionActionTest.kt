@@ -1,6 +1,5 @@
 package org.eazyportal.plugin.release.core.action
 
-import org.eazyportal.plugin.release.core.FixtureValues.ACTION_CONTEXT
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.model.ProjectDescriptorMockBuilder
 import org.eazyportal.plugin.release.core.project.ProjectActions
@@ -38,14 +37,14 @@ internal class SetSnapshotVersionActionTest : ReleaseActionBaseTest() {
         val projectActions: ProjectActions = mock()
         val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
-        underTest = createSetSnapshotVersionAction(ScmConfig.GIT_FLOW)
+        underTest = createSetSnapshotVersionAction(projectDescriptor, ScmConfig.GIT_FLOW)
 
         // WHEN
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.RELEASE_001)
         whenever(snapshotVersionProvider.provide(VersionFixtures.RELEASE_001)).thenReturn(VersionFixtures.SNAPSHOT_002)
 
         // THEN
-        underTest.execute(projectDescriptor, ACTION_CONTEXT)
+        underTest.execute()
 
         verify(projectActions).getVersion()
         verify(snapshotVersionProvider).provide(VersionFixtures.RELEASE_001)
@@ -66,14 +65,14 @@ internal class SetSnapshotVersionActionTest : ReleaseActionBaseTest() {
         val projectActions: ProjectActions = mock()
         val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
-        underTest = createSetSnapshotVersionAction(ScmConfig.TRUNK_BASED_FLOW)
+        underTest = createSetSnapshotVersionAction(projectDescriptor, ScmConfig.TRUNK_BASED_FLOW)
 
         // WHEN
         whenever(projectActions.getVersion()).thenReturn(VersionFixtures.RELEASE_001)
         whenever(snapshotVersionProvider.provide(VersionFixtures.RELEASE_001)).thenReturn(VersionFixtures.SNAPSHOT_002)
 
         // THEN
-        underTest.execute(projectDescriptor, ACTION_CONTEXT)
+        underTest.execute()
 
         verify(projectActions).getVersion()
         verify(snapshotVersionProvider).provide(VersionFixtures.RELEASE_001)
@@ -82,8 +81,12 @@ internal class SetSnapshotVersionActionTest : ReleaseActionBaseTest() {
         verifyNoMoreInteractions(projectActions, scmActions, snapshotVersionProvider)
     }
 
-    private fun createSetSnapshotVersionAction(scmConfig: ScmConfig = ScmConfig.GIT_FLOW): SetSnapshotVersionAction =
+    private fun createSetSnapshotVersionAction(
+        projectDescriptor: ProjectDescriptor,
+        scmConfig: ScmConfig = ScmConfig.GIT_FLOW
+    ): SetSnapshotVersionAction =
         SetSnapshotVersionAction(
+            projectDescriptor,
             scmActions,
             scmConfig,
             snapshotVersionProvider

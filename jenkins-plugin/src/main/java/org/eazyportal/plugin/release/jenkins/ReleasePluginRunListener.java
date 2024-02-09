@@ -5,12 +5,8 @@ import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.listeners.RunListener;
 import org.eazyportal.plugin.release.jenkins.action.ActionContextFactory;
-import org.eazyportal.plugin.release.jenkins.action.FinalizeReleaseVersionActionFactory;
-import org.eazyportal.plugin.release.jenkins.action.FinalizeSnapshotVersionActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.PrepareRepositoryForReleaseActionFactory;
-import org.eazyportal.plugin.release.jenkins.action.SetReleaseVersionActionFactory;
-import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
-import org.eazyportal.plugin.release.jenkins.action.UpdateScmActionFactory;
+import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,21 +19,13 @@ public class ReleasePluginRunListener extends RunListener<Run<?, ?>> {
     @Inject
     private ActionContextFactory actionContextFactory;
     @Inject
-    private FinalizeReleaseVersionActionFactory finalizeReleaseVersionActionFactory;
-    @Inject
-    private FinalizeSnapshotVersionActionFactory finalizeSnapshotVersionActionFactory;
-    @Inject
     private PrepareRepositoryForReleaseActionFactory prepareRepositoryForReleaseActionFactory;
     @Inject
     private ProjectDescriptorFactory projectDescriptorFactory;
     @Inject
+    private ReleaseActionFactory releaseActionFactory;
+    @Inject
     private ScmActionFactory scmActionFactory;
-    @Inject
-    private SetReleaseVersionActionFactory setReleaseVersionActionFactory;
-    @Inject
-    private SetSnapshotVersionActionFactory setSnapshotVersionActionFactory;
-    @Inject
-    private UpdateScmActionFactory updateScmActionFactory;
 
     public ReleasePluginRunListener() {
         LOGGER.info("Initialize EazyRelease plugin.");
@@ -46,14 +34,10 @@ public class ReleasePluginRunListener extends RunListener<Run<?, ?>> {
     @Override
     public void onInitialize(Run<?, ?> run) {
         run.addAction(actionContextFactory);
-        run.addAction(finalizeReleaseVersionActionFactory);
-        run.addAction(finalizeSnapshotVersionActionFactory);
         run.addAction(prepareRepositoryForReleaseActionFactory);
         run.addAction(projectDescriptorFactory);
+        run.addAction(releaseActionFactory);
         run.addAction(scmActionFactory);
-        run.addAction(setReleaseVersionActionFactory);
-        run.addAction(setSnapshotVersionActionFactory);
-        run.addAction(updateScmActionFactory);
     }
 
 }

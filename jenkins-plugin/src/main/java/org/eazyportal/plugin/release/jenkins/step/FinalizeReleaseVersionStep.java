@@ -10,13 +10,8 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
-import org.eazyportal.plugin.release.core.action.model.ActionContext;
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
-import org.eazyportal.plugin.release.core.scm.ScmActions;
-import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
-import org.eazyportal.plugin.release.jenkins.action.ActionContextFactory;
-import org.eazyportal.plugin.release.jenkins.action.FinalizeReleaseVersionActionFactory;
-import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
+import org.eazyportal.plugin.release.core.action.FinalizeReleaseVersionAction;
+import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -38,18 +33,9 @@ public class FinalizeReleaseVersionStep extends Builder implements SimpleBuildSt
 
         File workingDir = new File(workspace.toURI());
 
-        ScmActions scmActions = run.getAction(ScmActionFactory.class)
-            .create(launcher, listener);
-
-        ProjectDescriptor projectDescriptor = run.getAction(ProjectDescriptorFactory.class)
-            .create(workingDir, scmActions);
-
-        ActionContext actionContext = run.getAction(ActionContextFactory.class)
-            .create(env);
-
-        run.getAction(FinalizeReleaseVersionActionFactory.class)
-            .create(scmActions)
-            .execute(projectDescriptor, actionContext);
+        run.getAction(ReleaseActionFactory.class)
+            .create(FinalizeReleaseVersionAction.class, run, workingDir, env, launcher, listener)
+            .execute();
     }
 
     @Extension
