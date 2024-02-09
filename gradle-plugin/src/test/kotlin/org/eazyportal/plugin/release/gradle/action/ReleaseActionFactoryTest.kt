@@ -6,10 +6,12 @@ import org.eazyportal.plugin.release.core.TestFixtures.ACTION_CONTEXT
 import org.eazyportal.plugin.release.core.TestFixtures.CONVENTIONAL_COMMIT_TYPES
 import org.eazyportal.plugin.release.core.action.FinalizeReleaseVersionAction
 import org.eazyportal.plugin.release.core.action.FinalizeSnapshotVersionAction
+import org.eazyportal.plugin.release.core.action.PrepareRepositoryForReleaseAction
 import org.eazyportal.plugin.release.core.action.ReleaseAction
 import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction
 import org.eazyportal.plugin.release.core.action.UpdateScmAction
+import org.eazyportal.plugin.release.core.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 import org.gradle.api.Project
@@ -66,13 +68,23 @@ internal class ReleaseActionFactoryTest {
         }
 
         whenever(actionContextFactory.create(any())).thenReturn(ACTION_CONTEXT)
-        whenever(projectDescriptorFactory.create(any(), any(), any())).thenReturn(mock())
+
+        whenever(projectDescriptorFactory.create(any(), any(), any())).thenReturn(PROJECT_DESCRIPTOR)
 
         assertThat(resultProvider.invoke(underTest, project))
             .isInstanceOf(expectedReleaseActionClass.java)
     }
 
     companion object {
+        private val PROJECT_DESCRIPTOR = ProjectDescriptor(
+            rootProject = org.eazyportal.plugin.release.core.model.Project(
+                dir = mock(),
+                projectActions = mock()
+            ),
+            allProjects = emptyList(),
+            subProjects = emptyList()
+        )
+
         @JvmStatic
         private fun releaseActions(): List<Arguments> {
             return listOf(
@@ -86,6 +98,12 @@ internal class ReleaseActionFactoryTest {
                     FinalizeSnapshotVersionAction::class,
                     { underTest: ReleaseActionFactory, project: Project ->
                         underTest.create<FinalizeSnapshotVersionAction>(project)
+                    }
+                ),
+                Arguments.of(
+                    PrepareRepositoryForReleaseAction::class,
+                    { underTest: ReleaseActionFactory, project: Project ->
+                        underTest.create<PrepareRepositoryForReleaseAction>(project)
                     }
                 ),
                 Arguments.of(

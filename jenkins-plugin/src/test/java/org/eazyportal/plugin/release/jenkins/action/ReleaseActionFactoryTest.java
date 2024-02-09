@@ -7,10 +7,12 @@ import hudson.model.TaskListener;
 import org.eazyportal.plugin.release.core.TestFixtures;
 import org.eazyportal.plugin.release.core.action.FinalizeReleaseVersionAction;
 import org.eazyportal.plugin.release.core.action.FinalizeSnapshotVersionAction;
+import org.eazyportal.plugin.release.core.action.PrepareRepositoryForReleaseAction;
 import org.eazyportal.plugin.release.core.action.ReleaseAction;
 import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction;
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction;
 import org.eazyportal.plugin.release.core.action.UpdateScmAction;
+import org.eazyportal.plugin.release.core.model.Project;
 import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
 import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
@@ -26,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +42,10 @@ public class ReleaseActionFactoryTest {
 
     @InjectMocks
     private ReleaseActionFactory underTest;
+
+    private static final ProjectDescriptor PROJECT_DESCRIPTOR = new ProjectDescriptor(
+        new Project(mock(), mock()), Collections.emptyList(), Collections.emptyList()
+    );
 
     @BeforeEach
     public void setUp() {
@@ -63,9 +70,8 @@ public class ReleaseActionFactoryTest {
         when(scmActionFactory.create(launcher, taskListener)).thenReturn(scmActions);
         when(run.getAction(ScmActionFactory.class)).thenReturn(scmActionFactory);
 
-        ProjectDescriptor projectDescriptor = mock();
         ProjectDescriptorFactory projectDescriptorFactory = mock();
-        when(projectDescriptorFactory.create(workingDir, scmActions)).thenReturn(projectDescriptor);
+        when(projectDescriptorFactory.create(workingDir, scmActions)).thenReturn(PROJECT_DESCRIPTOR);
         when(run.getAction(ProjectDescriptorFactory.class)).thenReturn(projectDescriptorFactory);
 
         when(releaseStepConfig.getConventionalCommitTypes()).thenReturn(TestFixtures.getCONVENTIONAL_COMMIT_TYPES());
@@ -79,6 +85,7 @@ public class ReleaseActionFactoryTest {
         return List.of(
             Arguments.of(FinalizeReleaseVersionAction.class),
             Arguments.of(FinalizeSnapshotVersionAction.class),
+            Arguments.of(PrepareRepositoryForReleaseAction.class),
             Arguments.of(SetReleaseVersionAction.class),
             Arguments.of(SetSnapshotVersionAction.class),
             Arguments.of(UpdateScmAction.class)

@@ -1,75 +1,52 @@
 package org.eazyportal.plugin.release.jenkins.step;
 
-import hudson.EnvVars;
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.model.Run;
-import hudson.model.TaskListener;
 import org.eazyportal.plugin.release.core.action.PrepareRepositoryForReleaseAction;
-import org.eazyportal.plugin.release.core.scm.ScmActions;
-import org.eazyportal.plugin.release.jenkins.action.PrepareRepositoryForReleaseActionFactory;
-import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
+import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.io.File;
-
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-class PrepareRepositoryForReleaseStepTest {
+class PrepareRepositoryForReleaseStepTest extends ReleaseStepBaseTest {
 
-    @TempDir
-    private File workingDir;
+    @Mock
+    private PrepareRepositoryForReleaseAction prepareRepositoryForReleaseAction;
 
     private PrepareRepositoryForReleaseStep underTest;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+
         underTest = new PrepareRepositoryForReleaseStep();
     }
 
     @Test
     void test_perform() throws Exception {
         // GIVEN
-        FilePath workspace = new FilePath(workingDir);
-
-        Run<?, ?> run = mock(Run.class);
-        Launcher launcher = mock(Launcher.class);
-        TaskListener taskListener = mock(TaskListener.class);
-
-        ScmActions scmActions = mock(ScmActions.class);
-        ScmActionFactory scmActionFactory = mock(ScmActionFactory.class);
-
-        PrepareRepositoryForReleaseActionFactory prepareRepositoryForReleaseActionFactory = mock(PrepareRepositoryForReleaseActionFactory.class);
-        PrepareRepositoryForReleaseAction prepareRepositoryForReleaseAction = mock(PrepareRepositoryForReleaseAction.class);
-
         // WHEN
-        when(run.getAction(ScmActionFactory.class)).thenReturn(scmActionFactory);
-        when(scmActionFactory.create(launcher, taskListener)).thenReturn(scmActions);
+        when(run.getAction(ReleaseActionFactory.class)).thenReturn(releaseActionFactory);
 
-        when(run.getAction(PrepareRepositoryForReleaseActionFactory.class)).thenReturn(prepareRepositoryForReleaseActionFactory);
-        when(prepareRepositoryForReleaseActionFactory.create(scmActions)).thenReturn(prepareRepositoryForReleaseAction);
+        when(releaseActionFactory.create(PrepareRepositoryForReleaseAction.class, run, workingDir, envVars, launcher, taskListener))
+            .thenReturn(prepareRepositoryForReleaseAction);
+
+        doNothing().when(prepareRepositoryForReleaseAction).execute();
 
         // THEN
-        underTest.perform(run, workspace, mock(EnvVars.class), launcher, taskListener);
+        underTest.perform(run, workspace, envVars, launcher, taskListener);
 
-        verifyNoInteractions(launcher, scmActions, taskListener);
+        verifyNoInteractions(envVars, launcher, taskListener);
+        verify(run).getAction(ReleaseActionFactory.class);
+        verify(releaseActionFactory).create(PrepareRepositoryForReleaseAction.class, run, workingDir, envVars, launcher, taskListener);
+        verify(prepareRepositoryForReleaseAction).execute();
 
-        verify(run).getAction(ScmActionFactory.class);
-        verify(scmActionFactory).create(launcher, taskListener);
-
-        verify(run).getAction(PrepareRepositoryForReleaseActionFactory.class);
-        verify(prepareRepositoryForReleaseActionFactory).create(scmActions);
-        verify(prepareRepositoryForReleaseAction).execute(workingDir);
-
-        verifyNoMoreInteractions(
-            run, prepareRepositoryForReleaseAction, prepareRepositoryForReleaseActionFactory, scmActionFactory
-        );
+        verifyNoMoreInteractions(prepareRepositoryForReleaseAction, releaseActionFactory, run);
     }
 
 }

@@ -2,7 +2,6 @@ package org.eazyportal.plugin.release.jenkins;
 
 import hudson.model.Run;
 import org.eazyportal.plugin.release.jenkins.action.ActionContextFactory;
-import org.eazyportal.plugin.release.jenkins.action.PrepareRepositoryForReleaseActionFactory;
 import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,8 +20,6 @@ class ReleasePluginRunListenerTest {
 
     @Mock
     private ActionContextFactory actionContextFactory;
-    @Mock
-    private PrepareRepositoryForReleaseActionFactory prepareRepositoryForReleaseActionFactory;
     @Mock
     private ProjectDescriptorFactory projectDescriptorFactory;
     @Mock
@@ -50,7 +47,6 @@ class ReleasePluginRunListenerTest {
         underTest.onInitialize(run);
 
         verify(run).addAction(actionContextFactory);
-        verify(run).addAction(prepareRepositoryForReleaseActionFactory);
         verify(run).addAction(projectDescriptorFactory);
         verify(run).addAction(releaseActionFactory);
         verify(run).addAction(scmActionFactory);

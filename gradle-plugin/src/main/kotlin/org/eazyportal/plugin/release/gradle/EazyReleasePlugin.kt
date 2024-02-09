@@ -2,7 +2,6 @@ package org.eazyportal.plugin.release.gradle
 
 import org.eazyportal.plugin.release.core.ProjectDescriptorFactory
 import org.eazyportal.plugin.release.gradle.action.ActionContextFactory
-import org.eazyportal.plugin.release.gradle.action.PrepareRepositoryForReleaseActionFactory
 import org.eazyportal.plugin.release.gradle.action.ReleaseActionFactory
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 import org.eazyportal.plugin.release.gradle.tasks.EazyReleaseBaseTask
@@ -41,7 +40,7 @@ class EazyReleasePlugin : Plugin<Project> {
         )
 
         project.tasks.run {
-            registerPrepareRepositoryForReleaseTask()
+            registerPrepareRepositoryForReleaseTask(releaseActionFactory)
 
             registerSetReleaseVersionTask(releaseActionFactory).configure {
                 it.mustRunAfter(PREPARE_REPOSITORY_FOR_RELEASE_TASK_NAME)
@@ -110,11 +109,13 @@ class EazyReleasePlugin : Plugin<Project> {
             releaseActionFactory
         )
 
-    private fun TaskContainer.registerPrepareRepositoryForReleaseTask() =
+    private fun TaskContainer.registerPrepareRepositoryForReleaseTask(
+        releaseActionFactory: ReleaseActionFactory
+    ): TaskProvider<PrepareRepositoryForReleaseTask> =
         register(
             PREPARE_REPOSITORY_FOR_RELEASE_TASK_NAME,
             PrepareRepositoryForReleaseTask::class.java,
-            PrepareRepositoryForReleaseActionFactory()
+            releaseActionFactory
         )
 
     private fun TaskContainer.registerSetReleaseVersionTask(

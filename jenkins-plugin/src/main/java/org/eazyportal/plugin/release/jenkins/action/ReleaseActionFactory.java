@@ -9,6 +9,7 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import org.eazyportal.plugin.release.core.action.FinalizeReleaseVersionAction;
 import org.eazyportal.plugin.release.core.action.FinalizeSnapshotVersionAction;
+import org.eazyportal.plugin.release.core.action.PrepareRepositoryForReleaseAction;
 import org.eazyportal.plugin.release.core.action.ReleaseAction;
 import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction;
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction;
@@ -50,6 +51,10 @@ public class ReleaseActionFactory extends InvisibleAction implements Serializabl
         } else if (FinalizeSnapshotVersionAction.class.isAssignableFrom(clazz)) {
             instance = new FinalizeSnapshotVersionAction(
                 projectDescriptor, scmActions
+            );
+        } else if (PrepareRepositoryForReleaseAction.class.isAssignableFrom(clazz)) {
+            instance = new PrepareRepositoryForReleaseAction(
+              projectDescriptor, scmActions, releaseStepConfig.getScmConfig()
             );
         } else if (SetReleaseVersionAction.class.isAssignableFrom(clazz)) {
             instance = new SetReleaseVersionAction(

@@ -3,6 +3,7 @@ package org.eazyportal.plugin.release.gradle.action
 import org.eazyportal.plugin.release.core.ProjectDescriptorFactory
 import org.eazyportal.plugin.release.core.action.FinalizeReleaseVersionAction
 import org.eazyportal.plugin.release.core.action.FinalizeSnapshotVersionAction
+import org.eazyportal.plugin.release.core.action.PrepareRepositoryForReleaseAction
 import org.eazyportal.plugin.release.core.action.ReleaseAction
 import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction
@@ -39,6 +40,12 @@ class ReleaseActionFactory(
             FinalizeSnapshotVersionAction::class -> FinalizeSnapshotVersionAction(
                 projectDescriptor,
                 extension.scmActions
+            )
+
+            PrepareRepositoryForReleaseAction::class -> PrepareRepositoryForReleaseAction(
+                projectDescriptor,
+                extension.scmActions,
+                extension.scmConfig
             )
 
             SetReleaseVersionAction::class -> SetReleaseVersionAction(
