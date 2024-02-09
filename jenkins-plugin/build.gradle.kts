@@ -4,6 +4,14 @@ plugins {
     id("org.jenkins-ci.jpi") version("+")
 
     id("org.eazyportal.plugin.java-project-convention")
+
+    id("idea")
+}
+
+idea {
+    module {
+        excludeDirs.add(projectDir.resolve("work"))
+    }
 }
 
 jenkinsPlugin {
