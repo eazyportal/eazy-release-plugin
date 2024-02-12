@@ -2,20 +2,20 @@ package org.eazyportal.plugin.release.core.project
 
 import org.eazyportal.plugin.release.core.project.model.Project
 import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.project.model.ProjectFile
 import org.eazyportal.plugin.release.core.scm.ScmActions
-import java.io.File
 
-open class ProjectDescriptorFactory {
+open class ProjectDescriptorFactory<T> {
 
     fun create(
         projectActionsFactory: ProjectActionsFactory,
-        scmActions: ScmActions,
-        workingDir: File
-    ): ProjectDescriptor {
-        val rootProject: Project = workingDir.toProject(projectActionsFactory)
+        scmActions: ScmActions<T>,
+        rootProjectFile: ProjectFile<T>
+    ): ProjectDescriptor<T> {
+        val rootProject: Project<T> = rootProjectFile.toProject(projectActionsFactory)
 
-        val subProjects: List<Project> = scmActions.getSubmodules(workingDir)
-            .map { workingDir.resolve(it) }
+        val subProjects: List<Project<T>> = scmActions.getSubmodules(rootProject.dir)
+            .map { rootProject.dir.resolve(it) }
             .map { it.toProject(projectActionsFactory) }
 
         return ProjectDescriptor(
@@ -25,7 +25,7 @@ open class ProjectDescriptorFactory {
         )
     }
 
-    private fun File.toProject(projectActionsFactory: ProjectActionsFactory): Project =
+    private fun ProjectFile<T>.toProject(projectActionsFactory: ProjectActionsFactory): Project<T> =
         Project(this, projectActionsFactory.create(this))
 
 }

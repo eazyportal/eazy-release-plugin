@@ -1,7 +1,7 @@
 package org.eazyportal.plugin.release.core.project.model
 
-data class ProjectDescriptor(
-    val rootProject: Project,
-    val subProjects: List<Project>,
-    val allProjects: List<Project>
+data class ProjectDescriptor<T>(
+    val rootProject: Project<T>,
+    val subProjects: List<Project<T>>,
+    val allProjects: List<Project<T>>
 )

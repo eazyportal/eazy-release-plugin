@@ -7,9 +7,9 @@ import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class SetSnapshotVersionAction(
-    private val projectDescriptor: ProjectDescriptor,
-    private val scmActions: ScmActions,
+class SetSnapshotVersionAction<T>(
+    private val projectDescriptor: ProjectDescriptor<T>,
+    private val scmActions: ScmActions<T>,
     private val scmConfig: ScmConfig,
     private val snapshotVersionProvider: SnapshotVersionProvider
 ) : ReleaseAction {

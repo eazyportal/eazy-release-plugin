@@ -1,5 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.step;
 
+import hudson.FilePath;
 import org.eazyportal.plugin.release.core.action.UpdateScmAction;
 import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,7 @@ import static org.mockito.Mockito.when;
 class UpdateScmStepTest extends ReleaseStepBaseTest {
 
     @Mock
-    private UpdateScmAction updateScmAction;
+    private UpdateScmAction<FilePath> updateScmAction;
 
     private UpdateScmStep underTest;
 
@@ -33,7 +34,7 @@ class UpdateScmStepTest extends ReleaseStepBaseTest {
         // WHEN
         when(run.getAction(ReleaseActionFactory.class)).thenReturn(releaseActionFactory);
 
-        when(releaseActionFactory.create(UpdateScmAction.class, run, workingDir, envVars, launcher, taskListener))
+        when(releaseActionFactory.create(UpdateScmAction.class, run, workspace, envVars, launcher, taskListener))
             .thenReturn(updateScmAction);
 
         doNothing().when(updateScmAction).execute();
@@ -43,7 +44,7 @@ class UpdateScmStepTest extends ReleaseStepBaseTest {
 
         verifyNoInteractions(envVars, launcher, taskListener);
         verify(run).getAction(ReleaseActionFactory.class);
-        verify(releaseActionFactory).create(UpdateScmAction.class, run, workingDir, envVars, launcher, taskListener);
+        verify(releaseActionFactory).create(UpdateScmAction.class, run, workspace, envVars, launcher, taskListener);
         verify(updateScmAction).execute();
 
         verifyNoMoreInteractions(releaseActionFactory, run, updateScmAction);

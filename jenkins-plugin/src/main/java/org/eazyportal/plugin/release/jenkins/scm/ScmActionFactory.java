@@ -1,6 +1,7 @@
 package org.eazyportal.plugin.release.jenkins.scm;
 
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.InvisibleAction;
 import hudson.model.TaskListener;
@@ -13,8 +14,8 @@ import java.io.Serializable;
 @Extension
 public class ScmActionFactory extends InvisibleAction implements Serializable {
 
-    public ScmActions create(Launcher launcher, TaskListener listener) {
-        return new GitActions(new JenkinsCliCommandExecutor(launcher, listener));
+    public ScmActions<FilePath> create(Launcher launcher, TaskListener listener) {
+        return new GitActions<>(new JenkinsCliCommandExecutor(launcher, listener));
     }
 
 }

@@ -14,13 +14,14 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import java.io.File
 
 internal class FinalizeSnapshotVersionActionTest : ReleaseActionBaseTest() {
 
     @Mock
-    private lateinit var scmActions: ScmActions
+    private lateinit var scmActions: ScmActions<File>
 
-    private lateinit var underTest: FinalizeSnapshotVersionAction
+    private lateinit var underTest: FinalizeSnapshotVersionAction<File>
 
     @BeforeEach
     fun setUp() {
@@ -32,7 +33,7 @@ internal class FinalizeSnapshotVersionActionTest : ReleaseActionBaseTest() {
         // GIVEN
         val projectActions: ProjectActions = mock()
 
-        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
+        val projectDescriptor: ProjectDescriptor<File> = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
         underTest = createFinalizeSnapshotVersionAction(projectDescriptor)
 
@@ -53,8 +54,8 @@ internal class FinalizeSnapshotVersionActionTest : ReleaseActionBaseTest() {
     }
 
     private fun createFinalizeSnapshotVersionAction(
-        projectDescriptor: ProjectDescriptor
-    ): FinalizeSnapshotVersionAction =
+        projectDescriptor: ProjectDescriptor<File>
+    ): FinalizeSnapshotVersionAction<File> =
         FinalizeSnapshotVersionAction(
             projectDescriptor,
             scmActions

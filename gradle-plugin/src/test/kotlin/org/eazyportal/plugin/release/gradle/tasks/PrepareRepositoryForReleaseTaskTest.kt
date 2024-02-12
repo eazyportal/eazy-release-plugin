@@ -13,6 +13,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import java.io.File
 
 internal class PrepareRepositoryForReleaseTaskTest : EazyReleaseBaseTaskTest<PrepareRepositoryForReleaseTask>() {
 
@@ -34,10 +35,10 @@ internal class PrepareRepositoryForReleaseTaskTest : EazyReleaseBaseTaskTest<Pre
     @Test
     fun test_run() {
         // GIVEN
-        val prepareRepositoryForReleaseAction: PrepareRepositoryForReleaseAction = mock()
+        val prepareRepositoryForReleaseAction: PrepareRepositoryForReleaseAction<File> = mock()
 
         // WHEN
-        whenever(releaseActionFactory.create<PrepareRepositoryForReleaseAction>(project))
+        whenever(releaseActionFactory.create<PrepareRepositoryForReleaseAction<File>>(project))
             .thenReturn(prepareRepositoryForReleaseAction)
 
         doNothing().whenever(prepareRepositoryForReleaseAction).execute()
@@ -45,7 +46,7 @@ internal class PrepareRepositoryForReleaseTaskTest : EazyReleaseBaseTaskTest<Pre
         // THEN
         underTest.run()
 
-        verify(releaseActionFactory).create<PrepareRepositoryForReleaseAction>(project)
+        verify(releaseActionFactory).create<PrepareRepositoryForReleaseAction<File>>(project)
         verify(prepareRepositoryForReleaseAction).execute()
         verifyNoMoreInteractions(prepareRepositoryForReleaseAction, releaseActionFactory)
     }

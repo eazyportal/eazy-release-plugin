@@ -1,20 +1,21 @@
 package org.eazyportal.plugin.release.jenkins.executor;
 
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.TaskListener;
 import io.jenkins.cli.shaded.org.apache.commons.lang.SystemUtils;
 import org.eazyportal.plugin.release.core.executor.CommandExecutor;
 import org.eazyportal.plugin.release.core.executor.exception.CliExecutionException;
+import org.eazyportal.plugin.release.core.project.model.ProjectFile;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class JenkinsCliCommandExecutor implements CommandExecutor {
+public class JenkinsCliCommandExecutor implements CommandExecutor<ProjectFile<FilePath>> {
 
     private static final String[] OS_LINUX_COMMANDS = new String[] { "bash", "-c" };
     private static final String[] OS_WINDOWS_COMMANDS = new String[] { "cmd", "/c" };
@@ -29,7 +30,7 @@ public class JenkinsCliCommandExecutor implements CommandExecutor {
 
     @NotNull
     @Override
-    public String execute(@NotNull File workingDir, @NotNull String... commands) throws CliExecutionException {
+    public String execute(@NotNull ProjectFile<FilePath> projectFile, @NotNull String... commands) throws CliExecutionException {
         try (
             var stdOutOutputStream = new ByteArrayOutputStream();
             var stdErrOutputStream = new ByteArrayOutputStream()
@@ -38,7 +39,7 @@ public class JenkinsCliCommandExecutor implements CommandExecutor {
                 .cmds(enrichWithOsCommands(commands))
                 .stdout(stdOutOutputStream)
                 .stderr(stdErrOutputStream)
-                .pwd(workingDir)
+                .pwd(projectFile.getFile())
                 .join();
 
             if (returnCode == 0) {

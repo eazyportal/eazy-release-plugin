@@ -5,9 +5,9 @@ import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class FinalizeSnapshotVersionAction(
-    private val projectDescriptor: ProjectDescriptor,
-    private val scmActions: ScmActions,
+class FinalizeSnapshotVersionAction<T>(
+    private val projectDescriptor: ProjectDescriptor<T>,
+    private val scmActions: ScmActions<T>,
 ) : ReleaseAction {
 
     override fun execute() {

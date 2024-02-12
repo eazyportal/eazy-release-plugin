@@ -6,6 +6,7 @@ import org.eazyportal.plugin.release.core.project.exception.InvalidProjectLocati
 import org.eazyportal.plugin.release.core.project.exception.MissingProjectVersionPropertyException
 import org.eazyportal.plugin.release.core.project.exception.MultipleProjectVersionPropertyException
 import org.eazyportal.plugin.release.core.project.exception.ProjectVersionPropertyException
+import org.eazyportal.plugin.release.core.project.model.FileSystemProjectFile
 import org.eazyportal.plugin.release.core.version.model.VersionFixtures
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -44,7 +45,7 @@ internal class GradleProjectActionsTest {
     private val workingDir = Files.createTempDirectory("").toFile()
     private val gradlePropertiesFile = workingDir.resolve(GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME)
 
-    private val underTest = GradleProjectActions(workingDir)
+    private val underTest = GradleProjectActions(FileSystemProjectFile(workingDir))
 
     @AfterEach
     fun tearDown() {
@@ -59,7 +60,7 @@ internal class GradleProjectActionsTest {
 
         // WHEN
         // THEN
-        assertThatThrownBy { GradleProjectActions(workingDir) }
+        assertThatThrownBy { GradleProjectActions(FileSystemProjectFile(workingDir)) }
             .isInstanceOf(InvalidProjectLocationException::class.java)
             .hasMessage("Invalid Gradle project location: $workingDir")
     }
@@ -71,7 +72,7 @@ internal class GradleProjectActionsTest {
 
         // WHEN
         // THEN
-        assertThatThrownBy { GradleProjectActions(workingDir) }
+        assertThatThrownBy { GradleProjectActions(FileSystemProjectFile(workingDir)) }
             .isInstanceOf(InvalidProjectLocationException::class.java)
             .hasMessage("Invalid Gradle project location: $workingDir")
     }

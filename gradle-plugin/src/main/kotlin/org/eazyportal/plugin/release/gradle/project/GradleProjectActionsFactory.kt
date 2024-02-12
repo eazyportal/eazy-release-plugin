@@ -3,22 +3,15 @@ package org.eazyportal.plugin.release.gradle.project
 import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
 import org.eazyportal.plugin.release.core.project.exception.InvalidProjectTypeException
-import java.io.File
+import org.eazyportal.plugin.release.core.project.model.ProjectFile
 
 class GradleProjectActionsFactory : ProjectActionsFactory {
 
-    override fun create(workingDir: File): ProjectActions =
-        if (workingDir.isGradleProjectDir()) {
-            GradleProjectActions(workingDir)
-        }
-        else {
-            throw InvalidProjectTypeException("Unable to identify the project type in: $workingDir")
+    override fun create(projectFile: ProjectFile<*>): ProjectActions =
+        if (GradleProjectActions.isGradleProject(projectFile)) {
+            GradleProjectActions(projectFile)
+        } else {
+            throw InvalidProjectTypeException("Unable to identify the project type in: $projectFile")
         }
 
 }
-
-fun File.isGradleProjectDir(): Boolean =
-    resolve("build.gradle").exists() ||
-    resolve("build.gradle.kts").exists() ||
-    resolve("settings.gradle").exists() ||
-    resolve("settings.gradle.kts").exists()

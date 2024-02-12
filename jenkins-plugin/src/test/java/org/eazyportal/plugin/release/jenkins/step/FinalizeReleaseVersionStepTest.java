@@ -33,7 +33,7 @@ class FinalizeReleaseVersionStepTest extends ReleaseStepBaseTest {
         // WHEN
         when(run.getAction(ReleaseActionFactory.class)).thenReturn(releaseActionFactory);
 
-        when(releaseActionFactory.create(FinalizeReleaseVersionAction.class, run, workingDir, envVars, launcher, taskListener))
+        when(releaseActionFactory.create(FinalizeReleaseVersionAction.class, run, workspace, envVars, launcher, taskListener))
             .thenReturn(finalizeReleaseVersionAction);
 
         doNothing().when(finalizeReleaseVersionAction).execute();
@@ -43,7 +43,7 @@ class FinalizeReleaseVersionStepTest extends ReleaseStepBaseTest {
 
         verifyNoInteractions(envVars, launcher, taskListener);
         verify(run).getAction(ReleaseActionFactory.class);
-        verify(releaseActionFactory).create(FinalizeReleaseVersionAction.class, run, workingDir, envVars, launcher, taskListener);
+        verify(releaseActionFactory).create(FinalizeReleaseVersionAction.class, run, workspace, envVars, launcher, taskListener);
         verify(finalizeReleaseVersionAction).execute();
         verifyNoMoreInteractions(finalizeReleaseVersionAction, run);
     }

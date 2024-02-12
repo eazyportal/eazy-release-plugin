@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.project.ProjectActions
 import org.eazyportal.plugin.release.core.project.exception.InvalidProjectTypeException
+import org.eazyportal.plugin.release.core.project.model.FileSystemProjectFile
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -31,7 +32,7 @@ internal class GradleProjectActionsFactoryTest {
 
         // WHEN
         // THEN
-        val actual: ProjectActions = underTest.create(workingDir)
+        val actual: ProjectActions = underTest.create(FileSystemProjectFile(workingDir))
 
         assertThat(actual).isInstanceOf(GradleProjectActions::class.java)
     }
@@ -41,7 +42,7 @@ internal class GradleProjectActionsFactoryTest {
         // GIVEN
         // WHEN
         // THEN
-        assertThatThrownBy { underTest.create(workingDir) }
+        assertThatThrownBy { underTest.create(FileSystemProjectFile(workingDir)) }
             .isInstanceOf(InvalidProjectTypeException::class.java)
             .hasMessageStartingWith("Unable to identify the project type in: ")
     }

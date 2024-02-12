@@ -25,13 +25,10 @@ public abstract class ReleaseStepBaseTest {
     @Mock
     protected TaskListener taskListener;
 
-    @TempDir
-    protected File workingDir;
-
     protected FilePath workspace;
 
     @BeforeEach
-    public void setUpBase() {
+    public void setUpBase(@TempDir File workingDir) {
         workspace = new FilePath(workingDir);
     }
 

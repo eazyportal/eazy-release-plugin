@@ -2,6 +2,8 @@ package org.eazyportal.plugin.release.gradle.ac.project
 
 import org.assertj.core.api.Assertions.assertThat
 import org.eazyportal.plugin.release.core.executor.CliCommandExecutor
+import org.eazyportal.plugin.release.core.project.model.FileSystemProjectFile
+import org.eazyportal.plugin.release.core.project.model.ProjectFile
 import org.eazyportal.plugin.release.core.scm.GitActions
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
 import org.gradle.testkit.runner.GradleRunner
@@ -12,36 +14,9 @@ import java.io.File
 import java.nio.file.Files
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal abstract class BaseProjectAcceptanceTest {
+abstract class BaseProjectAcceptanceTest {
 
-    companion object {
-        const val PROJECT_NAME = "dummy-project"
-
-        @JvmStatic
-        val CLI_EXECUTOR = CliCommandExecutor()
-        @JvmStatic
-        val SCM_ACTIONS = GitActions(CLI_EXECUTOR)
-
-        @JvmStatic
-        lateinit var ORIGIN_PROJECT_DIR: File
-        @JvmStatic
-        lateinit var PROJECT_DIR: File
-        @TempDir
-        @JvmStatic
-        lateinit var WORKING_DIR: File
-
-        @BeforeAll
-        @JvmStatic
-        fun initializeBaseProject() {
-            ORIGIN_PROJECT_DIR = WORKING_DIR.resolve("origin/$PROJECT_NAME")
-                .also { Files.createDirectories(it.toPath()) }
-
-            PROJECT_DIR = WORKING_DIR.resolve(PROJECT_NAME)
-                .also { Files.createDirectories(it.toPath()) }
-        }
-    }
-
-    internal fun File.copyIntoFromResources(fileName: String, subFolder: String = "") {
+    protected fun FileSystemProjectFile.copyIntoFromResources(fileName: String, subFolder: String = "") {
         val fileContent = "${this@BaseProjectAcceptanceTest::class.java.simpleName}/$subFolder/$fileName"
             .let {
                 BaseProjectAcceptanceTest::class.java.classLoader.getResource(it)
@@ -52,20 +27,20 @@ internal abstract class BaseProjectAcceptanceTest {
 
         resolve(fileName)
             .let {
-                Files.createDirectories(it.parentFile.toPath())
+                Files.createDirectories(it.getFile().parentFile.toPath())
 
                 it.writeText(fileContent)
             }
     }
 
-    internal fun createGradleRunner(projectDir: File, vararg arguments: String): GradleRunner =
+    protected fun createGradleRunner(projectFile: FileSystemProjectFile, vararg arguments: String): GradleRunner =
         GradleRunner.create()
             .forwardOutput()
             .withPluginClasspath()
-            .withProjectDir(projectDir)
+            .withProjectDir(projectFile.getFile())
             .withArguments(*arguments)
 
-    internal fun File.initializeGradleProject(subFolder: String = "") {
+    protected fun FileSystemProjectFile.initializeGradleProject(subFolder: String = "") {
         createGradleRunner(this, "init", "--dsl", "kotlin")
             .build()
 
@@ -74,7 +49,7 @@ internal abstract class BaseProjectAcceptanceTest {
         copyIntoFromResources(GradleProjectActions.GRADLE_PROPERTIES_FILE_NAME, subFolder)
     }
 
-    internal fun Pair<File, File>.verifyGitCommitsAndTags() =
+    protected fun Pair<ProjectFile<File>, ProjectFile<File>>.verifyGitCommitsAndTags() =
         listOf(
             arrayOf("log", "--pretty=format:%s", "main"),
             arrayOf("log", "--pretty=format:%s", "dev"),
@@ -82,5 +57,35 @@ internal abstract class BaseProjectAcceptanceTest {
         ).forEach {
             assertThat(SCM_ACTIONS.execute(first, *it)).isEqualTo(SCM_ACTIONS.execute(second, *it))
         }
+
+    companion object {
+        @JvmStatic
+        protected val PROJECT_NAME = "dummy-project"
+
+        @JvmStatic
+        protected val CLI_EXECUTOR = CliCommandExecutor()
+        @JvmStatic
+        protected val SCM_ACTIONS = GitActions(CLI_EXECUTOR)
+
+        @JvmStatic
+        protected lateinit var ORIGIN_PROJECT_DIR: FileSystemProjectFile
+        @JvmStatic
+        protected lateinit var PROJECT_DIR: FileSystemProjectFile
+        @JvmStatic
+        @TempDir
+        protected lateinit var WORKING_DIR: File
+
+        @BeforeAll
+        @JvmStatic
+        fun initializeBaseProject() {
+            ORIGIN_PROJECT_DIR = WORKING_DIR.resolve("origin/$PROJECT_NAME")
+                .also { Files.createDirectories(it.toPath()) }
+                .let { FileSystemProjectFile(it) }
+
+            PROJECT_DIR = WORKING_DIR.resolve(PROJECT_NAME)
+                .also { Files.createDirectories(it.toPath()) }
+                .let { FileSystemProjectFile(it) }
+        }
+    }
 
 }

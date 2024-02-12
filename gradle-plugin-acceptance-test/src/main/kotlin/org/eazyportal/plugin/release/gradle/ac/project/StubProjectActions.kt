@@ -1,11 +1,11 @@
 package org.eazyportal.plugin.release.gradle.ac.project
 
 import org.eazyportal.plugin.release.core.project.ProjectActions
+import org.eazyportal.plugin.release.core.project.model.ProjectFile
 import org.eazyportal.plugin.release.core.version.model.Version
-import java.io.File
 
 class StubProjectActions(
-    private val workingDir: File
+    projectFile: ProjectFile<*>
 ) : ProjectActions {
 
     companion object {
@@ -15,7 +15,7 @@ class StubProjectActions(
         private val VERSION_REGEX = Regex(""".*"version".?:.?"(.*?)".*""")
     }
 
-    private val versionJsonFile = workingDir.resolve(VERSION_JSON_FILE_NAME)
+    private val versionJsonFile = projectFile.resolve(VERSION_JSON_FILE_NAME)
 
     override fun getVersion(): Version =
         versionJsonFile.readLines()

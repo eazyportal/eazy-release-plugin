@@ -1,6 +1,7 @@
 package org.eazyportal.plugin.release.gradle.ac.project
 
 import org.assertj.core.api.Assertions.assertThat
+import org.eazyportal.plugin.release.core.project.model.FileSystemProjectFile
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
 import org.junit.jupiter.api.BeforeAll
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.api.assertThrows
-import java.io.File
 import java.nio.file.Files
 
 @TestMethodOrder(value = OrderAnnotation::class)
@@ -20,15 +20,16 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
 
         private val PROJECT_ACTIONS_FACTORY = StubProjectActionsFactory()
 
-        private lateinit var ALL_PROJECT_DIRS: List<File>
-        private lateinit var ORIGIN_SUBMODULE_PROJECT_DIR: File
-        private lateinit var SUBMODULE_PROJECT_DIR: File
+        private lateinit var ALL_PROJECT_DIRS: List<FileSystemProjectFile>
+        private lateinit var ORIGIN_SUBMODULE_PROJECT_DIR: FileSystemProjectFile
+        private lateinit var SUBMODULE_PROJECT_DIR: FileSystemProjectFile
 
         @BeforeAll
         @JvmStatic
         fun initialize() {
             ORIGIN_SUBMODULE_PROJECT_DIR = WORKING_DIR.resolve("origin/$SUBMODULE_PROJECT_NAME")
                 .also { Files.createDirectories(it.toPath()) }
+                .let { FileSystemProjectFile(it) }
                 .also { SCM_ACTIONS.execute(it, "init", "--initial-branch=main") }
 
             SUBMODULE_PROJECT_DIR = PROJECT_DIR.resolve(SUBMODULE_PROJECT_NAME)
@@ -65,15 +66,15 @@ internal class GitFlowProjectWithCustomSubmodulesAcceptanceTest : BaseProjectAcc
                 SCM_ACTIONS.execute(projectDir, "checkout", "-b", "dev")
             }
 
-        val originProjectGitDirPath = ORIGIN_PROJECT_DIR.resolve(".git").path
-        val originSubmoduleGitDirPath = ORIGIN_SUBMODULE_PROJECT_DIR.resolve(".git").path
+        val originProjectGitDirPath = ORIGIN_PROJECT_DIR.resolve(".git").getFile().path
+        val originSubmoduleGitDirPath = ORIGIN_SUBMODULE_PROJECT_DIR.resolve(".git").getFile().path
 
         // Fixing Windows folder separator issue
         SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "-c", "protocol.file.allow=always", "submodule", "add", originSubmoduleGitDirPath.replace("\\", "/"))
 
         SCM_ACTIONS.commit(ORIGIN_PROJECT_DIR, "add submodule")
 
-        SCM_ACTIONS.execute(WORKING_DIR, "-c", "protocol.file.allow=always", "clone", "--recurse-submodules", originProjectGitDirPath, PROJECT_NAME)
+        SCM_ACTIONS.execute(FileSystemProjectFile(WORKING_DIR), "-c", "protocol.file.allow=always", "clone", "--recurse-submodules", originProjectGitDirPath, PROJECT_NAME)
 
         // Checking out to a different branch will fix: "remote: error: refusing to update checked out branch: refs/heads/dev"
         listOf(ORIGIN_PROJECT_DIR, ORIGIN_SUBMODULE_PROJECT_DIR).forEach { projectDir ->

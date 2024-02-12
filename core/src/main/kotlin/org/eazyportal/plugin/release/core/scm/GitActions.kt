@@ -1,14 +1,14 @@
 package org.eazyportal.plugin.release.core.scm
 
 import org.eazyportal.plugin.release.core.executor.CommandExecutor
+import org.eazyportal.plugin.release.core.project.model.ProjectFile
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
 import org.eazyportal.plugin.release.core.utils.isWindows
 import org.eazyportal.plugin.release.core.version.model.Version
-import java.io.File
 
-class GitActions(
-    private val commandExecutor: CommandExecutor
-) : ScmActions {
+class GitActions<T>(
+    private val commandExecutor: CommandExecutor<ProjectFile<T>>
+) : ScmActions<T> {
 
     companion object {
         internal val GIT_EXECUTABLE =
@@ -17,45 +17,45 @@ class GitActions(
         val LINE_BREAK_REGEX = Regex("\r?\n")
     }
 
-    override fun add(workingDir: File, vararg filePaths: String) {
-        execute(workingDir, "add", *filePaths)
+    override fun add(projectFile: ProjectFile<T>, vararg filePaths: String) {
+        execute(projectFile, "add", *filePaths)
     }
 
-    override fun checkout(workingDir: File, toRef: String) {
-        execute(workingDir, "checkout", toRef)
+    override fun checkout(projectFile: ProjectFile<T>, toRef: String) {
+        execute(projectFile, "checkout", toRef)
     }
 
-    override fun commit(workingDir: File, message: String) {
-        execute(workingDir, "commit", "-m", message)
+    override fun commit(projectFile: ProjectFile<T>, message: String) {
+        execute(projectFile, "commit", "-m", message)
     }
 
-    fun execute(workingDir: File, vararg gitCommands: String): String {
+    fun execute(projectFile: ProjectFile<T>, vararg gitCommands: String): String {
         try {
-            return commandExecutor.execute(workingDir, GIT_EXECUTABLE, *gitCommands)
+            return commandExecutor.execute(projectFile, GIT_EXECUTABLE, *gitCommands)
         }
         catch (exception: Exception) {
             throw ScmActionException(exception)
         }
     }
 
-    override fun fetch(workingDir: File, remote: String) {
-        execute(workingDir, "fetch", remote, "--tags", "--prune", "--prune-tags", "--recurse-submodules")
+    override fun fetch(projectFile: ProjectFile<T>, remote: String) {
+        execute(projectFile, "fetch", remote, "--tags", "--prune", "--prune-tags", "--recurse-submodules")
     }
 
-    override fun getCommits(workingDir: File, fromRef: String?, toRef: String): List<String> {
+    override fun getCommits(projectFile: ProjectFile<T>, fromRef: String?, toRef: String): List<String> {
         val refs = listOfNotNull(fromRef, toRef)
             .joinToString("..")
 
-        return execute(workingDir, "log", "--pretty=format:%s", refs)
+        return execute(projectFile, "log", "--pretty=format:%s", refs)
             .split(LINE_BREAK_REGEX)
     }
 
-    override fun getLastTag(workingDir: File, fromRef: String): String {
-        return execute(workingDir, "describe", "--abbrev=0", "--tags", fromRef)
+    override fun getLastTag(projectFile: ProjectFile<T>, fromRef: String): String {
+        return execute(projectFile, "describe", "--abbrev=0", "--tags", fromRef)
     }
 
-    override fun getSubmodules(workingDir: File): List<String> {
-        return execute(workingDir, "submodule")
+    override fun getSubmodules(projectFile: ProjectFile<T>): List<String> {
+        return execute(projectFile, "submodule")
             .lines()
             .map { it.replace(Regex("""^[\s\W]?\w+\s(.*?)\s?(\(.*\))?${'$'}"""), "$1") }
             .filter { it.isNotBlank() }
@@ -63,27 +63,27 @@ class GitActions(
             .toList()
     }
 
-    override fun getTags(workingDir: File, fromRef: String): List<String> {
-        return execute(workingDir, "tag", "--sort=-creatordate", "--contains", fromRef)
+    override fun getTags(projectFile: ProjectFile<T>, fromRef: String): List<String> {
+        return execute(projectFile, "tag", "--sort=-creatordate", "--contains", fromRef)
             .split(LINE_BREAK_REGEX)
             .filter { it.isNotBlank() }
     }
 
-    override fun mergeNoCommit(workingDir: File, fromBranch: String) {
-        execute(workingDir, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch)
+    override fun mergeNoCommit(projectFile: ProjectFile<T>, fromBranch: String) {
+        execute(projectFile, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch)
     }
 
-    override fun push(workingDir: File, remote: String, vararg branches: String) {
+    override fun push(projectFile: ProjectFile<T>, remote: String, vararg branches: String) {
         val branchesRefs = branches
             .distinct()
             .map { "$it:$it" }
             .toTypedArray()
 
-        execute(workingDir, "push", "--atomic", "--tags", "--recurse-submodules=on-demand", remote, *branchesRefs)
+        execute(projectFile, "push", "--atomic", "--tags", "--recurse-submodules=on-demand", remote, *branchesRefs)
     }
 
-    override fun tag(workingDir: File, version: Version) {
-        execute(workingDir, "tag", "-a", version.toString(), "-m", "v$version")
+    override fun tag(projectFile: ProjectFile<T>, version: Version) {
+        execute(projectFile, "tag", "-a", version.toString(), "-m", "v$version")
     }
 
 }

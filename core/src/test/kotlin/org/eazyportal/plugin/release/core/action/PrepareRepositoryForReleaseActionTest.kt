@@ -13,13 +13,14 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import java.io.File
 
 internal class PrepareRepositoryForReleaseActionTest : ReleaseActionBaseTest() {
 
     @Mock
-    private lateinit var scmActions: ScmActions
+    private lateinit var scmActions: ScmActions<File>
 
-    private lateinit var underTest: PrepareRepositoryForReleaseAction
+    private lateinit var underTest: PrepareRepositoryForReleaseAction<File>
 
     @BeforeEach
     fun setUp() {
@@ -30,21 +31,22 @@ internal class PrepareRepositoryForReleaseActionTest : ReleaseActionBaseTest() {
     fun test_execute_withGitFlow() {
         // GIVEN
         val projectActions: ProjectActions = mock()
-        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
+        val projectDescriptor: ProjectDescriptor<File> = ProjectDescriptorMockBuilder(projectActions, workingDir)
+            .build()
 
         underTest = PrepareRepositoryForReleaseAction(projectDescriptor, scmActions, ScmConfig.GIT_FLOW)
 
         // WHEN
-        whenever(scmActions.getSubmodules(workingDir))
+        whenever(scmActions.getSubmodules(projectDescriptor.rootProject.dir))
             .thenReturn(listOf(ProjectDescriptorMockBuilder.SUBMODULE_NAME))
 
         // THEN
         underTest.execute()
 
-        verify(scmActions).fetch(workingDir, ScmConfig.GIT_FLOW.remote)
-        verify(scmActions).checkout(workingDir, ScmConfig.GIT_FLOW.featureBranch)
-        verify(scmActions).getSubmodules(workingDir)
-        verify(scmActions).checkout(workingDir.resolve(ProjectDescriptorMockBuilder.SUBMODULE_NAME), ScmConfig.GIT_FLOW.featureBranch)
+        verify(scmActions).fetch(projectDescriptor.rootProject.dir, ScmConfig.GIT_FLOW.remote)
+        verify(scmActions).checkout(projectDescriptor.rootProject.dir, ScmConfig.GIT_FLOW.featureBranch)
+        verify(scmActions).getSubmodules(projectDescriptor.rootProject.dir)
+        verify(scmActions).checkout(projectDescriptor.rootProject.dir.resolve(ProjectDescriptorMockBuilder.SUBMODULE_NAME), ScmConfig.GIT_FLOW.featureBranch)
         verifyNoMoreInteractions(scmActions)
     }
 
@@ -52,19 +54,19 @@ internal class PrepareRepositoryForReleaseActionTest : ReleaseActionBaseTest() {
     fun test_execute_withTrunkBasedFlow() {
         // GIVEN
         val projectActions: ProjectActions = mock()
-        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
+        val projectDescriptor: ProjectDescriptor<File> = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
         underTest = PrepareRepositoryForReleaseAction(projectDescriptor, scmActions, ScmConfig.TRUNK_BASED_FLOW)
 
         // WHEN
-        whenever(scmActions.getSubmodules(workingDir))
+        whenever(scmActions.getSubmodules(projectDescriptor.rootProject.dir))
             .thenReturn(listOf(ProjectDescriptorMockBuilder.SUBMODULE_NAME))
 
         // THEN
         underTest.execute()
 
-        verify(scmActions).fetch(workingDir, ScmConfig.TRUNK_BASED_FLOW.remote)
-        verify(scmActions).getSubmodules(workingDir)
+        verify(scmActions).fetch(projectDescriptor.rootProject.dir, ScmConfig.TRUNK_BASED_FLOW.remote)
+        verify(scmActions).getSubmodules(projectDescriptor.rootProject.dir)
         verifyNoMoreInteractions(scmActions)
     }
 

@@ -13,6 +13,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import java.io.File
 
 internal class UpdateScmTaskTest : EazyReleaseBaseTaskTest<UpdateScmTask>() {
 
@@ -34,10 +35,10 @@ internal class UpdateScmTaskTest : EazyReleaseBaseTaskTest<UpdateScmTask>() {
     @Test
     fun test_run() {
         // GIVEN
-        val updateScmAction: UpdateScmAction = mock()
+        val updateScmAction: UpdateScmAction<File> = mock()
 
         // WHEN
-        whenever(releaseActionFactory.create<UpdateScmAction>(project))
+        whenever(releaseActionFactory.create<UpdateScmAction<File>>(project))
             .thenReturn(updateScmAction)
 
         doNothing().whenever(updateScmAction).execute()
@@ -45,7 +46,7 @@ internal class UpdateScmTaskTest : EazyReleaseBaseTaskTest<UpdateScmTask>() {
         // THEN
         underTest.run()
 
-        verify(releaseActionFactory).create<UpdateScmAction>(project)
+        verify(releaseActionFactory).create<UpdateScmAction<File>>(project)
         verify(updateScmAction).execute()
         verifyNoMoreInteractions(releaseActionFactory, updateScmAction)
     }

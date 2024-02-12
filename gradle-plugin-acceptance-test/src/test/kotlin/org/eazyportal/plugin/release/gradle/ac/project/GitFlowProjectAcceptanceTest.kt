@@ -1,6 +1,7 @@
 package org.eazyportal.plugin.release.gradle.ac.project
 
 import org.assertj.core.api.Assertions.assertThat
+import org.eazyportal.plugin.release.core.project.model.FileSystemProjectFile
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
 import org.eazyportal.plugin.release.gradle.project.GradleProjectActions
@@ -10,12 +11,13 @@ import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.api.assertThrows
+import java.io.File
 
 @TestMethodOrder(value = OrderAnnotation::class)
 internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
 
     companion object {
-        private lateinit var GRADLE_PROJECT_ACTIONS: GradleProjectActions
+        private lateinit var GRADLE_PROJECT_ACTIONS: GradleProjectActions<File>
 
         @BeforeAll
         @JvmStatic
@@ -43,7 +45,7 @@ internal class GitFlowProjectAcceptanceTest : BaseProjectAcceptanceTest() {
 
         SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "checkout", "-b", "dev")
 
-        SCM_ACTIONS.execute(WORKING_DIR, "clone", ORIGIN_PROJECT_DIR.resolve(".git").path, PROJECT_NAME)
+        SCM_ACTIONS.execute(FileSystemProjectFile(WORKING_DIR), "clone", ORIGIN_PROJECT_DIR.resolve(".git").getFile().path, PROJECT_NAME)
 
         // Checking out to a different branch will fix: "remote: error: refusing to update checked out branch: refs/heads/feature"
         SCM_ACTIONS.execute(ORIGIN_PROJECT_DIR, "checkout", "-b", "tmp")

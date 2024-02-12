@@ -3,6 +3,7 @@ package org.eazyportal.plugin.release.jenkins.action;
 import com.google.inject.Inject;
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.InvisibleAction;
 import hudson.model.Run;
@@ -19,9 +20,9 @@ import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider;
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
 import org.eazyportal.plugin.release.jenkins.project.ProjectDescriptorFactory;
+import org.eazyportal.plugin.release.jenkins.project.model.FilePathProjectFile;
 import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
 
-import java.io.File;
 import java.io.Serializable;
 
 @Extension
@@ -31,8 +32,8 @@ public class ReleaseActionFactory extends InvisibleAction implements Serializabl
     private transient ReleaseStepConfig releaseStepConfig;
 
     public ReleaseAction create(
-        Class<? extends ReleaseAction> clazz, Run<?, ?> run, File workingDir, EnvVars env, Launcher launcher,
-        TaskListener taskListener
+        Class<? extends ReleaseAction> clazz, Run<?, ?> run, FilePath workspace, EnvVars env,
+        Launcher launcher, TaskListener taskListener
     ) {
         var actionContext = run.getAction(ActionContextFactory.class)
             .create(env);
@@ -41,33 +42,33 @@ public class ReleaseActionFactory extends InvisibleAction implements Serializabl
             .create(launcher, taskListener);
 
         var projectDescriptor = run.getAction(ProjectDescriptorFactory.class)
-            .create(workingDir, scmActions);
+            .create(new FilePathProjectFile(workspace), scmActions);
 
         ReleaseAction instance;
         if (FinalizeReleaseVersionAction.class.isAssignableFrom(clazz)) {
-            instance = new FinalizeReleaseVersionAction(
+            instance = new FinalizeReleaseVersionAction<>(
                 projectDescriptor, scmActions
             );
         } else if (FinalizeSnapshotVersionAction.class.isAssignableFrom(clazz)) {
-            instance = new FinalizeSnapshotVersionAction(
+            instance = new FinalizeSnapshotVersionAction<>(
                 projectDescriptor, scmActions
             );
         } else if (PrepareRepositoryForReleaseAction.class.isAssignableFrom(clazz)) {
-            instance = new PrepareRepositoryForReleaseAction(
+            instance = new PrepareRepositoryForReleaseAction<>(
               projectDescriptor, scmActions, releaseStepConfig.getScmConfig()
             );
         } else if (SetReleaseVersionAction.class.isAssignableFrom(clazz)) {
-            instance = new SetReleaseVersionAction(
+            instance = new SetReleaseVersionAction<>(
                 actionContext, releaseStepConfig.getConventionalCommitTypes(), new ReleaseVersionProvider(),
                 projectDescriptor, scmActions, releaseStepConfig.getScmConfig(), new VersionIncrementProvider()
             );
         } else if (SetSnapshotVersionAction.class.isAssignableFrom(clazz)) {
-            instance = new SetSnapshotVersionAction(
+            instance = new SetSnapshotVersionAction<>(
                 projectDescriptor, scmActions, releaseStepConfig.getScmConfig(),
                 new SnapshotVersionProvider()
             );
         } else if (UpdateScmAction.class.isAssignableFrom(clazz)) {
-            instance = new UpdateScmAction(
+            instance = new UpdateScmAction<>(
                 projectDescriptor, scmActions, releaseStepConfig.getScmConfig()
             );
         } else {

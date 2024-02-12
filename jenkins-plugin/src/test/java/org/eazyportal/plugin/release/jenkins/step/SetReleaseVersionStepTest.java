@@ -1,5 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.step;
 
+import hudson.FilePath;
 import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction;
 import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,7 @@ import static org.mockito.Mockito.when;
 class SetReleaseVersionStepTest extends ReleaseStepBaseTest {
 
     @Mock
-    private SetReleaseVersionAction setReleaseVersionAction;
+    private SetReleaseVersionAction<FilePath> setReleaseVersionAction;
 
     private SetReleaseVersionStep underTest;
 
@@ -33,7 +34,7 @@ class SetReleaseVersionStepTest extends ReleaseStepBaseTest {
         // WHEN
         when(run.getAction(ReleaseActionFactory.class)).thenReturn(releaseActionFactory);
 
-        when(releaseActionFactory.create(SetReleaseVersionAction.class, run, workingDir, envVars, launcher, taskListener))
+        when(releaseActionFactory.create(SetReleaseVersionAction.class, run, workspace, envVars, launcher, taskListener))
             .thenReturn(setReleaseVersionAction);
 
         doNothing().when(setReleaseVersionAction).execute();
@@ -43,7 +44,7 @@ class SetReleaseVersionStepTest extends ReleaseStepBaseTest {
 
         verifyNoInteractions(envVars, launcher, taskListener);
         verify(run).getAction(ReleaseActionFactory.class);
-        verify(releaseActionFactory).create(SetReleaseVersionAction.class, run, workingDir, envVars, launcher, taskListener);
+        verify(releaseActionFactory).create(SetReleaseVersionAction.class, run, workspace, envVars, launcher, taskListener);
         verify(setReleaseVersionAction).execute();
         verifyNoMoreInteractions(releaseActionFactory, run, setReleaseVersionAction);
     }

@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
+import java.io.File
 
 internal class UpdateScmActionTest : ReleaseActionBaseTest() {
 
@@ -27,9 +28,9 @@ internal class UpdateScmActionTest : ReleaseActionBaseTest() {
     }
 
     @Mock
-    private lateinit var scmActions: ScmActions
+    private lateinit var scmActions: ScmActions<File>
 
-    private lateinit var underTest: UpdateScmAction
+    private lateinit var underTest: UpdateScmAction<File>
 
     @BeforeEach
     fun setUp() {
@@ -41,7 +42,7 @@ internal class UpdateScmActionTest : ReleaseActionBaseTest() {
     fun test_execute(scmConfig: ScmConfig) {
         // GIVEN
         val projectActions: ProjectActions = mock()
-        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
+        val projectDescriptor: ProjectDescriptor<File> = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
         underTest = createUpdateScmAction(projectDescriptor, scmConfig)
 
@@ -57,9 +58,9 @@ internal class UpdateScmActionTest : ReleaseActionBaseTest() {
     }
 
     private fun createUpdateScmAction(
-        projectDescriptor: ProjectDescriptor,
+        projectDescriptor: ProjectDescriptor<File>,
         scmConfig: ScmConfig
-    ): UpdateScmAction =
+    ): UpdateScmAction<File> =
         UpdateScmAction(
             projectDescriptor,
             scmActions,

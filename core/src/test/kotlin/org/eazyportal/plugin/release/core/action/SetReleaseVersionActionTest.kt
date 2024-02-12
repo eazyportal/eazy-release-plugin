@@ -29,6 +29,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import java.io.File
 
 internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
 
@@ -36,12 +37,12 @@ internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
     private lateinit var releaseVersionProvider: ReleaseVersionProvider
 
     @Mock
-    private lateinit var scmActions: ScmActions
+    private lateinit var scmActions: ScmActions<File>
 
     @Mock
     private lateinit var versionIncrementProvider: VersionIncrementProvider
 
-    private lateinit var underTest: SetReleaseVersionAction
+    private lateinit var underTest: SetReleaseVersionAction<File>
 
     @BeforeEach
     fun setUp() {
@@ -52,7 +53,8 @@ internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
     fun test_execute_withGitFlow() {
         // GIVEN
         val projectActions: ProjectActions = mock()
-        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
+        val projectDescriptor: ProjectDescriptor<File> = ProjectDescriptorMockBuilder(projectActions, workingDir)
+            .build()
 
         underTest = createSetReleaseVersionAction(
             projectDescriptor = projectDescriptor,
@@ -83,8 +85,8 @@ internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
             verify(scmActions).getCommits(it.dir, null)
         }
 
-        verify(scmActions).getLastTag(workingDir)
-        verify(scmActions).getCommits(workingDir, GIT_TAG)
+        verify(scmActions).getLastTag(projectDescriptor.rootProject.dir)
+        verify(scmActions).getCommits(projectDescriptor.rootProject.dir, GIT_TAG)
 
         verify(projectActions, times(2)).getVersion()
         verify(versionIncrementProvider, times(2)).provide(COMMITS, CONVENTIONAL_COMMIT_TYPES)
@@ -104,7 +106,8 @@ internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
     fun test_execute_withTrunkBasedFlow() {
         // GIVEN
         val projectActions: ProjectActions = mock()
-        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
+        val projectDescriptor: ProjectDescriptor<File> = ProjectDescriptorMockBuilder(projectActions, workingDir)
+            .build()
 
         underTest = createSetReleaseVersionAction(
             projectDescriptor = projectDescriptor,
@@ -135,8 +138,8 @@ internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
             verify(scmActions).getCommits(it.dir, null)
         }
 
-        verify(scmActions).getLastTag(workingDir)
-        verify(scmActions).getCommits(workingDir, GIT_TAG)
+        verify(scmActions).getLastTag(projectDescriptor.rootProject.dir)
+        verify(scmActions).getCommits(projectDescriptor.rootProject.dir, GIT_TAG)
 
         verify(projectActions, times(2)).getVersion()
         verify(versionIncrementProvider, times(2)).provide(COMMITS, CONVENTIONAL_COMMIT_TYPES)
@@ -155,7 +158,9 @@ internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
     ) {
         // GIVEN
         val projectActions: ProjectActions = mock()
-        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
+        val projectDescriptor: ProjectDescriptor<File> = ProjectDescriptorMockBuilder(projectActions, workingDir)
+            .build()
+
         val actionContext = ACTION_CONTEXT.copy(
             isForceRelease = true
         )
@@ -198,7 +203,8 @@ internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
     fun test_execute_shouldFail_whenVersionIncrementIsInvalid(versionIncrement: VersionIncrement?) {
         // GIVEN
         val projectActions: ProjectActions = mock()
-        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
+        val projectDescriptor: ProjectDescriptor<File> = ProjectDescriptorMockBuilder(projectActions, workingDir)
+            .build()
 
         underTest = createSetReleaseVersionAction(projectDescriptor = projectDescriptor)
 
@@ -223,9 +229,9 @@ internal class SetReleaseVersionActionTest : ReleaseActionBaseTest() {
 
     private fun createSetReleaseVersionAction(
         actionContext: ActionContext = ACTION_CONTEXT,
-        projectDescriptor: ProjectDescriptor,
+        projectDescriptor: ProjectDescriptor<File>,
         scmConfig: ScmConfig = ScmConfig.GIT_FLOW
-    ): SetReleaseVersionAction =
+    ): SetReleaseVersionAction<File> =
         SetReleaseVersionAction(
             actionContext,
             CONVENTIONAL_COMMIT_TYPES,

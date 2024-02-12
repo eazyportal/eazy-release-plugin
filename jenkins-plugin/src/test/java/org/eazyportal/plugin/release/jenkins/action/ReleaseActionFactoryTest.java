@@ -1,6 +1,7 @@
 package org.eazyportal.plugin.release.jenkins.action;
 
 import hudson.EnvVars;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -18,6 +19,7 @@ import org.eazyportal.plugin.release.core.scm.ScmActions;
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
 import org.eazyportal.plugin.release.jenkins.project.ProjectDescriptorFactory;
+import org.eazyportal.plugin.release.jenkins.project.model.FilePathProjectFile;
 import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,7 +29,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,8 +44,8 @@ public class ReleaseActionFactoryTest {
     @InjectMocks
     private ReleaseActionFactory underTest;
 
-    private static final ProjectDescriptor PROJECT_DESCRIPTOR = new ProjectDescriptor(
-        new Project(mock(), mock()), Collections.emptyList(), Collections.emptyList()
+    private static final ProjectDescriptor<FilePath> PROJECT_DESCRIPTOR = new ProjectDescriptor<>(
+        new Project<>(mock(), mock()), Collections.emptyList(), Collections.emptyList()
     );
 
     @BeforeEach
@@ -56,7 +57,7 @@ public class ReleaseActionFactoryTest {
     @ParameterizedTest
     public void test_create(Class<ReleaseAction> releaseActionClass) {
         Run<?, ?> run = mock();
-        File workingDir = mock();
+        FilePath workspace = mock();
         EnvVars envVars = mock();
         Launcher launcher = mock();
         TaskListener taskListener = mock();
@@ -65,19 +66,19 @@ public class ReleaseActionFactoryTest {
         when(actionContextFactory.create(envVars)).thenReturn(TestFixtures.getACTION_CONTEXT());
         when(run.getAction(ActionContextFactory.class)).thenReturn(actionContextFactory);
 
-        ScmActions scmActions = mock();
+        ScmActions<FilePath> scmActions = mock();
         ScmActionFactory scmActionFactory = mock();
         when(scmActionFactory.create(launcher, taskListener)).thenReturn(scmActions);
         when(run.getAction(ScmActionFactory.class)).thenReturn(scmActionFactory);
 
         ProjectDescriptorFactory projectDescriptorFactory = mock();
-        when(projectDescriptorFactory.create(workingDir, scmActions)).thenReturn(PROJECT_DESCRIPTOR);
+        when(projectDescriptorFactory.create(new FilePathProjectFile(workspace), scmActions)).thenReturn(PROJECT_DESCRIPTOR);
         when(run.getAction(ProjectDescriptorFactory.class)).thenReturn(projectDescriptorFactory);
 
         when(releaseStepConfig.getConventionalCommitTypes()).thenReturn(TestFixtures.getCONVENTIONAL_COMMIT_TYPES());
         when(releaseStepConfig.getScmConfig()).thenReturn(ScmConfig.getGIT_FLOW());
 
-        assertThat(underTest.create(releaseActionClass, run, workingDir, envVars, launcher, taskListener))
+        assertThat(underTest.create(releaseActionClass, run, workspace, envVars, launcher, taskListener))
             .isInstanceOf(releaseActionClass);
     }
 

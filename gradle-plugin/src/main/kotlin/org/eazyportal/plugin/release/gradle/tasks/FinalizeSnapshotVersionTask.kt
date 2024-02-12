@@ -3,6 +3,7 @@ package org.eazyportal.plugin.release.gradle.tasks
 import org.eazyportal.plugin.release.core.action.FinalizeSnapshotVersionAction
 import org.eazyportal.plugin.release.gradle.action.ReleaseActionFactory
 import org.gradle.api.tasks.TaskAction
+import java.io.File
 import javax.inject.Inject
 
 open class FinalizeSnapshotVersionTask @Inject constructor(
@@ -13,7 +14,7 @@ open class FinalizeSnapshotVersionTask @Inject constructor(
     fun run() {
         logger.quiet("Finalizing SNAPSHOT version...")
 
-        releaseActionFactory.create<FinalizeSnapshotVersionAction>(project)
+        releaseActionFactory.create<FinalizeSnapshotVersionAction<File>>(project)
             .execute()
     }
 

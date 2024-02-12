@@ -1,14 +1,15 @@
 package org.eazyportal.plugin.release.core.executor
 
 import org.eazyportal.plugin.release.core.executor.exception.CliExecutionException
+import org.eazyportal.plugin.release.core.project.model.ProjectFile
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-class CliCommandExecutor : CommandExecutor {
+class CliCommandExecutor : CommandExecutor<ProjectFile<File>> {
 
-    override fun execute(workingDir: File, vararg commands: String): String {
+    override fun execute(projectFile: ProjectFile<File>, vararg commands: String): String {
         val process = ProcessBuilder()
-            .directory(workingDir)
+            .directory(projectFile.getFile())
             .command(*commands)
             .redirectErrorStream(true)
             .start()

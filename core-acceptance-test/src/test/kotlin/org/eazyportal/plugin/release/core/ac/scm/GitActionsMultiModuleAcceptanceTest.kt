@@ -6,6 +6,7 @@ import org.eazyportal.plugin.release.core.ac.BaseMultiModuleAcceptanceTest
 import org.eazyportal.plugin.release.core.ac.scm.GitRepositoryUtils.assertThatBranches
 import org.eazyportal.plugin.release.core.ac.scm.GitRepositoryUtils.assertThatStatusContains
 import org.eazyportal.plugin.release.core.executor.CliCommandExecutor
+import org.eazyportal.plugin.release.core.project.model.FileSystemProjectFile
 import org.eazyportal.plugin.release.core.scm.GitActions
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
+import java.io.File
 
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation::class)
 internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTest() {
@@ -22,7 +24,7 @@ internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTe
     // It is used for not implemented command execution
     private val gitActions = GitActions(CliCommandExecutor())
 
-    private lateinit var underTest: ScmActions
+    private lateinit var underTest: ScmActions<File>
 
     @BeforeAll
     fun initialize() {
@@ -111,7 +113,7 @@ internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTe
             "protocol.file.allow=always",
             "submodule",
             "add",
-            originSubProjectDir.resolve(".git").path
+            originSubProjectDir.resolve(".git").getFile().path
         )
 
         assertThatStatusContains(
@@ -155,12 +157,12 @@ internal class GitActionsMultiModuleAcceptanceTest : BaseMultiModuleAcceptanceTe
     @Test
     fun test_cloneRepository() {
         gitActions.execute(
-            workingDir,
+            FileSystemProjectFile(workingDir),
             "-c",
             "protocol.file.allow=always",
             "clone",
             "--recurse-submodules",
-            originProjectDir.resolve(".git").path,
+            originProjectDir.resolve(".git").getFile().path,
             PROJECT_NAME
         )
 

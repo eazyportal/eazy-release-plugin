@@ -13,6 +13,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import java.io.File
 
 internal class SetReleaseVersionTaskTest : EazyReleaseBaseTaskTest<SetReleaseVersionTask>() {
 
@@ -34,10 +35,10 @@ internal class SetReleaseVersionTaskTest : EazyReleaseBaseTaskTest<SetReleaseVer
     @Test
     fun test_run() {
         // GIVEN
-        val setReleaseVersionAction: SetReleaseVersionAction = mock()
+        val setReleaseVersionAction: SetReleaseVersionAction<File> = mock()
 
         // WHEN
-        whenever(releaseActionFactory.create<SetReleaseVersionAction>(project))
+        whenever(releaseActionFactory.create<SetReleaseVersionAction<File>>(project))
             .thenReturn(setReleaseVersionAction)
 
         doNothing().whenever(setReleaseVersionAction).execute()
@@ -45,7 +46,7 @@ internal class SetReleaseVersionTaskTest : EazyReleaseBaseTaskTest<SetReleaseVer
         // THEN
         underTest.run()
 
-        verify(releaseActionFactory).create<SetReleaseVersionAction>(project)
+        verify(releaseActionFactory).create<SetReleaseVersionAction<File>>(project)
         verify(setReleaseVersionAction).execute()
         verifyNoMoreInteractions(releaseActionFactory, setReleaseVersionAction)
     }

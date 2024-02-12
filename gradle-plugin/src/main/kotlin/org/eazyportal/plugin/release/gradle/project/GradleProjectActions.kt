@@ -5,28 +5,26 @@ import org.eazyportal.plugin.release.core.project.exception.InvalidProjectLocati
 import org.eazyportal.plugin.release.core.project.exception.MissingProjectVersionPropertyException
 import org.eazyportal.plugin.release.core.project.exception.MultipleProjectVersionPropertyException
 import org.eazyportal.plugin.release.core.project.exception.ProjectVersionPropertyException
+import org.eazyportal.plugin.release.core.project.model.ProjectFile
 import org.eazyportal.plugin.release.core.version.model.Version
-import java.io.File
 
-class GradleProjectActions(
-    private val workingDir: File
+class GradleProjectActions<T>(
+    private val projectFile: ProjectFile<T>
 ) : ProjectActions {
 
-    companion object {
-        const val GRADLE_PROPERTIES_FILE_NAME = "gradle.properties"
-    }
+    private val gradlePropertiesFile: ProjectFile<*>
 
-    private val gradlePropertiesFile: File = run {
-        if (!workingDir.exists() || workingDir.isFile) {
-            throw InvalidProjectLocationException("Invalid Gradle project location: $workingDir")
+    init {
+        if (!projectFile.exists() || projectFile.isFile()) {
+            throw InvalidProjectLocationException("Invalid Gradle project location: $projectFile")
         }
 
-        return@run workingDir.resolve(GRADLE_PROPERTIES_FILE_NAME)
+        gradlePropertiesFile = projectFile.resolve(GRADLE_PROPERTIES_FILE_NAME)
     }
 
     override fun getVersion(): Version {
         if (!gradlePropertiesFile.exists()) {
-            throw InvalidProjectLocationException("'$GRADLE_PROPERTIES_FILE_NAME' file is missing in: $workingDir")
+            throw InvalidProjectLocationException("'$GRADLE_PROPERTIES_FILE_NAME' file is missing in: $projectFile")
         }
 
         val versions = gradlePropertiesFile.readLines()
@@ -44,7 +42,7 @@ class GradleProjectActions(
     override fun scmFilesToCommit(): Array<String> = arrayOf(".")
 
     override fun setVersion(version: Version) {
-        gradlePropertiesFile.createNewFile()
+        gradlePropertiesFile.createIfMissing()
 
         val versionLines = gradlePropertiesFile.readLines()
             .filter { it.isVersionLine() }
@@ -66,5 +64,18 @@ class GradleProjectActions(
 
     private fun String.isVersionLine(): Boolean =
         trim().let { it.startsWith("version=") || it.startsWith("version =") }
+
+    companion object {
+        val GRADLE_PROJECT_FILES = listOf(
+            "build.gradle",
+            "build.gradle.kts",
+            "settings.gradle",
+            "settings.gradle.kts"
+        )
+        const val GRADLE_PROPERTIES_FILE_NAME = "gradle.properties"
+
+        fun isGradleProject(projectFile: ProjectFile<*>): Boolean =
+            GRADLE_PROJECT_FILES.any { projectFile.resolve(it).exists() }
+    }
 
 }

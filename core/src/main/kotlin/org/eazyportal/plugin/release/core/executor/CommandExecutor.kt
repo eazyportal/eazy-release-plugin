@@ -1,11 +1,11 @@
 package org.eazyportal.plugin.release.core.executor
 
 import org.eazyportal.plugin.release.core.executor.exception.CliExecutionException
-import java.io.File
+import org.eazyportal.plugin.release.core.project.model.ProjectFile
 
-interface CommandExecutor {
+interface CommandExecutor<T: ProjectFile<*>> {
 
     @Throws(CliExecutionException::class)
-    fun execute(workingDir: File, vararg commands: String): String
+    fun execute(projectFile: T, vararg commands: String): String
 
 }

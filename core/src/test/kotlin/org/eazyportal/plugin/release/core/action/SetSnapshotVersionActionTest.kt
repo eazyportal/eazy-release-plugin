@@ -16,15 +16,16 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import java.io.File
 
 internal class SetSnapshotVersionActionTest : ReleaseActionBaseTest() {
 
     @Mock
-    private lateinit var scmActions: ScmActions
+    private lateinit var scmActions: ScmActions<File>
     @Mock
     private lateinit var snapshotVersionProvider: SnapshotVersionProvider
 
-    private lateinit var underTest: SetSnapshotVersionAction
+    private lateinit var underTest: SetSnapshotVersionAction<File>
 
     @BeforeEach
     fun setUp() {
@@ -35,7 +36,7 @@ internal class SetSnapshotVersionActionTest : ReleaseActionBaseTest() {
     fun test_execute_withGitFlow() {
         // GIVEN
         val projectActions: ProjectActions = mock()
-        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
+        val projectDescriptor: ProjectDescriptor<File> = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
         underTest = createSetSnapshotVersionAction(projectDescriptor, ScmConfig.GIT_FLOW)
 
@@ -63,7 +64,7 @@ internal class SetSnapshotVersionActionTest : ReleaseActionBaseTest() {
     fun test_execute_withTrunkBasedFlow() {
         // GIVEN
         val projectActions: ProjectActions = mock()
-        val projectDescriptor: ProjectDescriptor = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
+        val projectDescriptor: ProjectDescriptor<File> = ProjectDescriptorMockBuilder(projectActions, workingDir).build()
 
         underTest = createSetSnapshotVersionAction(projectDescriptor, ScmConfig.TRUNK_BASED_FLOW)
 
@@ -82,9 +83,9 @@ internal class SetSnapshotVersionActionTest : ReleaseActionBaseTest() {
     }
 
     private fun createSetSnapshotVersionAction(
-        projectDescriptor: ProjectDescriptor,
+        projectDescriptor: ProjectDescriptor<File>,
         scmConfig: ScmConfig = ScmConfig.GIT_FLOW
-    ): SetSnapshotVersionAction =
+    ): SetSnapshotVersionAction<File> =
         SetSnapshotVersionAction(
             projectDescriptor,
             scmActions,

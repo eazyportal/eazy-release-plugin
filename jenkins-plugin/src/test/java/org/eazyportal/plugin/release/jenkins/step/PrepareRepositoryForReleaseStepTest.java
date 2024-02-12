@@ -1,5 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.step;
 
+import hudson.FilePath;
 import org.eazyportal.plugin.release.core.action.PrepareRepositoryForReleaseAction;
 import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,7 @@ import static org.mockito.Mockito.when;
 class PrepareRepositoryForReleaseStepTest extends ReleaseStepBaseTest {
 
     @Mock
-    private PrepareRepositoryForReleaseAction prepareRepositoryForReleaseAction;
+    private PrepareRepositoryForReleaseAction<FilePath> prepareRepositoryForReleaseAction;
 
     private PrepareRepositoryForReleaseStep underTest;
 
@@ -33,7 +34,7 @@ class PrepareRepositoryForReleaseStepTest extends ReleaseStepBaseTest {
         // WHEN
         when(run.getAction(ReleaseActionFactory.class)).thenReturn(releaseActionFactory);
 
-        when(releaseActionFactory.create(PrepareRepositoryForReleaseAction.class, run, workingDir, envVars, launcher, taskListener))
+        when(releaseActionFactory.create(PrepareRepositoryForReleaseAction.class, run, workspace, envVars, launcher, taskListener))
             .thenReturn(prepareRepositoryForReleaseAction);
 
         doNothing().when(prepareRepositoryForReleaseAction).execute();
@@ -43,7 +44,7 @@ class PrepareRepositoryForReleaseStepTest extends ReleaseStepBaseTest {
 
         verifyNoInteractions(envVars, launcher, taskListener);
         verify(run).getAction(ReleaseActionFactory.class);
-        verify(releaseActionFactory).create(PrepareRepositoryForReleaseAction.class, run, workingDir, envVars, launcher, taskListener);
+        verify(releaseActionFactory).create(PrepareRepositoryForReleaseAction.class, run, workspace, envVars, launcher, taskListener);
         verify(prepareRepositoryForReleaseAction).execute();
 
         verifyNoMoreInteractions(prepareRepositoryForReleaseAction, releaseActionFactory, run);

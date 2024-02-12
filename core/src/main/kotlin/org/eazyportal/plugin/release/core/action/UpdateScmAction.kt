@@ -4,9 +4,9 @@ import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 
-class UpdateScmAction(
-    private val projectDescriptor: ProjectDescriptor,
-    private val scmActions: ScmActions,
+class UpdateScmAction<T>(
+    private val projectDescriptor: ProjectDescriptor<T>,
+    private val scmActions: ScmActions<T>,
     private val scmConfig: ScmConfig
 ) : ReleaseAction {
 

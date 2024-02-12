@@ -16,7 +16,6 @@ import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -29,12 +28,10 @@ public class SetReleaseVersionStep extends Builder implements SimpleBuildStep, S
 
     @Override
     public void perform(@NotNull Run<?, ?> run, @NotNull FilePath workspace, @NotNull EnvVars env, @NotNull Launcher launcher, @NotNull TaskListener listener)
-            throws InterruptedException, IOException {
-
-        File workingDir = new File(workspace.toURI());
+        throws InterruptedException, IOException {
 
         run.getAction(ReleaseActionFactory.class)
-            .create(SetReleaseVersionAction.class, run, workingDir, env, launcher, listener)
+            .create(SetReleaseVersionAction.class, run, workspace, env, launcher, listener)
             .execute();
     }
 

@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.io.File
 import kotlin.reflect.KClass
 
 internal class ReleaseActionFactoryTest {
@@ -34,7 +35,7 @@ internal class ReleaseActionFactoryTest {
     private lateinit var actionContextFactory: ActionContextFactory
 
     @Mock
-    private lateinit var projectDescriptorFactory: ProjectDescriptorFactory
+    private lateinit var projectDescriptorFactory: ProjectDescriptorFactory<File>
 
     @InjectMocks
     private lateinit var underTest: ReleaseActionFactory
@@ -76,7 +77,7 @@ internal class ReleaseActionFactoryTest {
     }
 
     companion object {
-        private val PROJECT_DESCRIPTOR = ProjectDescriptor(
+        private val PROJECT_DESCRIPTOR = ProjectDescriptor<File>(
             rootProject = org.eazyportal.plugin.release.core.project.model.Project(
                 dir = mock(),
                 projectActions = mock()
@@ -91,37 +92,37 @@ internal class ReleaseActionFactoryTest {
                 Arguments.of(
                     FinalizeReleaseVersionAction::class,
                     { underTest: ReleaseActionFactory, project: Project ->
-                        underTest.create<FinalizeReleaseVersionAction>(project)
+                        underTest.create<FinalizeReleaseVersionAction<File>>(project)
                     }
                 ),
                 Arguments.of(
                     FinalizeSnapshotVersionAction::class,
                     { underTest: ReleaseActionFactory, project: Project ->
-                        underTest.create<FinalizeSnapshotVersionAction>(project)
+                        underTest.create<FinalizeSnapshotVersionAction<File>>(project)
                     }
                 ),
                 Arguments.of(
                     PrepareRepositoryForReleaseAction::class,
                     { underTest: ReleaseActionFactory, project: Project ->
-                        underTest.create<PrepareRepositoryForReleaseAction>(project)
+                        underTest.create<PrepareRepositoryForReleaseAction<File>>(project)
                     }
                 ),
                 Arguments.of(
                     SetReleaseVersionAction::class,
                     { underTest: ReleaseActionFactory, project: Project ->
-                        underTest.create<SetReleaseVersionAction>(project)
+                        underTest.create<SetReleaseVersionAction<File>>(project)
                     }
                 ),
                 Arguments.of(
                     SetSnapshotVersionAction::class,
                     { underTest: ReleaseActionFactory, project: Project ->
-                        underTest.create<SetSnapshotVersionAction>(project)
+                        underTest.create<SetSnapshotVersionAction<File>>(project)
                     }
                 ),
                 Arguments.of(
                     UpdateScmAction::class,
                     { underTest: ReleaseActionFactory, project: Project ->
-                        underTest.create<UpdateScmAction>(project)
+                        underTest.create<UpdateScmAction<File>>(project)
                     }
                 )
             )

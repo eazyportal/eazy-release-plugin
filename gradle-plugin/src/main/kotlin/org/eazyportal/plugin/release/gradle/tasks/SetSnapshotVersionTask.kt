@@ -3,6 +3,7 @@ package org.eazyportal.plugin.release.gradle.tasks
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction
 import org.eazyportal.plugin.release.gradle.action.ReleaseActionFactory
 import org.gradle.api.tasks.TaskAction
+import java.io.File
 import javax.inject.Inject
 
 open class SetSnapshotVersionTask @Inject constructor(
@@ -13,7 +14,7 @@ open class SetSnapshotVersionTask @Inject constructor(
     fun run() {
         logger.quiet("Setting SNAPSHOT version...")
 
-        releaseActionFactory.create<SetSnapshotVersionAction>(project)
+        releaseActionFactory.create<SetSnapshotVersionAction<File>>(project)
             .execute()
     }
 

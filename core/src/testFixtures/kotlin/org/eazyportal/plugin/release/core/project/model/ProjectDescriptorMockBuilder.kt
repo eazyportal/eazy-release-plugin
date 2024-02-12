@@ -10,7 +10,7 @@ class ProjectDescriptorMockBuilder(
 
     var subProjectNames: List<String> = listOf(SUBMODULE_NAME)
 
-    fun build(): ProjectDescriptor {
+    fun build(): ProjectDescriptor<File> {
         val rootProject = workingDir.toProject()
 
         val subProjects = subProjectNames
@@ -24,7 +24,7 @@ class ProjectDescriptorMockBuilder(
         )
     }
 
-    private fun File.toProject(): Project = Project(this, projectActions)
+    private fun File.toProject(): Project<File> = Project(FileSystemProjectFile(this), projectActions)
 
     companion object {
         const val SUBMODULE_NAME = "ui"

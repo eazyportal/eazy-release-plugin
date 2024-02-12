@@ -3,6 +3,7 @@ package org.eazyportal.plugin.release.core.action
 import org.eazyportal.plugin.release.core.action.model.ActionContext
 import org.eazyportal.plugin.release.core.project.model.Project
 import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.project.model.ProjectFile
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
@@ -15,14 +16,13 @@ import org.eazyportal.plugin.release.core.version.model.VersionIncrement
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement.NONE
 import org.eazyportal.plugin.release.core.version.model.VersionIncrement.PATCH
 import org.slf4j.LoggerFactory
-import java.io.File
 
-open class SetReleaseVersionAction(
+open class SetReleaseVersionAction<T>(
     private val actionContext: ActionContext,
     private val conventionalCommitTypes: List<ConventionalCommitType>,
     private val releaseVersionProvider: ReleaseVersionProvider,
-    private val projectDescriptor: ProjectDescriptor,
-    private val scmActions: ScmActions,
+    private val projectDescriptor: ProjectDescriptor<T>,
+    private val scmActions: ScmActions<T>,
     private val scmConfig: ScmConfig,
     private val versionIncrementProvider: VersionIncrementProvider
 ) : ReleaseAction {
@@ -50,7 +50,7 @@ open class SetReleaseVersionAction(
         }
     }
 
-    private fun getReleaseVersion(projects: List<Project>, isForceRelease: Boolean): Version =
+    private fun getReleaseVersion(projects: List<Project<T>>, isForceRelease: Boolean): Version =
         projects.mapNotNull {
             val currentVersion = it.projectActions.getVersion()
             val versionIncrement = getVersionIncrement(it.dir, isForceRelease)
@@ -64,7 +64,7 @@ open class SetReleaseVersionAction(
         .maxWithOrNull(VersionComparator())
         ?: throw IllegalArgumentException("There are no acceptable commits.")
 
-    private fun getVersionIncrement(projectDir: File, isForceRelease: Boolean): VersionIncrement? {
+    private fun getVersionIncrement(projectDir: ProjectFile<T>, isForceRelease: Boolean): VersionIncrement? {
         val lastTag = try {
             scmActions.getLastTag(projectDir)
         }

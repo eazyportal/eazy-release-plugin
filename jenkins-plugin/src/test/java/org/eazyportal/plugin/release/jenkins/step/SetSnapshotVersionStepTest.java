@@ -1,5 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.step;
 
+import hudson.FilePath;
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction;
 import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,7 @@ import static org.mockito.Mockito.when;
 class SetSnapshotVersionStepTest extends ReleaseStepBaseTest {
 
     @Mock
-    private SetSnapshotVersionAction setSnapshotVersionAction;
+    private SetSnapshotVersionAction<FilePath> setSnapshotVersionAction;
 
     private SetSnapshotVersionStep underTest;
 
@@ -33,7 +34,7 @@ class SetSnapshotVersionStepTest extends ReleaseStepBaseTest {
         // WHEN
         when(run.getAction(ReleaseActionFactory.class)).thenReturn(releaseActionFactory);
 
-        when(releaseActionFactory.create(SetSnapshotVersionAction.class, run, workingDir, envVars, launcher, taskListener))
+        when(releaseActionFactory.create(SetSnapshotVersionAction.class, run, workspace, envVars, launcher, taskListener))
             .thenReturn(setSnapshotVersionAction);
 
         doNothing().when(setSnapshotVersionAction).execute();
@@ -43,7 +44,7 @@ class SetSnapshotVersionStepTest extends ReleaseStepBaseTest {
 
         verifyNoInteractions(envVars, launcher, taskListener);
         verify(run).getAction(ReleaseActionFactory.class);
-        verify(releaseActionFactory).create(SetSnapshotVersionAction.class, run, workingDir, envVars, launcher, taskListener);
+        verify(releaseActionFactory).create(SetSnapshotVersionAction.class, run, workspace, envVars, launcher, taskListener);
         verify(setSnapshotVersionAction).execute();
         verifyNoMoreInteractions(releaseActionFactory, run, setSnapshotVersionAction);
     }

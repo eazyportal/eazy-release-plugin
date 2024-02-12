@@ -1,15 +1,15 @@
 package org.eazyportal.plugin.release.core.action
 
 import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.project.model.ProjectFile
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.File
 
-class PrepareRepositoryForReleaseAction(
-    projectDescriptor: ProjectDescriptor,
-    private val scmActions: ScmActions,
+class PrepareRepositoryForReleaseAction<T>(
+    private val projectDescriptor: ProjectDescriptor<T>,
+    private val scmActions: ScmActions<T>,
     private val scmConfig: ScmConfig
 ) : ReleaseAction {
 
@@ -27,12 +27,11 @@ class PrepareRepositoryForReleaseAction(
             .forEach { checkoutFeatureBranch(it) }
     }
 
-    private fun checkoutFeatureBranch(projectDir: File) {
+    private fun checkoutFeatureBranch(projectDir: ProjectFile<T>) {
         if (scmConfig.releaseBranch != scmConfig.featureBranch) {
             scmActions.checkout(projectDir, scmConfig.featureBranch)
         }
     }
-
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(PrepareRepositoryForReleaseAction::class.java)
