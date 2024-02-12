@@ -52,13 +52,13 @@ class GradleProjectActions(
         when (versionLines.size) {
             0 -> throw ProjectVersionPropertyException("The project does not have version property.")
             1 -> gradlePropertiesFile.readText()
-                .replace(versionLines[0], versionLines[0].getNewVersionLine(version))
+                .replace(versionLines[0], getNewVersionLine(version))
                 .run { gradlePropertiesFile.writeText(this) }
             else -> throw MultipleProjectVersionPropertyException("The project has multiple versions: $versionLines")
         }
     }
 
-    private fun String.getNewVersionLine(version: Version): String =
+    private fun getNewVersionLine(version: Version): String =
         "version = $version"
 
     private fun String.getVersionFromLine(): String =
