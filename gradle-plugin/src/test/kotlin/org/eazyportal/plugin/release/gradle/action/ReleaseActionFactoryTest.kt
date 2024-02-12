@@ -1,7 +1,6 @@
 package org.eazyportal.plugin.release.gradle.action
 
 import org.assertj.core.api.Assertions.assertThat
-import org.eazyportal.plugin.release.core.ProjectDescriptorFactory
 import org.eazyportal.plugin.release.core.TestFixtures.ACTION_CONTEXT
 import org.eazyportal.plugin.release.core.TestFixtures.CONVENTIONAL_COMMIT_TYPES
 import org.eazyportal.plugin.release.core.action.FinalizeReleaseVersionAction
@@ -11,7 +10,8 @@ import org.eazyportal.plugin.release.core.action.ReleaseAction
 import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction
 import org.eazyportal.plugin.release.core.action.UpdateScmAction
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.project.ProjectDescriptorFactory
+import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension
 import org.gradle.api.Project
@@ -77,7 +77,7 @@ internal class ReleaseActionFactoryTest {
 
     companion object {
         private val PROJECT_DESCRIPTOR = ProjectDescriptor(
-            rootProject = org.eazyportal.plugin.release.core.model.Project(
+            rootProject = org.eazyportal.plugin.release.core.project.model.Project(
                 dir = mock(),
                 projectActions = mock()
             ),

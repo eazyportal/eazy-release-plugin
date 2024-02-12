@@ -1,6 +1,5 @@
 package org.eazyportal.plugin.release.gradle.action
 
-import org.eazyportal.plugin.release.core.ProjectDescriptorFactory
 import org.eazyportal.plugin.release.core.action.FinalizeReleaseVersionAction
 import org.eazyportal.plugin.release.core.action.FinalizeSnapshotVersionAction
 import org.eazyportal.plugin.release.core.action.PrepareRepositoryForReleaseAction
@@ -8,7 +7,8 @@ import org.eazyportal.plugin.release.core.action.ReleaseAction
 import org.eazyportal.plugin.release.core.action.SetReleaseVersionAction
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction
 import org.eazyportal.plugin.release.core.action.UpdateScmAction
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.project.ProjectDescriptorFactory
+import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider

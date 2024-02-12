@@ -1,8 +1,7 @@
-package org.eazyportal.plugin.release.core
+package org.eazyportal.plugin.release.core.project
 
-import org.eazyportal.plugin.release.core.model.Project
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor
-import org.eazyportal.plugin.release.core.project.ProjectActionsFactory
+import org.eazyportal.plugin.release.core.project.model.Project
+import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import java.io.File
 

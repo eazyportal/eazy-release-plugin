@@ -1,6 +1,6 @@
 package org.eazyportal.plugin.release.core.action
 
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 

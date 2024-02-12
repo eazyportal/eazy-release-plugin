@@ -4,9 +4,9 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eazyportal.plugin.release.core.TestFixtures.ACTION_CONTEXT
 import org.eazyportal.plugin.release.core.TestFixtures.CONVENTIONAL_COMMIT_TYPES
 import org.eazyportal.plugin.release.core.action.model.ActionContext
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor
-import org.eazyportal.plugin.release.core.model.ProjectDescriptorMockBuilder
 import org.eazyportal.plugin.release.core.project.ProjectActions
+import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.project.model.ProjectDescriptorMockBuilder
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig

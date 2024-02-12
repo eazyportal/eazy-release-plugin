@@ -1,4 +1,4 @@
-package org.eazyportal.plugin.release.core.model
+package org.eazyportal.plugin.release.core.project.model
 
 data class ProjectDescriptor(
     val rootProject: Project,

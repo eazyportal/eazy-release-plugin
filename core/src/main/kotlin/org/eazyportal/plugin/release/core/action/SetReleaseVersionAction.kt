@@ -1,8 +1,8 @@
 package org.eazyportal.plugin.release.core.action
 
 import org.eazyportal.plugin.release.core.action.model.ActionContext
-import org.eazyportal.plugin.release.core.model.Project
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.project.model.Project
+import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.scm.ConventionalCommitType
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.exception.ScmActionException

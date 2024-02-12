@@ -1,8 +1,8 @@
 package org.eazyportal.plugin.release.core.action
 
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor
-import org.eazyportal.plugin.release.core.model.ProjectDescriptorMockBuilder
 import org.eazyportal.plugin.release.core.project.ProjectActions
+import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.project.model.ProjectDescriptorMockBuilder
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.eazyportal.plugin.release.core.scm.model.ScmConfig
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider

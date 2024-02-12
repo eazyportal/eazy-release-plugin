@@ -1,6 +1,6 @@
 package org.eazyportal.plugin.release.gradle
 
-import org.eazyportal.plugin.release.core.ProjectDescriptorFactory
+import org.eazyportal.plugin.release.core.project.ProjectDescriptorFactory
 import org.eazyportal.plugin.release.gradle.action.ActionContextFactory
 import org.eazyportal.plugin.release.gradle.action.ReleaseActionFactory
 import org.eazyportal.plugin.release.gradle.model.EazyReleasePluginExtension

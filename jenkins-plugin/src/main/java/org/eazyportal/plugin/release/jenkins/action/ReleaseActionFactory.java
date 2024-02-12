@@ -17,8 +17,8 @@ import org.eazyportal.plugin.release.core.action.UpdateScmAction;
 import org.eazyportal.plugin.release.core.version.ReleaseVersionProvider;
 import org.eazyportal.plugin.release.core.version.SnapshotVersionProvider;
 import org.eazyportal.plugin.release.core.version.VersionIncrementProvider;
-import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
 import org.eazyportal.plugin.release.jenkins.ReleaseStepConfig;
+import org.eazyportal.plugin.release.jenkins.project.ProjectDescriptorFactory;
 import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
 
 import java.io.File;
