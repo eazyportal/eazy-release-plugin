@@ -50,6 +50,9 @@ public class JenkinsCliCommandExecutor implements CommandExecutor<ProjectFile<Fi
                 return result;
             } else {
                 String result = stdErrOutputStream.toString();
+                if (result.isBlank()) {
+                    result = stdOutOutputStream.toString();
+                }
 
                 listener.getLogger().println(result);
 
