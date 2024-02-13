@@ -261,13 +261,13 @@ internal class GitActionsTest {
         val fromBranch = "main"
 
         // WHEN
-        whenever(commandExecutor.execute(projectFile, GIT_EXECUTABLE, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch))
+        whenever(commandExecutor.execute(projectFile, GIT_EXECUTABLE, "merge", "--no-ff", "--no-commit", "--strategy-option=theirs", fromBranch))
             .thenReturn("")
 
         // THEN
         underTest.mergeNoCommit(projectFile, fromBranch)
 
-        verify(commandExecutor).execute(projectFile, GIT_EXECUTABLE, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch)
+        verify(commandExecutor).execute(projectFile, GIT_EXECUTABLE, "merge", "--no-ff", "--no-commit", "--strategy-option=theirs", fromBranch)
         verifyNoMoreInteractions(commandExecutor)
     }
 

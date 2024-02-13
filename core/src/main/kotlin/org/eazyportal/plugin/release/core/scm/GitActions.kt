@@ -70,7 +70,7 @@ class GitActions<T>(
     }
 
     override fun mergeNoCommit(projectFile: ProjectFile<T>, fromBranch: String) {
-        execute(projectFile, "merge", "--no-ff", "--no-commit", "-Xtheirs", fromBranch)
+        execute(projectFile, "merge", "--no-ff", "--no-commit", "--strategy-option=theirs", fromBranch)
     }
 
     override fun push(projectFile: ProjectFile<T>, remote: String, vararg branches: String) {
