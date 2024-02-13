@@ -16,10 +16,9 @@ public record FilePathProjectFile(FilePath filePath) implements ProjectFile<File
 
     @Override
     public void createIfMissing() throws IOException, InterruptedException {
-//        if (!filePath.exists()) {
-//            new FilePath(filePath, filePath.act(new CreateFile()));
-//        }
-        filePath.write();
+        if (!filePath.exists()) {
+            filePath.write();
+        }
     }
 
     @Override
@@ -73,15 +72,6 @@ public record FilePathProjectFile(FilePath filePath) implements ProjectFile<File
     public void writeText(@NotNull String content) throws IOException, InterruptedException {
         filePath.write(content, Charset.defaultCharset().displayName());
     }
-
-//    private static class CreateFile extends  MasterToSlaveFileCallable<String> {
-//
-//        @Override
-//        public String invoke(File file, VirtualChannel channel) throws IOException {
-//            return Files.createFile(file.toPath()).toFile().getName();
-//        }
-//
-//    }
 
     private static class ReadAllLines extends MasterToSlaveFileCallable<List<String>> {
 
