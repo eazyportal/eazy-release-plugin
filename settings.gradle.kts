@@ -2,7 +2,7 @@ rootProject.name = "eazyrelease-plugin"
 
 pluginManagement {
     plugins {
-        id("org.eazyportal.plugin.kotlin-project-convention") version(extra["eazyPluginConventionVersion"] as String)
+        id("org.eazyportal.plugin.kotlin-project-convention") version(extra["eazyConventionPluginVersion"] as String)
     }
 
     repositories {
@@ -22,6 +22,7 @@ pluginManagement {
 
 // Core
 include("core")
+include("core-acceptance-test")
 
 // Gradle
 include("gradle-plugin")

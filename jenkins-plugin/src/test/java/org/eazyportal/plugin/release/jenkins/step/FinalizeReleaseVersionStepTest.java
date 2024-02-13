@@ -1,70 +1,51 @@
 package org.eazyportal.plugin.release.jenkins.step;
 
-import hudson.EnvVars;
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.model.Run;
-import hudson.model.TaskListener;
 import org.eazyportal.plugin.release.core.action.FinalizeReleaseVersionAction;
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
-import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
-import org.eazyportal.plugin.release.jenkins.action.FinalizeReleaseVersionActionFactory;
+import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.io.File;
-
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-class FinalizeReleaseVersionStepTest {
+class FinalizeReleaseVersionStepTest extends ReleaseStepBaseTest {
 
-    @TempDir
-    private File workingDir;
+    @Mock
+    private FinalizeReleaseVersionAction finalizeReleaseVersionAction;
 
     private FinalizeReleaseVersionStep underTest;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+
         underTest = new FinalizeReleaseVersionStep();
     }
 
     @Test
     void test_perform() throws Exception {
         // GIVEN
-        FilePath workspace = new FilePath(workingDir);
-
-        Run<?, ?> run = mock(Run.class);
-
-        ProjectDescriptor projectDescriptor = mock(ProjectDescriptor.class);
-        ProjectDescriptorFactory projectDescriptorFactory = mock(ProjectDescriptorFactory.class);
-
-        FinalizeReleaseVersionActionFactory finalizeReleaseVersionActionFactory = mock(FinalizeReleaseVersionActionFactory.class);
-        FinalizeReleaseVersionAction finalizeReleaseVersionAction = mock(FinalizeReleaseVersionAction.class);
-
         // WHEN
-        when(run.getAction(ProjectDescriptorFactory.class)).thenReturn(projectDescriptorFactory);
-        when(projectDescriptorFactory.create(workingDir)).thenReturn(projectDescriptor);
+        when(run.getAction(ReleaseActionFactory.class)).thenReturn(releaseActionFactory);
 
-        when(run.getAction(FinalizeReleaseVersionActionFactory.class)).thenReturn(finalizeReleaseVersionActionFactory);
-        when(finalizeReleaseVersionActionFactory.create()).thenReturn(finalizeReleaseVersionAction);
+        when(releaseActionFactory.create(FinalizeReleaseVersionAction.class, run, workspace, envVars, launcher, taskListener))
+            .thenReturn(finalizeReleaseVersionAction);
+
+        doNothing().when(finalizeReleaseVersionAction).execute();
 
         // THEN
-        underTest.perform(run, workspace, mock(EnvVars.class), mock(Launcher.class), mock(TaskListener.class));
+        underTest.perform(run, workspace, envVars, launcher, taskListener);
 
-        verifyNoMoreInteractions(projectDescriptor);
-
-        verify(run).getAction(ProjectDescriptorFactory.class);
-        verify(projectDescriptorFactory).create(workingDir);
-
-        verify(run).getAction(FinalizeReleaseVersionActionFactory.class);
-        verify(finalizeReleaseVersionActionFactory).create();
-        verify(finalizeReleaseVersionAction).execute(projectDescriptor);
-
-        verifyNoMoreInteractions(run, projectDescriptorFactory, finalizeReleaseVersionAction, finalizeReleaseVersionActionFactory);
+        verifyNoInteractions(envVars, launcher, taskListener);
+        verify(run).getAction(ReleaseActionFactory.class);
+        verify(releaseActionFactory).create(FinalizeReleaseVersionAction.class, run, workspace, envVars, launcher, taskListener);
+        verify(finalizeReleaseVersionAction).execute();
+        verifyNoMoreInteractions(finalizeReleaseVersionAction, run);
     }
 
 }

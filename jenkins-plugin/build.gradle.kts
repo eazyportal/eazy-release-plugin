@@ -1,15 +1,25 @@
+import java.net.URI
+
 plugins {
+    id("org.jenkins-ci.jpi") version("+")
+
     id("org.eazyportal.plugin.java-project-convention")
 
-    id("org.jenkins-ci.jpi") version("+")
+    id("idea")
+}
+
+idea {
+    module {
+        excludeDirs.add(projectDir.resolve("work"))
+    }
 }
 
 jenkinsPlugin {
-    jenkinsVersion.set("2.332")
+    jenkinsVersion.set(project.property("jenkinsVersion") as String)
 
     shortName = "eazy-release"
     displayName = "Eazy Release Plugin"
-    gitHubUrl = "https://github.com/eazyportal/eazyrelease-plugin"
+    gitHub.set(URI("https://github.com/eazyportal/eazyrelease-plugin"))
 
     configurePublishing = false
     pluginFirstClassLoader = true
@@ -23,9 +33,16 @@ jenkinsPlugin {
     }
 }
 
-// fix "Implicit dependencies between tasks" warning
-tasks.generateLicenseInfo {
-    dependsOn(tasks.jar)
+tasks {
+    // fix: Unsupported class file major version 65
+    checkAccessModifier {
+        enabled = false
+    }
+
+    // fix: Implicit dependencies between tasks
+    generateLicenseInfo {
+        dependsOn(project.tasks.jar)
+    }
 }
 
 dependencies {
@@ -36,12 +53,30 @@ dependencies {
     implementation(project(mapOf("path" to ":gradle-plugin", "configuration" to "consumableConfiguration")))
 
     // Jenkins BOM
-    implementation(platform("io.jenkins.tools.bom:bom-2.332.x:+"))
+    implementation(platform("io.jenkins.tools.bom:bom-${project.property("jenkinsVersion")}.x:+"))
 
     compileOnly("org.jenkins-ci.plugins.workflow", "workflow-step-api")
     compileOnly("org.jenkins-ci.plugins.workflow", "workflow-job")
 
+    constraints {
+        configurations.all {
+            resolutionStrategy.eachDependency {
+                if ((requested.group == "org.checkerframework") && (requested.name == "checker-qual")) {
+                    useVersion("3.33.0")
+                    because("fix: missing dependency version from jenkins/guava")
+                } else if ((requested.group == "com.google.j2objc") && (requested.name == "j2objc-annotations")) {
+                    useVersion("2.8")
+                    because("fix: missing dependency version from jenkins/guava")
+                } else if ((requested.group == "org.junit.platform") && (requested.name == "junit-platform-launcher")) {
+                    useVersion("+")
+                    because("fix: missing dependency version for jpiAllPlugins task")
+                }
+            }
+        }
+    }
+
     // Test
+    testImplementation(testFixtures(project(":core")))
     testImplementation("org.jenkinsci.plugins", "pipeline-model-definition")
 
     // Jenkins server dependencies

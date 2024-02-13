@@ -11,9 +11,17 @@ This module is the `core` library which contains common classes for the other mo
 
 This module is a `Gradle` plugin implementation.
 
+==== System Properties
+
+With `-DforceRelease` it is possible to force a release.
+
 === jenkins-plugin
 
 This module is a `Jenkins` plugin implementation.
+
+==== Environment Variables
+
+With `FORCE_RELEASE` it is possible to force a release.
 
 === maven-plugin
 

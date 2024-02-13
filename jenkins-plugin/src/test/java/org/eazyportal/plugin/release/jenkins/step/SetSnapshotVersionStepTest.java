@@ -1,70 +1,52 @@
 package org.eazyportal.plugin.release.jenkins.step;
 
-import hudson.EnvVars;
 import hudson.FilePath;
-import hudson.Launcher;
-import hudson.model.Run;
-import hudson.model.TaskListener;
 import org.eazyportal.plugin.release.core.action.SetSnapshotVersionAction;
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
-import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
-import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
+import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.io.File;
-
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-class SetSnapshotVersionStepTest {
+class SetSnapshotVersionStepTest extends ReleaseStepBaseTest {
 
-    @TempDir
-    private File workingDir;
+    @Mock
+    private SetSnapshotVersionAction<FilePath> setSnapshotVersionAction;
 
     private SetSnapshotVersionStep underTest;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+
         underTest = new SetSnapshotVersionStep();
     }
 
     @Test
     void test_perform() throws Exception {
         // GIVEN
-        FilePath workspace = new FilePath(workingDir);
-
-        Run<?, ?> run = mock(Run.class);
-
-        ProjectDescriptor projectDescriptor = mock(ProjectDescriptor.class);
-        ProjectDescriptorFactory projectDescriptorFactory = mock(ProjectDescriptorFactory.class);
-
-        SetSnapshotVersionAction setSnapshotVersionAction = mock(SetSnapshotVersionAction.class);
-        SetSnapshotVersionActionFactory setSnapshotVersionActionFactory = mock(SetSnapshotVersionActionFactory.class);
-
         // WHEN
-        when(run.getAction(ProjectDescriptorFactory.class)).thenReturn(projectDescriptorFactory);
-        when(projectDescriptorFactory.create(workingDir)).thenReturn(projectDescriptor);
+        when(run.getAction(ReleaseActionFactory.class)).thenReturn(releaseActionFactory);
 
-        when(run.getAction(SetSnapshotVersionActionFactory.class)).thenReturn(setSnapshotVersionActionFactory);
-        when(setSnapshotVersionActionFactory.create()).thenReturn(setSnapshotVersionAction);
+        when(releaseActionFactory.create(SetSnapshotVersionAction.class, run, workspace, envVars, launcher, taskListener))
+            .thenReturn(setSnapshotVersionAction);
+
+        doNothing().when(setSnapshotVersionAction).execute();
 
         // THEN
-        underTest.perform(run, workspace, mock(EnvVars.class), mock(Launcher.class), mock(TaskListener.class));
+        underTest.perform(run, workspace, envVars, launcher, taskListener);
 
-        verifyNoMoreInteractions(projectDescriptor);
-
-        verify(run).getAction(ProjectDescriptorFactory.class);
-        verify(projectDescriptorFactory).create(workingDir);
-
-        verify(run).getAction(SetSnapshotVersionActionFactory.class);
-        verify(setSnapshotVersionActionFactory).create();
-        verify(setSnapshotVersionAction).execute(projectDescriptor);
-
-        verifyNoMoreInteractions(run, projectDescriptorFactory, setSnapshotVersionAction, setSnapshotVersionActionFactory);
+        verifyNoInteractions(envVars, launcher, taskListener);
+        verify(run).getAction(ReleaseActionFactory.class);
+        verify(releaseActionFactory).create(SetSnapshotVersionAction.class, run, workspace, envVars, launcher, taskListener);
+        verify(setSnapshotVersionAction).execute();
+        verifyNoMoreInteractions(releaseActionFactory, run, setSnapshotVersionAction);
     }
 
 }

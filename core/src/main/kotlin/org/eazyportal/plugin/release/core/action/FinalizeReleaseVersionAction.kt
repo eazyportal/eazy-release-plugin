@@ -1,20 +1,16 @@
 package org.eazyportal.plugin.release.core.action
 
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor
+import org.eazyportal.plugin.release.core.project.model.ProjectDescriptor
 import org.eazyportal.plugin.release.core.scm.ScmActions
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class FinalizeReleaseVersionAction(
-    private val scmActions: ScmActions
+class FinalizeReleaseVersionAction<T>(
+    private val projectDescriptor: ProjectDescriptor<T>,
+    private val scmActions: ScmActions<T>,
 ) : ReleaseAction {
 
-    private companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(FinalizeReleaseVersionAction::class.java)
-    }
-
-    override fun execute(projectDescriptor: ProjectDescriptor) {
+    override fun execute() {
         LOGGER.info("Finalize release version...")
 
         val releaseVersion = projectDescriptor.rootProject.projectActions.getVersion()
@@ -23,8 +19,12 @@ class FinalizeReleaseVersionAction(
             scmActions.add(it.dir, *it.projectActions.scmFilesToCommit())
             scmActions.commit(it.dir, "Release version: $releaseVersion")
 
-            scmActions.tag(it.dir, "-a", releaseVersion.toString(), "-m", "v$releaseVersion")
+            scmActions.tag(it.dir, releaseVersion)
         }
+    }
+
+    companion object {
+        private val LOGGER: Logger = LoggerFactory.getLogger(FinalizeReleaseVersionAction::class.java)
     }
 
 }

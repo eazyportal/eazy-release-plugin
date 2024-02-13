@@ -1,7 +1,8 @@
 # This is a Gradle generated file for dependency locking.
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
+com.github.spotbugs.snom:spotbugs-gradle-plugin:5.0.13=classpath
 net.java.sezpoz:sezpoz:1.13=classpath
-org.jenkins-ci.jpi:org.jenkins-ci.jpi.gradle.plugin:0.47.0=classpath
-org.jenkins-ci.tools:gradle-jpi-plugin:0.47.0=classpath
+org.jenkins-ci.jpi:org.jenkins-ci.jpi.gradle.plugin:0.50.0=classpath
+org.jenkins-ci.tools:gradle-jpi-plugin:0.50.0=classpath
 empty=

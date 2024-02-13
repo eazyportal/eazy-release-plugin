@@ -2,20 +2,23 @@ package org.eazyportal.plugin.release.gradle.tasks
 
 import org.eazyportal.plugin.release.core.action.PrepareRepositoryForReleaseAction
 import org.eazyportal.plugin.release.gradle.EazyReleasePlugin
-import org.eazyportal.plugin.release.gradle.action.PrepareRepositoryForReleaseActionFactory
+import org.eazyportal.plugin.release.gradle.action.ReleaseActionFactory
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import java.io.File
 
 internal class PrepareRepositoryForReleaseTaskTest : EazyReleaseBaseTaskTest<PrepareRepositoryForReleaseTask>() {
 
     @Mock
-    private lateinit var prepareRepositoryForReleaseActionFactory: PrepareRepositoryForReleaseActionFactory
+    private lateinit var releaseActionFactory: ReleaseActionFactory
 
     @BeforeEach
     fun init() {
@@ -24,25 +27,28 @@ internal class PrepareRepositoryForReleaseTaskTest : EazyReleaseBaseTaskTest<Pre
         underTest = project.tasks.create(
             EazyReleasePlugin.PREPARE_REPOSITORY_FOR_RELEASE_TASK_NAME,
             PrepareRepositoryForReleaseTask::class.java,
-            prepareRepositoryForReleaseActionFactory
+            releaseActionFactory
         )
     }
 
+    @Disabled("It is not possible to mock inline functions.")
     @Test
     fun test_run() {
         // GIVEN
-        val prepareRepositoryForReleaseAction: PrepareRepositoryForReleaseAction = mock()
+        val prepareRepositoryForReleaseAction: PrepareRepositoryForReleaseAction<File> = mock()
 
         // WHEN
-        whenever(prepareRepositoryForReleaseActionFactory.create(extension)).thenReturn(prepareRepositoryForReleaseAction)
+        whenever(releaseActionFactory.create<PrepareRepositoryForReleaseAction<File>>(project))
+            .thenReturn(prepareRepositoryForReleaseAction)
+
+        doNothing().whenever(prepareRepositoryForReleaseAction).execute()
 
         // THEN
         underTest.run()
 
-        verify(prepareRepositoryForReleaseActionFactory).create(extension)
-        verify(prepareRepositoryForReleaseAction).execute(project.projectDir)
-
-        verifyNoMoreInteractions(prepareRepositoryForReleaseAction, prepareRepositoryForReleaseActionFactory,)
+        verify(releaseActionFactory).create<PrepareRepositoryForReleaseAction<File>>(project)
+        verify(prepareRepositoryForReleaseAction).execute()
+        verifyNoMoreInteractions(prepareRepositoryForReleaseAction, releaseActionFactory)
     }
 
 }

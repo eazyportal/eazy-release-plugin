@@ -10,12 +10,12 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
-import org.eazyportal.plugin.release.jenkins.action.PrepareRepositoryForReleaseActionFactory;
+import org.eazyportal.plugin.release.core.action.PrepareRepositoryForReleaseAction;
+import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -28,13 +28,11 @@ public class PrepareRepositoryForReleaseStep extends Builder implements SimpleBu
 
     @Override
     public void perform(@NotNull Run<?, ?> run, @NotNull FilePath workspace, @NotNull EnvVars env, @NotNull Launcher launcher, @NotNull TaskListener listener)
-            throws InterruptedException, IOException {
+        throws InterruptedException, IOException {
 
-        File workingDir = new File(workspace.toURI());
-
-        run.getAction(PrepareRepositoryForReleaseActionFactory.class)
-            .create()
-            .execute(workingDir);
+        run.getAction(ReleaseActionFactory.class)
+            .create(PrepareRepositoryForReleaseAction.class, run, workspace, env, launcher, listener)
+            .execute();
     }
 
     @Extension

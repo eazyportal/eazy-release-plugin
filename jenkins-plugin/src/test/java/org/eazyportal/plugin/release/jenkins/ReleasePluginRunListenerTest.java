@@ -1,12 +1,10 @@
 package org.eazyportal.plugin.release.jenkins;
 
 import hudson.model.Run;
-import org.eazyportal.plugin.release.jenkins.action.FinalizeReleaseVersionActionFactory;
-import org.eazyportal.plugin.release.jenkins.action.FinalizeSnapshotVersionActionFactory;
-import org.eazyportal.plugin.release.jenkins.action.PrepareRepositoryForReleaseActionFactory;
-import org.eazyportal.plugin.release.jenkins.action.SetReleaseVersionActionFactory;
-import org.eazyportal.plugin.release.jenkins.action.SetSnapshotVersionActionFactory;
-import org.eazyportal.plugin.release.jenkins.action.UpdateScmActionFactory;
+import org.eazyportal.plugin.release.jenkins.action.ActionContextFactory;
+import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
+import org.eazyportal.plugin.release.jenkins.project.ProjectDescriptorFactory;
+import org.eazyportal.plugin.release.jenkins.scm.ScmActionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -22,19 +20,13 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 class ReleasePluginRunListenerTest {
 
     @Mock
-    private FinalizeReleaseVersionActionFactory finalizeReleaseVersionActionFactory;
-    @Mock
-    private FinalizeSnapshotVersionActionFactory finalizeSnapshotVersionActionFactory;
-    @Mock
-    private PrepareRepositoryForReleaseActionFactory prepareRepositoryForReleaseActionFactory;
+    private ActionContextFactory actionContextFactory;
     @Mock
     private ProjectDescriptorFactory projectDescriptorFactory;
     @Mock
-    private SetReleaseVersionActionFactory setReleaseVersionActionFactory;
+    private ReleaseActionFactory releaseActionFactory;
     @Mock
-    private SetSnapshotVersionActionFactory setSnapshotVersionActionFactory;
-    @Mock
-    private UpdateScmActionFactory updateScmActionFactory;
+    private ScmActionFactory scmActionFactory;
 
     @InjectMocks
     private ReleasePluginRunListener underTest;
@@ -55,13 +47,10 @@ class ReleasePluginRunListenerTest {
         // THEN
         underTest.onInitialize(run);
 
-        verify(run).addAction(finalizeReleaseVersionActionFactory);
-        verify(run).addAction(finalizeSnapshotVersionActionFactory);
-        verify(run).addAction(prepareRepositoryForReleaseActionFactory);
+        verify(run).addAction(actionContextFactory);
         verify(run).addAction(projectDescriptorFactory);
-        verify(run).addAction(setReleaseVersionActionFactory);
-        verify(run).addAction(setSnapshotVersionActionFactory);
-        verify(run).addAction(updateScmActionFactory);
+        verify(run).addAction(releaseActionFactory);
+        verify(run).addAction(scmActionFactory);
         verifyNoMoreInteractions(run);
     }
 

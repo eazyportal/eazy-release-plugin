@@ -5,11 +5,12 @@ import java.io.File
 
 abstract class ReleaseActionBaseTest {
 
-    protected companion object {
-        const val FILE_TO_COMMIT = "."
-    }
-
     @TempDir
     protected lateinit var workingDir: File
+
+    companion object {
+        @JvmStatic
+        protected val FILE_TO_COMMIT = "."
+    }
 
 }

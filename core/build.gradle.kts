@@ -1,7 +1,7 @@
 plugins {
-    id("org.eazyportal.plugin.kotlin-library-convention")
-
     `java-test-fixtures`
+
+    id("org.eazyportal.plugin.kotlin-library-convention")
 }
 
 dependencies {

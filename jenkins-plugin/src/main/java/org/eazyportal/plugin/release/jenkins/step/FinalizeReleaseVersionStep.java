@@ -10,14 +10,12 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
-import org.eazyportal.plugin.release.core.model.ProjectDescriptor;
-import org.eazyportal.plugin.release.jenkins.ProjectDescriptorFactory;
-import org.eazyportal.plugin.release.jenkins.action.FinalizeReleaseVersionActionFactory;
+import org.eazyportal.plugin.release.core.action.FinalizeReleaseVersionAction;
+import org.eazyportal.plugin.release.jenkins.action.ReleaseActionFactory;
 import org.jenkinsci.Symbol;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -30,16 +28,11 @@ public class FinalizeReleaseVersionStep extends Builder implements SimpleBuildSt
 
     @Override
     public void perform(@NotNull Run<?, ?> run, @NotNull FilePath workspace, @NotNull EnvVars env, @NotNull Launcher launcher, @NotNull TaskListener listener)
-            throws InterruptedException, IOException {
+        throws InterruptedException, IOException {
 
-        File workingDir = new File(workspace.toURI());
-
-        ProjectDescriptor projectDescriptor = run.getAction(ProjectDescriptorFactory.class)
-            .create(workingDir);
-
-        run.getAction(FinalizeReleaseVersionActionFactory.class)
-            .create()
-            .execute(projectDescriptor);
+        run.getAction(ReleaseActionFactory.class)
+            .create(FinalizeReleaseVersionAction.class, run, workspace, env, launcher, listener)
+            .execute();
     }
 
     @Extension
