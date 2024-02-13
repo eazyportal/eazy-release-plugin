@@ -13,18 +13,17 @@ class PrepareRepositoryForReleaseAction<T>(
     private val scmConfig: ScmConfig
 ) : ReleaseAction {
 
-    private val workingDir = projectDescriptor.rootProject.dir
-
     override fun execute() {
         LOGGER.info("Preparing repository for release...")
 
-        scmActions.fetch(workingDir, scmConfig.remote)
+        projectDescriptor.rootProject.dir.run {
+            scmActions.fetch(this, scmConfig.remote)
 
-        checkoutFeatureBranch(workingDir)
+            checkoutFeatureBranch(this)
+        }
 
-        scmActions.getSubmodules(workingDir)
-            .map { workingDir.resolve(it) }
-            .forEach { checkoutFeatureBranch(it) }
+        projectDescriptor.subProjects
+            .forEach { checkoutFeatureBranch(it.dir) }
     }
 
     private fun checkoutFeatureBranch(projectDir: ProjectFile<T>) {

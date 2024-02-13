@@ -45,8 +45,9 @@ internal class PrepareRepositoryForReleaseActionTest : ReleaseActionBaseTest() {
 
         verify(scmActions).fetch(projectDescriptor.rootProject.dir, ScmConfig.GIT_FLOW.remote)
         verify(scmActions).checkout(projectDescriptor.rootProject.dir, ScmConfig.GIT_FLOW.featureBranch)
-        verify(scmActions).getSubmodules(projectDescriptor.rootProject.dir)
-        verify(scmActions).checkout(projectDescriptor.rootProject.dir.resolve(ProjectDescriptorMockBuilder.SUBMODULE_NAME), ScmConfig.GIT_FLOW.featureBranch)
+        projectDescriptor.subProjects.forEach {
+            verify(scmActions).checkout(it.dir, ScmConfig.GIT_FLOW.featureBranch)
+        }
         verifyNoMoreInteractions(scmActions)
     }
 
@@ -66,7 +67,6 @@ internal class PrepareRepositoryForReleaseActionTest : ReleaseActionBaseTest() {
         underTest.execute()
 
         verify(scmActions).fetch(projectDescriptor.rootProject.dir, ScmConfig.TRUNK_BASED_FLOW.remote)
-        verify(scmActions).getSubmodules(projectDescriptor.rootProject.dir)
         verifyNoMoreInteractions(scmActions)
     }
 
