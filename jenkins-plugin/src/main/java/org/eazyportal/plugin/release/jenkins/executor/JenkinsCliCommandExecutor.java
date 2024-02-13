@@ -1,5 +1,6 @@
 package org.eazyportal.plugin.release.jenkins.executor;
 
+import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.TaskListener;
@@ -14,10 +15,12 @@ import java.util.Objects;
 
 public class JenkinsCliCommandExecutor implements CommandExecutor<ProjectFile<FilePath>> {
 
+    private final EnvVars envVars;
     private final Launcher launcher;
     private final TaskListener listener;
 
-    public JenkinsCliCommandExecutor(Launcher launcher, TaskListener listener) {
+    public JenkinsCliCommandExecutor(EnvVars envVars, Launcher launcher, TaskListener listener) {
+        this.envVars = Objects.requireNonNull(envVars);
         this.launcher = Objects.requireNonNull(launcher);
         this.listener = Objects.requireNonNull(listener);
     }
@@ -31,6 +34,7 @@ public class JenkinsCliCommandExecutor implements CommandExecutor<ProjectFile<Fi
         ) {
             var returnCode = launcher.launch()
                 .cmds(commands)
+                .envs(envVars)
                 .stdout(stdOutOutputStream)
                 .stderr(stdErrOutputStream)
                 .pwd(projectFile.getFile())

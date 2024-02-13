@@ -68,7 +68,7 @@ public class ReleaseActionFactoryTest {
 
         ScmActions<FilePath> scmActions = mock();
         ScmActionFactory scmActionFactory = mock();
-        when(scmActionFactory.create(launcher, taskListener)).thenReturn(scmActions);
+        when(scmActionFactory.create(envVars, launcher, taskListener)).thenReturn(scmActions);
         when(run.getAction(ScmActionFactory.class)).thenReturn(scmActionFactory);
 
         ProjectDescriptorFactory projectDescriptorFactory = mock();

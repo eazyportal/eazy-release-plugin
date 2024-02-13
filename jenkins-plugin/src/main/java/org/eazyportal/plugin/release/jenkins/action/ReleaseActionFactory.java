@@ -32,14 +32,14 @@ public class ReleaseActionFactory extends InvisibleAction implements Serializabl
     private transient ReleaseStepConfig releaseStepConfig;
 
     public ReleaseAction create(
-        Class<? extends ReleaseAction> clazz, Run<?, ?> run, FilePath workspace, EnvVars env,
+        Class<? extends ReleaseAction> clazz, Run<?, ?> run, FilePath workspace, EnvVars envVars,
         Launcher launcher, TaskListener taskListener
     ) {
         var actionContext = run.getAction(ActionContextFactory.class)
-            .create(env);
+            .create(envVars);
 
         var scmActions = run.getAction(ScmActionFactory.class)
-            .create(launcher, taskListener);
+            .create(envVars, launcher, taskListener);
 
         var projectDescriptor = run.getAction(ProjectDescriptorFactory.class)
             .create(new FilePathProjectFile(workspace), scmActions);
